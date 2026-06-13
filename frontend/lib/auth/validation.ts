@@ -14,10 +14,6 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const signupSchema = z
   .object({
-    username: z
-      .string()
-      .min(4, "Username must be at least 4 characters")
-      .max(64, "Username must be at most 64 characters"),
     full_name: z
       .string()
       .min(6, "Full name must be at least 6 characters")

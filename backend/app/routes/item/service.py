@@ -6,7 +6,7 @@ from ...models.user import User
 
 
 def get_item(item_id: int, user: User, session: Session):
-    itemData = session.exec(select(Item).where(Item.id == item_id, Item.user_id == user.id)).first()
+    itemData = session.exec(select(Item).where(Item.id == item_id, Item.user_id == user.email)).first()
     if not itemData:
         raise HTTPException(
             status_code=404,
@@ -18,7 +18,7 @@ def get_item(item_id: int, user: User, session: Session):
 def create_item(item: ItemBase, user: User, session: Session):
     item_data = Item(
         **item.model_dump(),
-        user_id=user.id
+        user_id=user.email
     )
     session.add(item_data)
     session.commit()
@@ -26,7 +26,7 @@ def create_item(item: ItemBase, user: User, session: Session):
 
 
 def get_all_items(user: User, session: Session, q: Union[str, None] = None):
-    query = select(Item).where(Item.user_id == user.id)
+    query = select(Item).where(Item.user_id == user.email)
     if q:
         query = query.where(Item.name.ilike(f"%{q}%"))
     items = session.exec(query).all()
@@ -34,7 +34,7 @@ def get_all_items(user: User, session: Session, q: Union[str, None] = None):
 
 
 def update_item(item_id: int, item: ItemBase, user: User, session: Session):
-    itemData = session.exec(select(Item).where(Item.id == item_id, Item.user_id == user.id)).first()
+    itemData = session.exec(select(Item).where(Item.id == item_id, Item.user_id == user.email)).first()
     if not itemData:
         raise HTTPException(
             status_code=404,
@@ -53,7 +53,7 @@ def update_item(item_id: int, item: ItemBase, user: User, session: Session):
 
 
 def delete_item(item_id: int, user: User, session: Session):
-    itemData = session.exec(select(Item).where(Item.id == item_id, Item.user_id == user.id)).first()
+    itemData = session.exec(select(Item).where(Item.id == item_id, Item.user_id == user.email)).first()
     if not itemData:
         raise HTTPException(
             status_code=404,

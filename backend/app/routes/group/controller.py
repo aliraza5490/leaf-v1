@@ -1,5 +1,5 @@
-from uuid import UUID
 from fastapi import APIRouter, Depends, Path, Query, Body
+from pydantic import EmailStr
 from typing import Union, List, Optional
 from ...utilities.tags import Tags
 from ...utilities.auth import get_user_from_token
@@ -37,7 +37,7 @@ def create_group(
 
 @group_router.get("/{group_id}", summary="Get a specific group")
 def read_group(
-    group_id: UUID = Path(..., title="The ID of the group to retrieve"), 
+    group_id: int = Path(..., title="The ID of the group to retrieve"), 
     user: User = Depends(get_user_from_token), 
     session: Session = Depends(get_session)
 ):
@@ -59,7 +59,7 @@ def read_all_groups(
 
 @group_router.put("/{group_id}", summary="Update a group")
 def update_group(
-    group_id: UUID = Path(..., title="The ID of the group to update"),
+    group_id: int = Path(..., title="The ID of the group to update"),
     group: GroupBase = Body(..., title="Updated group data"),
     user: User = Depends(get_user_from_token), 
     session: Session = Depends(get_session)
@@ -71,7 +71,7 @@ def update_group(
 
 @group_router.delete("/{group_id}", summary="Delete a group")
 def delete_group(
-    group_id: UUID = Path(..., title="The ID of the group to delete"),
+    group_id: int = Path(..., title="The ID of the group to delete"),
     user: User = Depends(get_user_from_token), 
     session: Session = Depends(get_session)
 ):
@@ -81,33 +81,33 @@ def delete_group(
     return delete_group_svc(group_id, user, session)
 
 # Group membership routes
-@group_router.post("/{group_id}/members/{user_id}", summary="Add user to group")
+@group_router.post("/{group_id}/members/{user_email}", summary="Add user to group")
 def add_member(
-    group_id: UUID = Path(..., title="The ID of the group"),
-    user_id: int = Path(..., title="The ID of the user to add"),
+    group_id: int = Path(..., title="The ID of the group"),
+    user_email: EmailStr = Path(..., title="The email of the user to add"),
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session)
 ):
     """
     Add a user to a group if the current user is the admin
     """
-    return add_user_to_group(group_id, user_id, user, session)
+    return add_user_to_group(group_id, user_email, user, session)
 
-@group_router.delete("/{group_id}/members/{user_id}", summary="Remove user from group")
+@group_router.delete("/{group_id}/members/{user_email}", summary="Remove user from group")
 def remove_member(
-    group_id: UUID = Path(..., title="The ID of the group"),
-    user_id: int = Path(..., title="The ID of the user to remove"),
+    group_id: int = Path(..., title="The ID of the group"),
+    user_email: EmailStr = Path(..., title="The email of the user to remove"),
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session)
 ):
     """
     Remove a user from a group if the current user is the admin
     """
-    return remove_user_from_group(group_id, user_id, user, session)
+    return remove_user_from_group(group_id, user_email, user, session)
 
 @group_router.get("/{group_id}/members", summary="Get group members")
 def get_members(
-    group_id: UUID = Path(..., title="The ID of the group"),
+    group_id: int = Path(..., title="The ID of the group"),
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session)
 ):
@@ -119,7 +119,7 @@ def get_members(
 # Group invitation route
 @group_router.post("/{group_id}/invite", summary="Invite user to group by email")
 def invite_to_group(
-    group_id: UUID = Path(..., title="The ID of the group"),
+    group_id: int = Path(..., title="The ID of the group"),
     invite_data: GroupInvite = Body(..., title="Invitation data"),
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session)

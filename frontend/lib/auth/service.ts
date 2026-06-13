@@ -8,7 +8,6 @@ export interface LoginCredentials {
 }
 
 export interface RegisterData {
-  username: string;
   email: string;
   full_name: string;
   password: string;
@@ -20,7 +19,6 @@ export interface LoginResponse {
 }
 
 export interface RegisterResponse {
-  id: string;
   email: string;
   full_name: string | null;
   message: string;

@@ -1,4 +1,4 @@
-from ...models.user import User, UserLogin, ForgotPasswordRequest
+from ...models.user import User, UserLogin, UserCreate, ForgotPasswordRequest
 from fastapi import status, HTTPException
 from sqlmodel import select, Session
 from ...utilities.auth import get_password_hash, verify_password, create_access_token
@@ -6,7 +6,7 @@ from ...settings import settings
 from datetime import timedelta
 
 
-def register(user: UserLogin, session: Session):
+def register(user: UserCreate, session: Session):
     existing_user = session.exec(select(User).where(
         User.email == user.email
     )).first()
@@ -18,7 +18,6 @@ def register(user: UserLogin, session: Session):
         )
 
     new_user = User(
-        username=user.username,
         email=user.email,
         hashed_password=get_password_hash(user.password),
         full_name=user.full_name,
@@ -30,7 +29,6 @@ def register(user: UserLogin, session: Session):
     session.refresh(new_user)
 
     return {
-        "id": new_user.id,
         "email": new_user.email,
         "full_name": new_user.full_name,
         "message": "User registered successfully"
@@ -50,7 +48,7 @@ def login(user: UserLogin, session: Session):
     if not user_data:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -58,7 +56,7 @@ def login(user: UserLogin, session: Session):
     if not does_pass_match:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
+            detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
