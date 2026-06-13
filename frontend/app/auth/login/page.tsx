@@ -48,7 +48,7 @@ export default function LoginPage() {
     try {
       await login(values);
       toast.success("Logged in successfully");
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "An unexpected error occurred";
