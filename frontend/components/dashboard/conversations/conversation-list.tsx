@@ -101,9 +101,17 @@ export function ConversationList({
               conversation.messages[conversation.messages.length - 1];
 
             return (
-              <button
+              <div
                 key={conversation.id}
+                role="button"
+                tabIndex={0}
                 onClick={() => onSelect(conversation.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelect(conversation.id);
+                  }
+                }}
                 className={cn(
                   "flex w-full items-start gap-3 border-b border-border/40 p-4 text-left transition-colors hover:bg-muted/50",
                   selectedId === conversation.id && "bg-muted/50",
@@ -161,7 +169,7 @@ export function ConversationList({
                     )}
                   </div>
                 </div>
-              </button>
+              </div>
             );
           })
         )}

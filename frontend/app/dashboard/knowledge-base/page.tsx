@@ -23,7 +23,7 @@ import { generateId } from "@/lib/knowledge-base/utils";
 
 export default function KnowledgeBasePage() {
   const [articles, setArticles] = useState<KBArticle[]>(mockArticles);
-  const [viewMode, setViewMode] = useState<KBViewMode>("table");
+  const [viewMode, setViewMode] = useState<KBViewMode>("grid");
   const [filters, setFilters] = useState<KBFilters>({
     search: "",
     category: "all",

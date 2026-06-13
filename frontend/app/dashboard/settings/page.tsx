@@ -144,6 +144,8 @@ export default function SettingsPage() {
           onSectionChange={setActiveSection}
         />
 
+        <div className="border-l border-border" />
+
         <div className="flex-1 min-w-0">{renderContent()}</div>
       </div>
     </div>
