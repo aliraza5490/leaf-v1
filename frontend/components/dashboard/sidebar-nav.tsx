@@ -55,7 +55,7 @@ export function DashboardSidebar() {
       <SidebarHeader className="border-b border-border/40">
         <Link
           href="/dashboard"
-          className="flex items-center gap-2 px-4 py-3 text-primary group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+          className="flex items-center gap-2 px-2 py-3 text-primary group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
         >
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10">
             <Leaf className="h-5 w-5" />
