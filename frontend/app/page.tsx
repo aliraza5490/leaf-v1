@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Leaf, CheckCircle2, Users, Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeCustomizer } from "@/components/theme-customizer";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function LandingPage() {
@@ -16,14 +16,14 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2 text-primary">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
               <Leaf className="h-5 w-5" />
             </div>
             <span className="text-lg font-semibold tracking-tight">Leaf</span>
           </Link>
 
           <nav className="flex items-center gap-4">
-            <ThemeToggle />
+            <ThemeCustomizer />
             {isAuthenticated ? (
               <Button asChild>
                 <Link href="/dashboard">Dashboard</Link>
@@ -135,7 +135,7 @@ function FeatureCard({
 }) {
   return (
     <div className="rounded-xl border border-border bg-card p-6 text-card-foreground shadow-sm transition-shadow hover:shadow-md">
-      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+      <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
         {icon}
       </div>
       <h3 className="text-lg font-semibold">{title}</h3>

@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Leaf, Shield, Zap } from "lucide-react";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeCustomizer } from "@/components/theme-customizer";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-primary-foreground/10 blur-3xl" />
 
         <div className="relative z-10 flex items-center gap-2 text-lg font-semibold">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-foreground/20 backdrop-blur-sm">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-foreground/20 backdrop-blur-sm">
             <Leaf className="h-5 w-5" />
           </div>
           Leaf
@@ -63,13 +63,13 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       <div className="relative flex flex-col items-center justify-center p-6 md:p-10">
         {/* Mobile-only logo */}
         <div className="absolute left-6 top-6 flex items-center gap-2 text-lg font-semibold text-primary lg:hidden">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
             <Leaf className="h-4 w-4" />
           </div>
           Leaf
         </div>
         <div className="absolute right-4 top-4">
-          <ThemeToggle />
+          <ThemeCustomizer />
         </div>
         {children}
       </div>
