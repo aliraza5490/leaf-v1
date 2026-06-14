@@ -14,10 +14,17 @@ export function mountWidget(config: WidgetConfig) {
   const container = document.createElement('div');
   container.id = CONTAINER_ID;
   container.className = 'leaf-widget-root';
+  container.style.visibility = 'hidden';
   document.body.appendChild(container);
 
   const root = createRoot(container);
   root.render(<LeafWidget config={config} />);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      container.style.visibility = '';
+    });
+  });
 }
 
 export function init(config: WidgetConfig) {
