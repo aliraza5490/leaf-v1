@@ -3,6 +3,7 @@ export type WidgetTheme = 'light' | 'dark' | 'auto';
 
 export interface WidgetConfig {
   storeId: string;
+  apiUrl?: string;
   position?: WidgetPosition;
   theme?: WidgetTheme;
   primaryColor?: string;
@@ -34,4 +35,12 @@ export interface ChatState {
   messages: Message[];
   isOpen: boolean;
   isTyping: boolean;
+  isCallActive: boolean;
+  sessionId?: string;
+}
+
+export interface SSEEvent {
+  type: 'token' | 'products' | 'done' | 'error';
+  content?: string;
+  products?: Product[];
 }

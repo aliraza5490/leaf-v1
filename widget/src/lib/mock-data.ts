@@ -29,7 +29,7 @@ export const mockProducts: Product[] = [
     id: 'p4',
     name: 'Natural Soy Candle',
     price: 15.00,
-    image: 'https://images.unsplash.com/photo-1602607688066-3d5c4e0e5e5a?w=200&h=200&fit=crop',
+    image: 'https://images.unsplash.com/photo-1603006905003-be475563bc59?w=200&h=200&fit=crop',
     url: '#',
     description: 'Hand-poured lavender & vanilla soy wax candle',
   },

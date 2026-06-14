@@ -3,8 +3,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routes.api_router import api_router
 from contextlib import asynccontextmanager
-from .utilities.db import get_session, create_db_and_tables
+from .utilities.db import get_session, create_db_and_tables, engine
 from .settings import settings
+from .utilities.seed import seed_products
+from sqlmodel import Session
 
 
 @asynccontextmanager
@@ -12,6 +14,8 @@ async def lifespan(app: FastAPI):
     # Setup: Initialize before app starts
     get_session()
     create_db_and_tables()
+    with Session(engine) as session:
+        seed_products(session)
     yield  # This is crucial - it yields control back to FastAPI
     # Cleanup: Code after this will run when app shuts down
     # You can add cleanup code here if needed

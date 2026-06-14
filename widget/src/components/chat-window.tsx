@@ -1,12 +1,15 @@
 import { ChatHeader } from './chat-header';
 import { MessageList } from './message-list';
 import { ChatInput } from './chat-input';
+import { CallView } from './call-view';
+import { mockProducts } from '@/lib/mock-data';
 import type { Message } from '@/lib/types';
 
 interface ChatWindowProps {
   isOpen: boolean;
   messages: Message[];
   isTyping: boolean;
+  isCallActive: boolean;
   primaryColor: string;
   position: 'bottom-right' | 'bottom-left';
   storeName: string;
@@ -14,6 +17,8 @@ interface ChatWindowProps {
   greeting: string;
   placeholder: string;
   showBranding: boolean;
+  onStartCall: () => void;
+  onEndCall: () => void;
   onClose: () => void;
   onSend: (message: string) => void;
 }
@@ -22,6 +27,7 @@ export function ChatWindow({
   isOpen,
   messages,
   isTyping,
+  isCallActive,
   primaryColor,
   position,
   storeName,
@@ -29,6 +35,8 @@ export function ChatWindow({
   greeting,
   placeholder,
   showBranding,
+  onStartCall,
+  onEndCall,
   onClose,
   onSend,
 }: ChatWindowProps) {
@@ -38,7 +46,7 @@ export function ChatWindow({
 
   return (
     <div
-      className={`fixed bottom-24 ${posClass} z-[999998] w-[380px] max-w-[calc(100vw-2.5rem)] h-[520px] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
+      className={`fixed bottom-24 ${posClass} z-[999998] ${isCallActive ? 'w-[480px] h-[600px]' : 'w-[380px] h-[520px]'} max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
       style={{ fontFamily: 'var(--leaf-font, Inter, system-ui, sans-serif)' }}
     >
       <ChatHeader
@@ -46,10 +54,24 @@ export function ChatWindow({
         storeLogo={storeLogo}
         greeting={greeting}
         primaryColor={primaryColor}
+        isCallActive={isCallActive}
+        onStartCall={onStartCall}
         onClose={onClose}
       />
-      <MessageList messages={messages} isTyping={isTyping} primaryColor={primaryColor} />
-      <ChatInput onSend={onSend} placeholder={placeholder} primaryColor={primaryColor} disabled={isTyping} />
+      {isCallActive ? (
+        <CallView
+          storeName={storeName}
+          storeLogo={storeLogo}
+          primaryColor={primaryColor}
+          products={mockProducts}
+          onEndCall={onEndCall}
+        />
+      ) : (
+        <>
+          <MessageList messages={messages} isTyping={isTyping} primaryColor={primaryColor} />
+          <ChatInput onSend={onSend} placeholder={placeholder} primaryColor={primaryColor} disabled={isTyping} />
+        </>
+      )}
       {showBranding && (
         <div className="text-center py-1.5 bg-gray-50 border-t border-gray-100">
           <span className="text-[10px] text-gray-400">

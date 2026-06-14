@@ -20,12 +20,57 @@
   to { opacity: 1; }
 }
 
+@keyframes leaf-glow-pulse {
+  0%, 100% {
+    transform: scale(0.85);
+    opacity: 0.15;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.35;
+  }
+}
+
+@keyframes leaf-glow-breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+  }
+}
+
+@keyframes leaf-product-pulse {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.4;
+  }
+}
+
 .animate-leaf-slide-up {
   animation: leaf-slide-up 0.2s ease-out;
 }
 
 .animate-leaf-fade-in {
   animation: leaf-fade-in 0.15s ease-out;
+}
+
+.animate-leaf-glow-pulse {
+  animation: leaf-glow-pulse 3s ease-in-out infinite;
+}
+
+.animate-leaf-glow-breathe {
+  animation: leaf-glow-breathe 3s ease-in-out infinite;
+}
+
+.animate-leaf-product-pulse {
+  animation: leaf-product-pulse 2.5s ease-in-out infinite;
 }
 
 .leaf-widget-root {
@@ -45,4 +90,13 @@
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.leaf-widget-root .scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.leaf-widget-root .scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

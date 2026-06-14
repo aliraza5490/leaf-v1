@@ -12,10 +12,13 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     messages,
     isOpen,
     isTyping,
+    isCallActive,
     toggle,
     close,
+    startCall,
+    endCall,
     sendMessage,
-  } = useChat(config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?");
+  } = useChat(config, config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?");
 
   return (
     <>
@@ -23,6 +26,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
         isOpen={isOpen}
         messages={messages}
         isTyping={isTyping}
+        isCallActive={isCallActive}
         primaryColor={config.primaryColor || '#10b981'}
         position={config.position || 'bottom-right'}
         storeName={config.storeName || 'Leaf Assistant'}
@@ -30,6 +34,8 @@ export function LeafWidget({ config }: LeafWidgetProps) {
         greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
         placeholder={config.placeholder || 'Type your message...'}
         showBranding={config.showBranding !== false}
+        onStartCall={startCall}
+        onEndCall={endCall}
         onClose={close}
         onSend={sendMessage}
       />
