@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes leaf-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes leaf-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-leaf-slide-up {
+  animation: leaf-slide-up 0.2s ease-out;
+}
+
+.animate-leaf-fade-in {
+  animation: leaf-fade-in 0.15s ease-out;
+}
+
+.leaf-widget-root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.leaf-widget-root *,
+.leaf-widget-root *::before,
+.leaf-widget-root *::after {
+  box-sizing: border-box;
+}
+
+.leaf-widget-root .line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

@@ -60,12 +60,15 @@ export const mockIntegrationSettings: IntegrationSettings = {
       active: false,
     },
   ],
-  embedCode: `<script src="https://cdn.leaf.ai/widget.js"></script>
+  embedCode: `<script src="https://cdn.leaf.ai/leaf-widget.js"></script>
 <script>
   Leaf.init({
     storeId: 'store_abc123',
     position: 'bottom-right',
-    theme: 'auto'
+    primaryColor: '#10b981',
+    storeName: 'Your Store Name',
+    greeting: 'Hi! How can I help you today?',
+    showBranding: true
   });
 </script>`,
 };
