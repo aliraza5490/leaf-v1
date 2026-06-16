@@ -12,6 +12,7 @@ export interface WidgetConfig {
   greeting?: string;
   placeholder?: string;
   showBranding?: boolean;
+  products?: RawProduct[];
 }
 
 export interface Product {
@@ -21,6 +22,27 @@ export interface Product {
   image: string;
   url?: string;
   description?: string;
+}
+
+export interface RawProduct {
+  id: string | number;
+  name: string;
+  price: number;
+  image?: string;
+  images?: string[];
+  url?: string;
+  description?: string;
+}
+
+export function normalizeProduct(p: RawProduct): Product {
+  return {
+    id: String(p.id),
+    name: p.name,
+    price: p.price,
+    image: p.image ?? p.images?.[0] ?? '',
+    url: p.url,
+    description: p.description,
+  };
 }
 
 export interface Message {
@@ -42,5 +64,5 @@ export interface ChatState {
 export interface SSEEvent {
   type: 'token' | 'products' | 'done' | 'error';
   content?: string;
-  products?: Product[];
+  products?: RawProduct[];
 }

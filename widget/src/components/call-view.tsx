@@ -29,7 +29,8 @@ function MicIcon() {
 
 export function CallView({ storeName, storeLogo, primaryColor, products, onEndCall }: CallViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const highlightedId = products && products.length > 0 ? products[0].id : null;
+  const hasProducts = products && products.length > 0;
+  const highlightedId = hasProducts ? products[0].id : null;
 
   const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
     if (e.deltaY !== 0) {
@@ -41,9 +42,9 @@ export function CallView({ storeName, storeLogo, primaryColor, products, onEndCa
   };
 
   return (
-    <div className="flex-1 flex flex-col w-full min-w-0 pt-10 pb-2 bg-gray-50 animate-leaf-fade-in">
-      <div className="flex flex-col items-center mb-6">
-        <div className="relative flex items-center justify-center mb-10">
+    <div className={`flex-1 flex flex-col w-full min-w-0 ${hasProducts ? 'pt-10' : 'pt-6'} pb-2 bg-gray-50 animate-leaf-fade-in`}>
+      <div className={`flex flex-col items-center mt-6 ${hasProducts ? 'mb-6' : 'mb-4'}`}>
+        <div className={`relative flex items-center justify-center ${hasProducts ? 'mb-10' : 'mb-6'}`}>
           <div
             className="absolute w-28 h-28 rounded-full opacity-20 animate-leaf-glow-pulse"
             style={{ backgroundColor: primaryColor, animationDelay: '0s' }}
@@ -64,11 +65,11 @@ export function CallView({ storeName, storeLogo, primaryColor, products, onEndCa
           </div>
         </div>
 
-        <h3 className="text-base font-semibold text-gray-800 mb-0.5">{storeName}</h3>
+        <h3 className="text-base font-semibold text-gray-800 mb-0.5 mt-6">{storeName}</h3>
         <p className="text-sm text-gray-500">Connected</p>
       </div>
 
-      {products && products.length > 0 && (
+      {hasProducts && (
         <div className="w-full mb-2 animate-leaf-slide-up">
           <p className="text-xs font-medium text-gray-400 uppercase tracking-wider px-5">
             Recommended for you
@@ -125,7 +126,7 @@ export function CallView({ storeName, storeLogo, primaryColor, products, onEndCa
         </div>
       )}
 
-      <div className="flex justify-center mt-auto mb-6">
+      <div className={`flex justify-center ${hasProducts ? 'mt-auto mb-6' : 'mt-10 mb-4'}`}>
         <button
           onClick={onEndCall}
           className="flex items-center gap-2 px-6 py-3 rounded-full bg-red-500 text-white font-medium text-sm hover:bg-red-600 active:scale-95 transition-all cursor-pointer shadow-lg shadow-red-500/25"

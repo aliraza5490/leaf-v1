@@ -2,8 +2,7 @@ import { ChatHeader } from './chat-header';
 import { MessageList } from './message-list';
 import { ChatInput } from './chat-input';
 import { CallView } from './call-view';
-import { mockProducts } from '@/lib/mock-data';
-import type { Message } from '@/lib/types';
+import type { Message, Product } from '@/lib/types';
 
 interface ChatWindowProps {
   isOpen: boolean;
@@ -17,6 +16,7 @@ interface ChatWindowProps {
   greeting: string;
   placeholder: string;
   showBranding: boolean;
+  products?: Product[];
   onStartCall: () => void;
   onEndCall: () => void;
   onClose: () => void;
@@ -35,6 +35,7 @@ export function ChatWindow({
   greeting,
   placeholder,
   showBranding,
+  products,
   onStartCall,
   onEndCall,
   onClose,
@@ -46,7 +47,7 @@ export function ChatWindow({
 
   return (
     <div
-      className={`fixed bottom-24 ${posClass} z-[999998] ${isCallActive ? 'w-[480px] h-[600px]' : 'w-[380px] h-[520px]'} max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
+      className={`fixed bottom-24 ${posClass} z-[999998] ${isCallActive && products?.length ? 'w-[550px] h-[670px]' : 'w-[380px] h-[450px]'} max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
       style={{ fontFamily: 'var(--leaf-font, Inter, system-ui, sans-serif)' }}
     >
       <ChatHeader
@@ -63,7 +64,7 @@ export function ChatWindow({
           storeName={storeName}
           storeLogo={storeLogo}
           primaryColor={primaryColor}
-          products={mockProducts}
+          products={products}
           onEndCall={onEndCall}
         />
       ) : (

@@ -1,13 +1,16 @@
 import { useChat } from '@/hooks/use-chat';
 import { ChatBubble } from '@/components/chat-bubble';
 import { ChatWindow } from '@/components/chat-window';
-import type { WidgetConfig } from '@/lib/types';
+import type { WidgetConfig, Product } from '@/lib/types';
+import { normalizeProduct } from '@/lib/types';
 
 interface LeafWidgetProps {
   config: WidgetConfig;
 }
 
 export function LeafWidget({ config }: LeafWidgetProps) {
+  const normalizedProducts: Product[] | undefined = config.products?.map(normalizeProduct);
+
   const {
     messages,
     isOpen,
@@ -34,6 +37,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
         greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
         placeholder={config.placeholder || 'Type your message...'}
         showBranding={config.showBranding !== false}
+        products={normalizedProducts}
         onStartCall={startCall}
         onEndCall={endCall}
         onClose={close}

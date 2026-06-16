@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from 'react';
 import type { ChatState, Message, WidgetConfig, Product } from '@/lib/types';
+import { normalizeProduct } from '@/lib/types';
 import { createConversation, sendMessage, getApiUrl } from '@/lib/api';
 
 function createMessage(
@@ -94,10 +95,7 @@ export function useChat(config: WidgetConfig, greeting: string) {
               return { ...prev, messages: msgs, isTyping: false };
             });
           } else if (event.type === 'products' && event.products) {
-            products = event.products.map((p) => ({
-              ...p,
-              id: String(p.id),
-            }));
+            products = event.products.map(normalizeProduct);
           } else if (event.type === 'error') {
             setState((prev) => {
               const msgs = [...prev.messages];
