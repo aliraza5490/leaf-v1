@@ -4,6 +4,7 @@ export type WidgetTheme = 'light' | 'dark' | 'auto';
 export interface WidgetConfig {
   storeId: string;
   apiUrl?: string;
+  assetsBaseUrl?: string;
   position?: WidgetPosition;
   theme?: WidgetTheme;
   primaryColor?: string;
@@ -66,3 +67,5 @@ export interface SSEEvent {
   content?: string;
   products?: RawProduct[];
 }
+
+export type VoiceState = 'idle' | 'connecting' | 'listening' | 'processing' | 'speaking' | 'error';

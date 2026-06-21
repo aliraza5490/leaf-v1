@@ -17,6 +17,7 @@ dependencies = [
     "langchain-openai>=0.3",
     "langchain-core>=0.3",
     "sse-starlette>=2.0",
+    "pipecat-ai[webrtc,deepgram,groq,cartesia,silero,runner]",
 ]
 
 [build-system]

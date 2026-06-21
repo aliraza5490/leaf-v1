@@ -38,6 +38,7 @@ export default defineConfig({
     'process.env.NODE_ENV': JSON.stringify('production'),
   },
   build: {
+    target: 'es2022',
     lib: {
       entry: resolve(__dirname, 'src/main.tsx'),
       name: 'Leaf',
@@ -55,6 +56,14 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+    },
+  },
+  esbuild: {
+    target: 'es2022',
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2022',
     },
   },
   server: {

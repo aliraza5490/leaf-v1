@@ -2,7 +2,8 @@ import { ChatHeader } from './chat-header';
 import { MessageList } from './message-list';
 import { ChatInput } from './chat-input';
 import { CallView } from './call-view';
-import type { Message, Product } from '@/lib/types';
+import type { Message, Product, VoiceState } from '@/lib/types';
+import type { VoiceErrorCode } from '@/lib/voice-error';
 
 interface ChatWindowProps {
   isOpen: boolean;
@@ -17,6 +18,10 @@ interface ChatWindowProps {
   placeholder: string;
   showBranding: boolean;
   products?: Product[];
+  voiceState: VoiceState;
+  transcript: string;
+  agentText: string;
+  voiceError: { code: VoiceErrorCode; message: string } | null;
   onStartCall: () => void;
   onEndCall: () => void;
   onClose: () => void;
@@ -36,6 +41,10 @@ export function ChatWindow({
   placeholder,
   showBranding,
   products,
+  voiceState,
+  transcript,
+  agentText,
+  voiceError,
   onStartCall,
   onEndCall,
   onClose,
@@ -65,6 +74,10 @@ export function ChatWindow({
           storeLogo={storeLogo}
           primaryColor={primaryColor}
           products={products}
+          voiceState={voiceState}
+          transcript={transcript}
+          agentText={agentText}
+          voiceError={voiceError}
           onEndCall={onEndCall}
         />
       ) : (

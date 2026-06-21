@@ -1,11 +1,16 @@
 import { useRef, type WheelEvent } from 'react';
-import type { Product } from '@/lib/types';
+import type { Product, VoiceState } from '@/lib/types';
+import type { VoiceErrorCode } from '@/lib/voice-error';
 
 interface CallViewProps {
   storeName: string;
   storeLogo?: string;
   primaryColor: string;
   products?: Product[];
+  voiceState: VoiceState;
+  transcript: string;
+  agentText: string;
+  voiceError: { code: VoiceErrorCode; message: string } | null;
   onEndCall: () => void;
 }
 
@@ -27,7 +32,50 @@ function MicIcon() {
   );
 }
 
-export function CallView({ storeName, storeLogo, primaryColor, products, onEndCall }: CallViewProps) {
+function getStateLabel(state: VoiceState): string {
+  switch (state) {
+    case 'connecting': return 'Connecting...';
+    case 'listening': return 'Listening...';
+    case 'processing': return 'Thinking...';
+    case 'speaking': return 'Speaking...';
+    case 'error': return 'Error';
+    default: return 'Ready';
+  }
+}
+
+function getStateColor(state: VoiceState, primaryColor: string): string {
+  switch (state) {
+    case 'connecting': return '#f59e0b';
+    case 'listening': return primaryColor;
+    case 'processing': return '#3b82f6';
+    case 'speaking': return '#8b5cf6';
+    case 'error': return '#ef4444';
+    default: return '#6b7280';
+  }
+}
+
+function getErrorMessage(code: VoiceErrorCode): string {
+  switch (code) {
+    case 'mic-denied': return 'Microphone access was denied. Please allow mic access in your browser settings and try again.';
+    case 'mic-unavailable': return 'No microphone found. Please connect a microphone and try again.';
+    case 'ws-failed': return 'Could not connect to the voice server. Please check your internet connection.';
+    case 'ws-lost': return 'Connection was lost. Please try starting a new call.';
+    case 'server-error': return 'The server encountered an error. Please try again.';
+    default: return 'Something went wrong. Please try again.';
+  }
+}
+
+export function CallView({ 
+  storeName, 
+  storeLogo, 
+  primaryColor, 
+  products, 
+  voiceState,
+  transcript,
+  agentText,
+  voiceError,
+  onEndCall 
+}: CallViewProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const hasProducts = products && products.length > 0;
   const highlightedId = hasProducts ? products[0].id : null;
@@ -41,21 +89,24 @@ export function CallView({ storeName, storeLogo, primaryColor, products, onEndCa
     }
   };
 
+  const stateLabel = getStateLabel(voiceState);
+  const stateColor = getStateColor(voiceState, primaryColor);
+
   return (
     <div className={`flex-1 flex flex-col w-full min-w-0 ${hasProducts ? 'pt-10' : 'pt-6'} pb-2 bg-gray-50 animate-leaf-fade-in`}>
       <div className={`flex flex-col items-center mt-6 ${hasProducts ? 'mb-6' : 'mb-4'}`}>
         <div className={`relative flex items-center justify-center ${hasProducts ? 'mb-10' : 'mb-6'}`}>
           <div
-            className="absolute w-28 h-28 rounded-full opacity-20 animate-leaf-glow-pulse"
-            style={{ backgroundColor: primaryColor, animationDelay: '0s' }}
+            className={`absolute w-28 h-28 rounded-full opacity-20 ${voiceState === 'listening' ? 'animate-leaf-glow-pulse' : voiceState === 'speaking' ? 'animate-leaf-glow-pulse' : ''}`}
+            style={{ backgroundColor: stateColor, animationDelay: '0s' }}
           />
           <div
-            className="absolute w-24 h-24 rounded-full opacity-30 animate-leaf-glow-pulse"
-            style={{ backgroundColor: primaryColor, animationDelay: '0.4s' }}
+            className={`absolute w-24 h-24 rounded-full opacity-30 ${voiceState === 'listening' ? 'animate-leaf-glow-pulse' : voiceState === 'speaking' ? 'animate-leaf-glow-pulse' : ''}`}
+            style={{ backgroundColor: stateColor, animationDelay: '0.4s' }}
           />
           <div
             className="relative w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg animate-leaf-glow-breathe"
-            style={{ backgroundColor: primaryColor }}
+            style={{ backgroundColor: stateColor }}
           >
             {storeLogo ? (
               <img src={storeLogo} alt="" className="w-16 h-16 rounded-full object-cover" />
@@ -66,7 +117,27 @@ export function CallView({ storeName, storeLogo, primaryColor, products, onEndCa
         </div>
 
         <h3 className="text-base font-semibold text-gray-800 mb-0.5 mt-6">{storeName}</h3>
-        <p className="text-sm text-gray-500">Connected</p>
+        <p className="text-sm font-medium mb-2" style={{ color: stateColor }}>
+          {stateLabel}
+        </p>
+        
+        {transcript && voiceState === 'listening' && (
+          <div className="px-6 text-center animate-leaf-fade-in">
+            <p className="text-sm text-gray-600 italic">{transcript}</p>
+          </div>
+        )}
+        
+        {agentText && voiceState === 'speaking' && (
+          <div className="px-6 text-center animate-leaf-fade-in max-w-[300px]">
+            <p className="text-sm text-gray-700">{agentText}</p>
+          </div>
+        )}
+        
+        {voiceError && voiceState === 'error' && (
+          <div className="px-6 text-center animate-leaf-fade-in max-w-[300px]">
+            <p className="text-sm text-red-600">{getErrorMessage(voiceError.code)}</p>
+          </div>
+        )}
       </div>
 
       {hasProducts && (
