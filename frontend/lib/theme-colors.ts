@@ -519,5 +519,5 @@ export const baseColors: BaseColor[] = [
   },
 ];
 
-export const DEFAULT_ACCENT = "violet";
-export const DEFAULT_BASE = "mauve";
+export const DEFAULT_ACCENT = "green";
+export const DEFAULT_BASE = "slate";
