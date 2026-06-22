@@ -37,13 +37,16 @@ export function ConversationDetail({
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const viewport = scrollRef.current?.querySelector<HTMLDivElement>(
+      '[data-slot="scroll-area-viewport"]'
+    );
+    if (viewport) {
+      viewport.scrollTop = viewport.scrollHeight;
     }
   }, [conversation.messages.length]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div className="flex items-center justify-between border-b border-border/40 px-4 py-3">
         <div className="flex items-center gap-2">
           <ExportMenu conversation={conversation} />
@@ -93,7 +96,7 @@ export function ConversationDetail({
 
       <VisitorHeader conversation={conversation} />
 
-      <ScrollArea className="flex-1" ref={scrollRef}>
+      <ScrollArea className="min-h-0 flex-1" ref={scrollRef}>
         <div className="flex flex-col gap-4 p-4">
           {conversation.messages.map((message) => (
             <ChatMessage key={message.id} message={message} />
