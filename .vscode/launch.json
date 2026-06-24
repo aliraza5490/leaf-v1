@@ -2,21 +2,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Backend: FastAPI",
-      "type": "debugpy",
-      "request": "launch",
-      "python": "${workspaceFolder}/backend/.venv/bin/python",
-      "module": "uvicorn",
-      "args": ["app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"],
-      "cwd": "${workspaceFolder}/backend",
-      "env": {
-        "PYTHONUNBUFFERED": "1",
-        "VIRTUAL_ENV": "${workspaceFolder}/backend/.venv",
-        "PATH": "${workspaceFolder}/backend/.venv/bin:${env:PATH}"
-      },
-      "justMyCode": true
-    },
-    {
       "name": "Backend: FastAPI (uv run)",
       "type": "node-terminal",
       "request": "launch",
@@ -36,22 +21,22 @@
       }
     },
     {
-      "name": "Frontend: Debug Chrome",
-      "type": "chrome",
+      "name": "Widget: Vite",
+      "type": "node-terminal",
       "request": "launch",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}/frontend",
-      "sourceMaps": true,
-      "sourceMapPathOverrides": {
-        "webpack:///./~/*": "${workspaceFolder}/frontend/node_modules/*",
-        "webpack://?./*": "${workspaceFolder}/frontend/*"
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/widget",
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "Local:.*http://localhost:([0-9]+)",
+        "uriFormat": "http://localhost:%s"
       }
     }
   ],
   "compounds": [
     {
       "name": "Full Stack",
-      "configurations": ["Backend: FastAPI (uv run)", "Frontend: Next.js"],
+      "configurations": ["Backend: FastAPI (uv run)", "Frontend: Next.js", "Widget: Vite"],
       "stopAll": true
     }
   ]
