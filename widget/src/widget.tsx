@@ -5,7 +5,7 @@ import { ChatWindow } from '@/components/chat-window';
 import type { WidgetConfig, Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
 import { normalizeProduct } from '@/lib/types';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 interface LeafWidgetProps {
   config: WidgetConfig;
@@ -32,6 +32,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   const [agentText, setAgentText] = useState('');
   const [voiceProducts, setVoiceProducts] = useState<Product[]>([]);
   const [error, setError] = useState<{ code: VoiceErrorCode; message: string } | null>(null);
+  const hasAutoStartedCall = useRef(false);
 
   useEffect(() => {
     if (!client) return;
@@ -127,6 +128,13 @@ export function LeafWidget({ config }: LeafWidgetProps) {
       setVoiceState('error');
     }
   }, [client, config.apiUrl, config.storeId, startCall]);
+
+  useEffect(() => {
+    if (isOpen && !hasAutoStartedCall.current) {
+      hasAutoStartedCall.current = true;
+      handleStartCall();
+    }
+  }, [isOpen, handleStartCall]);
 
   const handleEndCall = useCallback(async () => {
     endCall();
