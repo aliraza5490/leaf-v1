@@ -11,8 +11,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMUserAggregatorParams,
 )
 from pipecat.services.cartesia.tts import CartesiaTTSService
-from pipecat.services.cartesia.stt import CartesiaSTTService
-from pipecat.services.deepgram.stt import DeepgramSTTService
+from pipecat.services.cartesia.turns.stt import CartesiaTurnsSTTService
 from pipecat.services.groq.llm import GroqLLMService
 from pipecat.transports.base_transport import TransportParams
 from pipecat.transports.smallwebrtc.connection import SmallWebRTCConnection
@@ -43,12 +42,12 @@ async def run_voice_bot(
         params=TransportParams(
             audio_in_enabled=True,
             audio_out_enabled=True,
-            vad_analyzer=SileroVADAnalyzer(),
         ),
     )
 
-    # stt = DeepgramSTTService(api_key=settings.DEEPGRAM_API_KEY)
-    stt = CartesiaSTTService(api_key=settings.CARTESIA_API_KEY)
+    stt = CartesiaTurnsSTTService(
+        api_key=settings.CARTESIA_API_KEY,
+    )
     tts = CartesiaTTSService(
         api_key=settings.CARTESIA_API_KEY,
         settings=CartesiaTTSService.Settings(
@@ -66,6 +65,7 @@ async def run_voice_bot(
     )
 
     context = LLMContext(tools=[product_search_tool, get_product_details_tool])
+    logger.debug(f"[pipeline] LLM context initialized with tools: {[t.__name__ for t in [product_search_tool, get_product_details_tool]]}")
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(
         context,
         user_params=LLMUserAggregatorParams(),
@@ -105,6 +105,7 @@ async def run_voice_bot(
         context.add_message(
             {"role": "developer", "content": "Start by concisely introducing yourself as Leaf, a shopping assistant."}
         )
+        logger.debug(f"[pipeline] queuing LLMRunFrame for conversation {conversation_id}")
         await worker.queue_frames([LLMRunFrame()])
 
     @transport.event_handler("on_client_disconnected")

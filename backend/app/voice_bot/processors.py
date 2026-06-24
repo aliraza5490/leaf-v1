@@ -30,21 +30,28 @@ class ProductDataProcessor(FrameProcessor):
         await super().process_frame(frame, direction)
 
         if isinstance(frame, FunctionCallResultFrame):
+            logger.debug(f"[ProductDataProcessor] received FunctionCallResultFrame: function_name='{frame.function_name}'")
             if frame.function_name == "product_search_tool":
                 await self._extract_and_send_products(frame)
+            else:
+                logger.debug(f"[ProductDataProcessor] ignoring result for function '{frame.function_name}'")
 
         await self.push_frame(frame, direction)
 
     async def _extract_and_send_products(self, frame: FunctionCallResultFrame):
         result = frame.result
         if not result or not isinstance(result, str):
+            logger.debug(f"[ProductDataProcessor] result is empty or not a string: {type(result)}")
             return
 
         product_ids = set()
         for match in re.finditer(r"ID:\s*(\d+)", result):
             product_ids.add(int(match.group(1)))
 
+        logger.debug(f"[ProductDataProcessor] extracted product IDs: {product_ids}")
+
         if not product_ids:
+            logger.debug("[ProductDataProcessor] no product IDs found in result")
             return
 
         with Session(engine) as session:
@@ -64,10 +71,12 @@ class ProductDataProcessor(FrameProcessor):
             ]
 
         if self._last_products:
+            logger.debug(f"[ProductDataProcessor] sending {len(self._last_products)} product(s) via data channel: {[p['name'] for p in self._last_products]}")
             try:
                 self._webrtc_connection.send_app_message(
                     {"type": "products", "products": self._last_products}
                 )
+                logger.debug("[ProductDataProcessor] products sent successfully")
             except Exception as e:
                 logger.warning(f"Failed to send products via data channel: {e}")
 
