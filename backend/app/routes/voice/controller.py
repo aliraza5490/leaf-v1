@@ -66,7 +66,7 @@ async def voice_offer(
             conversation_id = conversation.id
 
     async def webrtc_connection_callback(connection):
-        await run_voice_bot(connection, store_id, conversation_id)
+        background_tasks.add_task(run_voice_bot, connection, store_id, conversation_id)
 
     from pipecat.transports.smallwebrtc.request_handler import SmallWebRTCRequest
     pipecat_request = SmallWebRTCRequest(
