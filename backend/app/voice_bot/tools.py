@@ -8,7 +8,7 @@ from ..utilities.db import engine
 
 
 async def product_search_tool(
-    params: FunctionCallParams, query: str, store_id: str = ""
+    params: FunctionCallParams, query: str
 ):
     """Search for products by name, description, category, or tags.
     Returns a list of matching products with their details.
@@ -17,8 +17,8 @@ async def product_search_tool(
         query: The search query for finding products.
         store_id: Optional store ID to filter products.
     """
-    store = store_id or params.app_resources.store_id
-    logger.debug(f"[product_search_tool] called with query='{query}', store_id='{store_id}', resolved_store='{store}'")
+    store = params.app_resources.store_id
+    logger.debug(f"[product_search_tool] called with query='{query}', store_id='{store}', resolved_store='{store}'")
     with Session(engine) as session:
         products = search_products(query, session, store if store else None, limit=5)
         logger.debug(f"[product_search_tool] found {len(products)} product(s)")
