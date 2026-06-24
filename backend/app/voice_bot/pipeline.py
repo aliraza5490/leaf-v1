@@ -11,6 +11,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMUserAggregatorParams,
 )
 from pipecat.services.cartesia.tts import CartesiaTTSService
+from pipecat.services.cartesia.stt import CartesiaSTTService
 from pipecat.services.deepgram.stt import DeepgramSTTService
 from pipecat.services.groq.llm import GroqLLMService
 from pipecat.transports.base_transport import TransportParams
@@ -46,8 +47,8 @@ async def run_voice_bot(
         ),
     )
 
-    stt = DeepgramSTTService(api_key=settings.DEEPGRAM_API_KEY)
-
+    # stt = DeepgramSTTService(api_key=settings.DEEPGRAM_API_KEY)
+    stt = CartesiaSTTService(api_key=settings.CARTESIA_API_KEY)
     tts = CartesiaTTSService(
         api_key=settings.CARTESIA_API_KEY,
         settings=CartesiaTTSService.Settings(
@@ -61,6 +62,7 @@ async def run_voice_bot(
             model=settings.OPENAI_MODEL,
             system_instruction=SYSTEM_INSTRUCTION,
         ),
+        reasoning_effort="low"
     )
 
     context = LLMContext(tools=[product_search_tool, get_product_details_tool])
