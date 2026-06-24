@@ -1,77 +1,53 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
+import { AlertCircle, Plus, Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ProductsHeader } from "@/components/dashboard/products/products-header";
 import { ProductsToolbar } from "@/components/dashboard/products/products-toolbar";
 import { ProductsTable } from "@/components/dashboard/products/products-table";
 import { ProductsGrid } from "@/components/dashboard/products/products-grid";
 import { ProductFormDialog } from "@/components/dashboard/products/product-form-dialog";
 import { ProductImportDialog } from "@/components/dashboard/products/product-import-dialog";
+import { useProducts } from "@/hooks/use-products";
 import type {
   Product,
   ProductFilters,
   ProductFormData,
   ViewMode,
 } from "@/lib/products/types";
-import { mockProducts } from "@/lib/products/mock-data";
-import { generateId } from "@/lib/products/utils";
+
+const DEFAULT_FILTERS: ProductFilters = {
+  search: "",
+  category: "all",
+  status: "all",
+  sortField: "createdAt",
+  sortDirection: "desc",
+  page: 1,
+  pageSize: 20,
+};
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
-  const [filters, setFilters] = useState<ProductFilters>({
-    search: "",
-    category: "all",
-    status: "all",
-    sortField: "createdAt",
-    sortDirection: "desc",
-  });
+  const [filters, setFilters] = useState<ProductFilters>(DEFAULT_FILTERS);
 
   const [formOpen, setFormOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
-  const filteredProducts = useMemo(() => {
-    let result = [...products];
-
-    if (filters.search) {
-      const search = filters.search.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.name.toLowerCase().includes(search) ||
-          p.sku.toLowerCase().includes(search) ||
-          p.description.toLowerCase().includes(search) ||
-          p.tags.some((t) => t.toLowerCase().includes(search))
-      );
-    }
-
-    if (filters.category !== "all") {
-      result = result.filter((p) => p.category === filters.category);
-    }
-
-    if (filters.status !== "all") {
-      result = result.filter((p) => p.status === filters.status);
-    }
-
-    result.sort((a, b) => {
-      const direction = filters.sortDirection === "asc" ? 1 : -1;
-      switch (filters.sortField) {
-        case "name":
-          return a.name.localeCompare(b.name) * direction;
-        case "price":
-          return (a.price - b.price) * direction;
-        case "stock":
-          return (a.stock - b.stock) * direction;
-        case "createdAt":
-          return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * direction;
-        default:
-          return 0;
-      }
-    });
-
-    return result;
-  }, [products, filters]);
+  const {
+    products,
+    total,
+    categories,
+    loading,
+    error,
+    mutating,
+    createProduct,
+    updateProduct,
+    removeProduct,
+    importProducts,
+  } = useProducts(filters);
 
   const handleAddProduct = () => {
     setEditingProduct(null);
@@ -84,45 +60,29 @@ export default function ProductsPage() {
   };
 
   const handleDeleteProduct = (product: Product) => {
-    setProducts((prev) => prev.filter((p) => p.id !== product.id));
-    toast.success(`"${product.name}" has been deleted.`);
+    removeProduct(product);
   };
 
-  const handleSaveProduct = (data: ProductFormData) => {
-    if (editingProduct) {
-      setProducts((prev) =>
-        prev.map((p) =>
-          p.id === editingProduct.id
-            ? {
-                ...p,
-                ...data,
-                updatedAt: new Date().toISOString(),
-              }
-            : p
-        )
-      );
-      toast.success(`"${data.name}" has been updated.`);
-    } else {
-      const newProduct: Product = {
-        id: generateId(),
-        ...data,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      setProducts((prev) => [newProduct, ...prev]);
-      toast.success(`"${data.name}" has been added.`);
+  const handleSaveProduct = async (data: ProductFormData) => {
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, data);
+      } else {
+        await createProduct(data);
+      }
+      setFormOpen(false);
+    } catch {
+      // Error toast handled in hook; keep dialog open on failure.
     }
   };
 
-  const handleImportProducts = (importedProducts: ProductFormData[]) => {
-    const newProducts: Product[] = importedProducts.map((data) => ({
-      id: generateId(),
-      ...data,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
-    setProducts((prev) => [...newProducts, ...prev]);
-    toast.success(`${importedProducts.length} products have been imported.`);
+  const handleImportProducts = async (items: ProductFormData[]) => {
+    try {
+      await importProducts(items);
+      setImportOpen(false);
+    } catch {
+      // Error toast handled in hook; keep dialog open on failure.
+    }
   };
 
   return (
@@ -134,17 +94,47 @@ export default function ProductsPage() {
         onFiltersChange={setFilters}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
+        categories={categories}
+        total={total}
+        loading={loading}
       />
 
-      {viewMode === "table" ? (
+      {error ? (
+        <div className="flex items-center gap-2 rounded-lg border border-destructive/50 bg-destructive/10 p-4 text-destructive">
+          <AlertCircle className="h-5 w-5 shrink-0" />
+          <div>
+            <p className="font-medium">Failed to load products</p>
+            <p className="text-sm">{error}</p>
+          </div>
+        </div>
+      ) : loading ? (
+        <ProductsSkeleton viewMode={viewMode} />
+      ) : products.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-12 text-center">
+          <p className="text-lg font-medium">No products found</p>
+          <p className="text-sm text-muted-foreground">
+            Get started by adding a product or importing a catalog.
+          </p>
+          <div className="mt-2 flex gap-2">
+            <Button variant="outline" onClick={() => setImportOpen(true)}>
+              <Upload className="mr-2 h-4 w-4" />
+              Import
+            </Button>
+            <Button onClick={handleAddProduct}>
+              <Plus className="mr-2 h-4 w-4" />
+              Add Product
+            </Button>
+          </div>
+        </div>
+      ) : viewMode === "table" ? (
         <ProductsTable
-          products={filteredProducts}
+          products={products}
           onEdit={handleEditProduct}
           onDelete={handleDeleteProduct}
         />
       ) : (
         <ProductsGrid
-          products={filteredProducts}
+          products={products}
           onEdit={handleEditProduct}
           onDelete={handleDeleteProduct}
         />
@@ -155,13 +145,44 @@ export default function ProductsPage() {
         onOpenChange={setFormOpen}
         product={editingProduct}
         onSave={handleSaveProduct}
+        categories={categories}
+        saving={mutating}
       />
 
       <ProductImportDialog
         open={importOpen}
         onOpenChange={setImportOpen}
         onImport={handleImportProducts}
+        importing={mutating}
       />
+    </div>
+  );
+}
+
+function ProductsSkeleton({ viewMode }: { viewMode: ViewMode }) {
+  if (viewMode === "grid") {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="overflow-hidden rounded-lg border">
+            <Skeleton className="aspect-square w-full" />
+            <div className="space-y-2 p-4">
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-8 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="rounded-md border">
+      <div className="space-y-4 p-4">
+        {Array.from({ length: 6 }).map((_, i) => (
+          <Skeleton key={i} className="h-12 w-full" />
+        ))}
+      </div>
     </div>
   );
 }

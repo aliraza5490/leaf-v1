@@ -78,6 +78,7 @@ def _get_products_by_ids(product_ids: list[int]) -> list[dict]:
     if not product_ids:
         return []
     from ..models.product import Product
+    from ..routes.product.service import first_image
     with Session(engine) as session:
         products = session.exec(
             select(Product).where(Product.id.in_(product_ids))
@@ -87,7 +88,7 @@ def _get_products_by_ids(product_ids: list[int]) -> list[dict]:
                 "id": p.id,
                 "name": p.name,
                 "price": p.price,
-                "image": p.image_url,
+                "image": first_image(p.images),
                 "url": p.url,
                 "description": p.description,
             }

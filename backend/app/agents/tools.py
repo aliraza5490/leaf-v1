@@ -1,6 +1,6 @@
 from langchain_core.tools import tool
 from sqlmodel import Session
-from ..routes.product.service import search_products, get_product as get_product_svc
+from ..routes.product.service import search_products, get_product as get_product_svc, first_image
 from ..utilities.db import engine
 
 
@@ -17,7 +17,7 @@ def product_search(query: str, store_id: str = "") -> str:
             results.append(
                 f"ID: {p.id} | Name: {p.name} | Price: ${p.price:.2f} | "
                 f"Description: {p.description} | Category: {p.category} | "
-                f"Image: {p.image_url} | URL: {p.url}"
+                f"Image: {first_image(p.images)} | URL: {p.url}"
             )
         return "\n".join(results)
 
@@ -31,7 +31,7 @@ def get_product_details(product_id: int) -> str:
             return (
                 f"ID: {product.id} | Name: {product.name} | Price: ${product.price:.2f} | "
                 f"Description: {product.description} | Category: {product.category} | "
-                f"Tags: {product.tags} | Image: {product.image_url} | URL: {product.url}"
+                f"Tags: {product.tags} | Image: {first_image(product.images)} | URL: {product.url}"
             )
         except Exception:
             return f"Product with ID {product_id} not found."

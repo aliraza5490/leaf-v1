@@ -16,6 +16,7 @@ from sqlmodel import Session, select
 
 from ..models.conversation import ChatMessage, Conversation
 from ..models.product import Product
+from ..routes.product.service import first_image
 from ..utilities.db import engine
 
 
@@ -55,7 +56,7 @@ class ProductDataProcessor(FrameProcessor):
                     "id": p.id,
                     "name": p.name,
                     "price": p.price,
-                    "image": p.image_url,
+                    "image": first_image(p.images),
                     "url": p.url,
                     "description": p.description,
                 }

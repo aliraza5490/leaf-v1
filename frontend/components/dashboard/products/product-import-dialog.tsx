@@ -39,12 +39,14 @@ interface ProductImportDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImport: (products: ProductFormData[]) => void;
+  importing?: boolean;
 }
 
 export function ProductImportDialog({
   open,
   onOpenChange,
   onImport,
+  importing,
 }: ProductImportDialogProps) {
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [fileName, setFileName] = useState<string>("");
@@ -106,7 +108,6 @@ export function ProductImportDialog({
   const handleImport = () => {
     if (preview && preview.data.length > 0) {
       onImport(preview.data);
-      handleClose();
     }
   };
 
@@ -265,15 +266,22 @@ export function ProductImportDialog({
         </div>
 
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={handleClose}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleClose}
+            disabled={importing}
+          >
             Cancel
           </Button>
           <Button
             type="button"
             onClick={handleImport}
-            disabled={!preview || preview.data.length === 0}
+            disabled={!preview || preview.data.length === 0 || importing}
           >
-            Import {preview?.data.length || 0} Products
+            {importing
+              ? "Importing..."
+              : `Import ${preview?.data.length || 0} Products`}
           </Button>
         </DialogFooter>
       </DialogContent>

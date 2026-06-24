@@ -5,7 +5,7 @@ from .routes.api_router import api_router
 from contextlib import asynccontextmanager
 from .utilities.db import get_session, create_db_and_tables, engine
 from .settings import settings
-from .utilities.seed import seed_products
+from .utilities.seed import seed_products, seed_superuser
 from sqlmodel import Session
 
 
@@ -15,6 +15,7 @@ async def lifespan(app: FastAPI):
     get_session()
     create_db_and_tables()
     with Session(engine) as session:
+        seed_superuser(session)
         seed_products(session)
     yield  # This is crucial - it yields control back to FastAPI
     # Cleanup: Code after this will run when app shuts down

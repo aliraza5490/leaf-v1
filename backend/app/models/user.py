@@ -7,6 +7,7 @@ from . import GroupUserLink
 class UserBase(SQLModel):
     email: EmailStr = Field(primary_key=True)
     full_name: Optional[Annotated[str, StringConstraints(min_length=6, max_length=64)]] = None
+    store_id: str = ""
 
 class UserLogin(SQLModel):
     email: EmailStr

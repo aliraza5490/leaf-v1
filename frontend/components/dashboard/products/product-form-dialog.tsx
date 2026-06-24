@@ -30,8 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Product, ProductFormData } from "@/lib/products/types";
-import { categories } from "@/lib/products/mock-data";
+import type { Category, Product, ProductFormData } from "@/lib/products/types";
 
 const productFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
@@ -52,6 +51,8 @@ interface ProductFormDialogProps {
   onOpenChange: (open: boolean) => void;
   product: Product | null;
   onSave: (data: ProductFormData) => void;
+  categories: Category[];
+  saving?: boolean;
 }
 
 export function ProductFormDialog({
@@ -59,6 +60,8 @@ export function ProductFormDialog({
   onOpenChange,
   product,
   onSave,
+  categories,
+  saving,
 }: ProductFormDialogProps) {
   const isEditing = product !== null;
 
@@ -185,23 +188,18 @@ export function ProductFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.name}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <Input
+                        list="product-categories"
+                        placeholder="Enter or select category"
+                        {...field}
+                      />
+                    </FormControl>
+                    <datalist id="product-categories">
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.name} />
+                      ))}
+                    </datalist>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -295,8 +293,12 @@ export function ProductFormDialog({
               >
                 Cancel
               </Button>
-              <Button type="submit">
-                {isEditing ? "Save Changes" : "Add Product"}
+              <Button type="submit" disabled={saving}>
+                {saving
+                  ? "Saving..."
+                  : isEditing
+                    ? "Save Changes"
+                    : "Add Product"}
               </Button>
             </DialogFooter>
           </form>

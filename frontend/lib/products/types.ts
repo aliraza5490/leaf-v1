@@ -7,8 +7,10 @@ export interface Product {
   category: string;
   tags: string[];
   images: string[];
+  url?: string;
+  storeId?: string;
   stock: number;
-  status: "active" | "draft" | "archived";
+  status: ProductStatus;
   createdAt: string;
   updatedAt: string;
 }
@@ -19,7 +21,7 @@ export interface Category {
   productCount: number;
 }
 
-export type ProductStatus = Product["status"];
+export type ProductStatus = "active" | "draft" | "archived";
 
 export type ViewMode = "table" | "grid";
 
@@ -32,6 +34,8 @@ export interface ProductFilters {
   status: ProductStatus | "all";
   sortField: SortField;
   sortDirection: SortDirection;
+  page: number;
+  pageSize: number;
 }
 
 export interface ProductFormData {
@@ -44,4 +48,11 @@ export interface ProductFormData {
   images: string[];
   stock: number;
   status: ProductStatus;
+}
+
+export interface ProductListResponse {
+  products: Product[];
+  total: number;
+  page: number;
+  pageSize: number;
 }
