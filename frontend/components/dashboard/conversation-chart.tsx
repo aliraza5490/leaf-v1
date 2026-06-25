@@ -12,16 +12,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCssVariable } from "@/hooks/use-css-variable";
-
-const data = [
-  { name: "Mon", conversations: 120, resolved: 98 },
-  { name: "Tue", conversations: 145, resolved: 120 },
-  { name: "Wed", conversations: 162, resolved: 135 },
-  { name: "Thu", conversations: 138, resolved: 112 },
-  { name: "Fri", conversations: 189, resolved: 156 },
-  { name: "Sat", conversations: 98, resolved: 82 },
-  { name: "Sun", conversations: 76, resolved: 64 },
-];
+import { useConversationTrends } from "@/hooks/use-conversation-stats";
 
 export function ConversationChart() {
   const chart1 = useCssVariable("--chart-1");
@@ -30,6 +21,14 @@ export function ConversationChart() {
   const card = useCssVariable("--card");
   const border = useCssVariable("--border");
   const radius = useCssVariable("--radius");
+
+  const { trends } = useConversationTrends(7);
+
+  const data = trends?.trends.map((t) => ({
+    name: new Date(t.date).toLocaleDateString("en-US", { weekday: "short" }),
+    conversations: t.conversations,
+    resolved: t.resolved,
+  })) ?? [];
 
   return (
     <Card className="col-span-4">
@@ -41,7 +40,7 @@ export function ConversationChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={data}>
+          <AreaChart data={data} margin={{ left: -20 }}>
             <defs>
               <linearGradient id="colorConversations" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor={chart1} stopOpacity={0.3} />

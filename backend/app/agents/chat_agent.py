@@ -54,9 +54,9 @@ def _get_conversation_history(conversation_id: str) -> list[BaseMessage]:
         ).all()
         history = []
         for msg in messages:
-            if msg.role == "user":
+            if msg.sender == "visitor":
                 history.append(HumanMessage(content=msg.content))
-            elif msg.role == "assistant":
+            elif msg.sender in ("assistant", "ai", "agent"):
                 history.append(AIMessage(content=msg.content))
         return history
 
@@ -113,6 +113,7 @@ async def run_agent_stream(
         user_msg = ChatMessage(
             conversation_id=conversation_id,
             role="user",
+            sender="visitor",
             content=user_message,
         )
         session.add(user_msg)
@@ -154,6 +155,7 @@ async def run_agent_stream(
         assistant_msg = ChatMessage(
             conversation_id=conversation_id,
             role="assistant",
+            sender="ai",
             content=full_response,
             products_json=json.dumps(products) if products else "",
         )

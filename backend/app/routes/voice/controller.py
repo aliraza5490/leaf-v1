@@ -54,15 +54,28 @@ async def voice_offer(
 ):
     logger.info(f"Received offer request: {request}")
     store_id = ""
+    visitor_name = None
+    visitor_email = None
+    visitor_id = None
     conversation_id = None
 
     if request.request_data:
         store_id = request.request_data.get("storeId", "")
         conversation_id = request.request_data.get("conversationId")
+        visitor_name = request.request_data.get("visitorName")
+        visitor_email = request.request_data.get("visitorEmail")
+        visitor_id = request.request_data.get("visitorId")
 
     if not conversation_id:
         with Session(engine) as session:
-            conversation = create_conversation(store_id, session)
+            conversation = create_conversation(
+                store_id=store_id,
+                session=session,
+                visitor_name=visitor_name,
+                visitor_email=visitor_email,
+                visitor_id=visitor_id,
+                channel="voice",
+            )
             conversation_id = conversation.id
 
     async def webrtc_connection_callback(connection):

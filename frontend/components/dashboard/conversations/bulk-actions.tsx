@@ -9,10 +9,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { mockTeamMembers } from "@/lib/mock-data/agents";
+import type { TeamMember } from "@/lib/conversations/types";
 
 interface BulkActionsProps {
   selectedCount: number;
+  teamMembers: TeamMember[];
   onResolve: () => void;
   onAssign: (agentId: string) => void;
   onArchive: () => void;
@@ -21,6 +22,7 @@ interface BulkActionsProps {
 
 export function BulkActions({
   selectedCount,
+  teamMembers,
   onResolve,
   onAssign,
   onArchive,
@@ -49,7 +51,7 @@ export function BulkActions({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {mockTeamMembers.map((agent) => (
+            {teamMembers.map((agent) => (
               <DropdownMenuItem
                 key={agent.id}
                 onClick={() => onAssign(agent.id)}

@@ -41,7 +41,7 @@ export function VisitorGeographyChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data} layout="vertical">
+          <BarChart data={data} layout="vertical" margin={{ left: -20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={border} />
             <XAxis
               type="number"

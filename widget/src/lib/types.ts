@@ -48,7 +48,7 @@ export function normalizeProduct(p: RawProduct): Product {
 
 export interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'agent';
   content: string;
   products?: Product[];
   timestamp: Date;
@@ -60,6 +60,7 @@ export interface ChatState {
   isTyping: boolean;
   isCallActive: boolean;
   sessionId?: string;
+  visitorInfo?: { name: string; email: string };
 }
 
 export interface SSEEvent {

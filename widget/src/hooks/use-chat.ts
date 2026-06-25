@@ -1,10 +1,11 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatState, Message, WidgetConfig, Product } from '@/lib/types';
 import { normalizeProduct } from '@/lib/types';
-import { createConversation, sendMessage, getApiUrl } from '@/lib/api';
+import { createConversation, sendMessage, getApiUrl, getOrCreateVisitorId, subscribeToAgentMessages } from '@/lib/api';
+import type { PreChatFormData } from '@/components/pre-chat-form';
 
 function createMessage(
-  role: 'user' | 'assistant',
+  role: 'user' | 'assistant' | 'agent',
   content: string,
   products?: Product[],
 ): Message {
@@ -22,13 +23,15 @@ export function useChat(config: WidgetConfig, greeting: string) {
     messages: [createMessage('assistant', greeting)],
     isOpen: false,
     isTyping: false,
-    isCallActive: true,
+    isCallActive: false,
     sessionId: undefined,
+    visitorInfo: undefined,
   });
 
   const sessionRef = useRef<string | undefined>(undefined);
   const assistantMsgIdRef = useRef<string | null>(null);
   const apiUrl = getApiUrl(config.apiUrl);
+  const unsubscribeRef = useRef<(() => void) | null>(null);
 
   const open = useCallback(() => {
     setState((prev) => ({ ...prev, isOpen: true }));
@@ -50,6 +53,44 @@ export function useChat(config: WidgetConfig, greeting: string) {
     setState((prev) => ({ ...prev, isCallActive: false }));
   }, []);
 
+  const submitVisitorInfo = useCallback(
+    async (data: PreChatFormData) => {
+      const visitorId = getOrCreateVisitorId();
+      setState((prev) => ({ ...prev, visitorInfo: { name: data.name, email: data.email } }));
+
+      try {
+        const sessionId = await createConversation(
+          apiUrl,
+          config.storeId,
+          data.name,
+          data.email || undefined,
+          visitorId,
+          'chat',
+        );
+        sessionRef.current = sessionId;
+        setState((prev) => ({ ...prev, sessionId }));
+
+        unsubscribeRef.current?.();
+        unsubscribeRef.current = subscribeToAgentMessages(apiUrl, sessionId, (msg) => {
+          const products = msg.products?.map(normalizeProduct);
+          setState((prev) => ({
+            ...prev,
+            messages: [...prev.messages, createMessage('agent', msg.content, products)],
+          }));
+        });
+      } catch {
+        // Conversation creation will be retried on first message
+      }
+    },
+    [apiUrl, config.storeId],
+  );
+
+  useEffect(() => {
+    return () => {
+      unsubscribeRef.current?.();
+    };
+  }, []);
+
   const sendMessage_ = useCallback(
     async (content: string) => {
       const userMsg = createMessage('user', content);
@@ -63,13 +104,28 @@ export function useChat(config: WidgetConfig, greeting: string) {
       try {
         let sessionId = sessionRef.current;
         if (!sessionId) {
-          sessionId = await createConversation(apiUrl, config.storeId);
+          const visitorId = getOrCreateVisitorId();
+          const visitorInfo = state.visitorInfo;
+          sessionId = await createConversation(
+            apiUrl,
+            config.storeId,
+            visitorInfo?.name,
+            visitorInfo?.email || undefined,
+            visitorId,
+            'chat',
+          );
           sessionRef.current = sessionId;
           setState((prev) => ({ ...prev, sessionId }));
-        }
 
-        const aiMsgId = `msg_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-        assistantMsgIdRef.current = aiMsgId;
+          unsubscribeRef.current?.();
+          unsubscribeRef.current = subscribeToAgentMessages(apiUrl, sessionId, (msg) => {
+            const products = msg.products?.map(normalizeProduct);
+            setState((prev) => ({
+              ...prev,
+              messages: [...prev.messages, createMessage('agent', msg.content, products)],
+            }));
+          });
+        }
 
         let fullContent = '';
         let products: Product[] | undefined;
@@ -132,7 +188,7 @@ export function useChat(config: WidgetConfig, greeting: string) {
             assistantMsgIdRef.current = null;
           }
         });
-      } catch (err) {
+      } catch {
         setState((prev) => {
           const msgs = [...prev.messages];
           const lastMsg = msgs[msgs.length - 1];
@@ -150,7 +206,7 @@ export function useChat(config: WidgetConfig, greeting: string) {
         assistantMsgIdRef.current = null;
       }
     },
-    [apiUrl, config.storeId],
+    [apiUrl, config.storeId, state.visitorInfo],
   );
 
   return {
@@ -158,11 +214,14 @@ export function useChat(config: WidgetConfig, greeting: string) {
     isOpen: state.isOpen,
     isTyping: state.isTyping,
     isCallActive: state.isCallActive,
+    sessionId: state.sessionId,
+    visitorInfo: state.visitorInfo,
     open,
     close,
     toggle,
     startCall,
     endCall,
+    submitVisitorInfo,
     sendMessage: sendMessage_,
   };
 }

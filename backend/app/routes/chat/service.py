@@ -4,8 +4,21 @@ from sqlmodel import Session, select
 from ...models.conversation import Conversation, ChatMessage
 
 
-def create_conversation(store_id: str, session: Session) -> Conversation:
-    conversation = Conversation(store_id=store_id)
+def create_conversation(
+    store_id: str,
+    session: Session,
+    visitor_name: str | None = None,
+    visitor_email: str | None = None,
+    visitor_id: str | None = None,
+    channel: str = "chat",
+) -> Conversation:
+    conversation = Conversation(
+        store_id=store_id,
+        visitor_name=visitor_name,
+        visitor_email=visitor_email,
+        visitor_id=visitor_id,
+        channel=channel,
+    )
     session.add(conversation)
     session.commit()
     session.refresh(conversation)
@@ -34,6 +47,7 @@ def get_conversation_messages(conversation_id: str, session: Session) -> list[di
         result.append({
             "id": msg.id,
             "role": msg.role,
+            "sender": msg.sender,
             "content": msg.content,
             "products": products,
             "timestamp": msg.created_at.isoformat(),

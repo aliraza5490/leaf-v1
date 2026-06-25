@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { MoreHorizontal, CheckCircle2, UserPlus } from "lucide-react";
+import { MoreHorizontal, CheckCircle2, UserPlus, AudioLines } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -12,15 +12,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { Conversation } from "@/types/conversation";
+import type { TeamMember } from "@/lib/conversations/types";
+import { API_BASE_URL } from "@/lib/api/client";
 import { ChatMessage } from "./chat-message";
 import { VisitorHeader } from "./visitor-header";
 import { ReplyInput } from "./reply-input";
 import { QuickReplies } from "./quick-replies";
 import { ExportMenu } from "./export-menu";
-import { mockTeamMembers } from "@/lib/mock-data/agents";
 
 interface ConversationDetailProps {
   conversation: Conversation;
+  teamMembers: TeamMember[];
   onSendReply: (message: string) => void;
   onQuickReply: (text: string) => void;
   onResolve: () => void;
@@ -29,6 +31,7 @@ interface ConversationDetailProps {
 
 export function ConversationDetail({
   conversation,
+  teamMembers,
   onSendReply,
   onQuickReply,
   onResolve,
@@ -67,7 +70,7 @@ export function ConversationDetail({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {mockTeamMembers.map((agent) => (
+              {teamMembers.map((agent) => (
                 <DropdownMenuItem
                   key={agent.id}
                   onClick={() => onAssign(agent.id)}
@@ -95,6 +98,17 @@ export function ConversationDetail({
       </div>
 
       <VisitorHeader conversation={conversation} />
+
+      {conversation.audioRecordingUrl && (
+        <div className="flex items-center gap-2 border-b border-border/40 px-4 py-2">
+          <AudioLines className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+          <audio
+            controls
+            className="h-8 w-full"
+            src={`${API_BASE_URL}${conversation.audioRecordingUrl}`}
+          />
+        </div>
+      )}
 
       <ScrollArea className="min-h-0 flex-1" ref={scrollRef}>
         <div className="flex flex-col gap-4 p-4">

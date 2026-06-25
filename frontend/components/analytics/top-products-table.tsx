@@ -12,19 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const products = [
-  { name: "Wireless Headphones Pro", views: 1245, clicks: 432, conversions: 87, rate: "20.1%" },
-  { name: "Smart Watch Series 5", views: 987, clicks: 356, conversions: 62, rate: "17.4%" },
-  { name: "Running Shoes Ultra", views: 876, clicks: 298, conversions: 54, rate: "18.1%" },
-  { name: "Organic Face Cream", views: 754, clicks: 267, conversions: 48, rate: "18.0%" },
-  { name: "Bluetooth Speaker Mini", views: 698, clicks: 234, conversions: 41, rate: "17.5%" },
-  { name: "Yoga Mat Premium", views: 654, clicks: 212, conversions: 38, rate: "17.9%" },
-  { name: "LED Desk Lamp", views: 587, clicks: 189, conversions: 32, rate: "16.9%" },
-  { name: "Stainless Water Bottle", views: 543, clicks: 176, conversions: 28, rate: "15.9%" },
-];
+import { useAnalyticsTopProducts } from "@/hooks/use-conversation-stats";
 
 export function TopProductsTable() {
+  const { products, loading } = useAnalyticsTopProducts(10);
+
   return (
     <Card>
       <CardHeader>
@@ -32,12 +24,12 @@ export function TopProductsTable() {
           <div>
             <CardTitle>Top Products via AI</CardTitle>
             <CardDescription>
-              Products most frequently recommended and clicked through chat
+              Products most frequently recommended in conversations
             </CardDescription>
           </div>
           <Badge variant="secondary" className="gap-1">
             <TrendingUp className="h-3 w-3" />
-            Last 30 days
+            All time
           </Badge>
         </div>
       </CardHeader>
@@ -46,24 +38,32 @@ export function TopProductsTable() {
           <TableHeader>
             <TableRow>
               <TableHead>Product</TableHead>
-              <TableHead className="text-right">Chat Views</TableHead>
-              <TableHead className="text-right">Clicks</TableHead>
-              <TableHead className="text-right">Conversions</TableHead>
-              <TableHead className="text-right">Conv. Rate</TableHead>
+              <TableHead className="text-right">Recommendations</TableHead>
+              <TableHead className="text-right">Price</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {products.map((product) => (
-              <TableRow key={product.name}>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="text-right">{product.views.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{product.clicks.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{product.conversions}</TableCell>
-                <TableCell className="text-right">
-                  <Badge variant="secondary">{product.rate}</Badge>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-muted-foreground">
+                  Loading...
                 </TableCell>
               </TableRow>
-            ))}
+            ) : !products || products.products.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={3} className="text-center text-muted-foreground">
+                  No product recommendations yet
+                </TableCell>
+              </TableRow>
+            ) : (
+              products.products.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell className="font-medium">{product.name}</TableCell>
+                  <TableCell className="text-right">{product.count}</TableCell>
+                  <TableCell className="text-right">${product.price.toFixed(2)}</TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </CardContent>

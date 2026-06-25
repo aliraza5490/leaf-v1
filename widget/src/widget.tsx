@@ -2,10 +2,12 @@ import { usePipecatClient } from '@pipecat-ai/client-react';
 import { useChat } from '@/hooks/use-chat';
 import { ChatBubble } from '@/components/chat-bubble';
 import { ChatWindow } from '@/components/chat-window';
+import { PreChatForm } from '@/components/pre-chat-form';
 import type { WidgetConfig, Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
 import { normalizeProduct } from '@/lib/types';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { getOrCreateVisitorId } from '@/lib/api';
+import { useEffect, useState, useCallback } from 'react';
 
 interface LeafWidgetProps {
   config: WidgetConfig;
@@ -20,10 +22,12 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     isOpen,
     isTyping,
     isCallActive,
+    visitorInfo,
     toggle,
     close,
     startCall,
     endCall,
+    submitVisitorInfo,
     sendMessage,
   } = useChat(config, config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?");
 
@@ -32,7 +36,6 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   const [agentText, setAgentText] = useState('');
   const [voiceProducts, setVoiceProducts] = useState<Product[]>([]);
   const [error, setError] = useState<{ code: VoiceErrorCode; message: string } | null>(null);
-  const hasAutoStartedCall = useRef(false);
 
   useEffect(() => {
     if (!client) return;
@@ -115,26 +118,23 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     setVoiceState('connecting');
 
     try {
+      const visitorId = getOrCreateVisitorId();
       await client.connect({
         webrtcRequestParams: {
           endpoint: `${config.apiUrl || 'http://localhost:8000'}/api/v1/voice/offer`,
           requestData: {
             storeId: config.storeId,
+            visitorName: visitorInfo?.name,
+            visitorEmail: visitorInfo?.email,
+            visitorId,
           },
         },
       });
-    } catch (error) {
-      setError({ code: 'unknown' as VoiceErrorCode, message: `Failed to start call: ${error}` });
+    } catch (err) {
+      setError({ code: 'unknown' as VoiceErrorCode, message: `Failed to start call: ${err}` });
       setVoiceState('error');
     }
-  }, [client, config.apiUrl, config.storeId, startCall]);
-
-  useEffect(() => {
-    if (isOpen && !hasAutoStartedCall.current) {
-      hasAutoStartedCall.current = true;
-      handleStartCall();
-    }
-  }, [isOpen, handleStartCall]);
+  }, [client, config.apiUrl, config.storeId, visitorInfo, startCall]);
 
   const handleEndCall = useCallback(async () => {
     endCall();
@@ -148,30 +148,76 @@ export function LeafWidget({ config }: LeafWidgetProps) {
 
   const displayProducts = voiceProducts.length > 0 ? voiceProducts : normalizedProducts;
 
+  const showPreChatForm = isOpen && !visitorInfo;
+  const showChat = isOpen && visitorInfo && !isCallActive;
+  const showCall = isOpen && visitorInfo && isCallActive;
+
   return (
     <>
-      <ChatWindow
-        isOpen={isOpen}
-        messages={messages}
-        isTyping={isTyping}
-        isCallActive={isCallActive}
-        primaryColor={config.primaryColor || '#10b981'}
-        position={config.position || 'bottom-right'}
-        storeName={config.storeName || 'Leaf Assistant'}
-        storeLogo={config.storeLogo}
-        greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
-        placeholder={config.placeholder || 'Type your message...'}
-        showBranding={config.showBranding !== false}
-        products={displayProducts}
-        voiceState={voiceState}
-        transcript={transcript}
-        agentText={agentText}
-        voiceError={error}
-        onStartCall={handleStartCall}
-        onEndCall={handleEndCall}
-        onClose={close}
-        onSend={sendMessage}
-      />
+      {showPreChatForm && (
+        <div
+          className="fixed bottom-24 right-5 z-[999998] w-[380px] h-[450px] max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up"
+          style={{ fontFamily: 'var(--leaf-font, Inter, system-ui, sans-serif)' }}
+        >
+          <PreChatForm
+            primaryColor={config.primaryColor || '#10b981'}
+            storeName={config.storeName || 'Leaf Assistant'}
+            greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
+            onSubmit={submitVisitorInfo}
+          />
+        </div>
+      )}
+
+      {showChat && (
+        <ChatWindow
+          isOpen={true}
+          messages={messages}
+          isTyping={isTyping}
+          isCallActive={false}
+          primaryColor={config.primaryColor || '#10b981'}
+          position={config.position || 'bottom-right'}
+          storeName={config.storeName || 'Leaf Assistant'}
+          storeLogo={config.storeLogo}
+          greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
+          placeholder={config.placeholder || 'Type your message...'}
+          showBranding={config.showBranding !== false}
+          products={displayProducts}
+          voiceState={voiceState}
+          transcript={transcript}
+          agentText={agentText}
+          voiceError={error}
+          onStartCall={handleStartCall}
+          onEndCall={handleEndCall}
+          onClose={close}
+          onSend={sendMessage}
+        />
+      )}
+
+      {showCall && (
+        <ChatWindow
+          isOpen={true}
+          messages={messages}
+          isTyping={isTyping}
+          isCallActive={true}
+          primaryColor={config.primaryColor || '#10b981'}
+          position={config.position || 'bottom-right'}
+          storeName={config.storeName || 'Leaf Assistant'}
+          storeLogo={config.storeLogo}
+          greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
+          placeholder={config.placeholder || 'Type your message...'}
+          showBranding={config.showBranding !== false}
+          products={displayProducts}
+          voiceState={voiceState}
+          transcript={transcript}
+          agentText={agentText}
+          voiceError={error}
+          onStartCall={handleStartCall}
+          onEndCall={handleEndCall}
+          onClose={close}
+          onSend={sendMessage}
+        />
+      )}
+
       <ChatBubble
         onClick={toggle}
         isOpen={isOpen}

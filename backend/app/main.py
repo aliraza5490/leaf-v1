@@ -1,12 +1,18 @@
+from pathlib import Path
+
 from pydantic import BaseModel
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from .routes.api_router import api_router
 from contextlib import asynccontextmanager
 from .utilities.db import get_session, create_db_and_tables, engine
 from .settings import settings
 from .utilities.seed import seed_products, seed_superuser
 from sqlmodel import Session
+
+RECORDINGS_DIR = Path(__file__).resolve().parent.parent / "recordings"
+RECORDINGS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 @asynccontextmanager
@@ -39,6 +45,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/recordings", StaticFiles(directory=RECORDINGS_DIR), name="recordings")
 
 
 class Health(BaseModel): 

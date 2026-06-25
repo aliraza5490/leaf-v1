@@ -41,7 +41,7 @@ export function SatisfactionTrendChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <ComposedChart data={data}>
+          <ComposedChart data={data} margin={{ left: -20 }}>
             <CartesianGrid strokeDasharray="3 3" stroke={border} />
             <XAxis
               dataKey="name"

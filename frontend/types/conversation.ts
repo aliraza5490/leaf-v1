@@ -1,5 +1,6 @@
 export type ConversationStatus = "active" | "waiting" | "resolved" | "archived";
 export type MessageSender = "visitor" | "ai" | "agent";
+export type ConversationChannel = "chat" | "voice";
 
 export interface Product {
   id: string;
@@ -29,11 +30,13 @@ export interface Conversation {
   id: string;
   visitor: Visitor;
   status: ConversationStatus;
+  channel?: ConversationChannel;
   messages: Message[];
   startedAt: string;
   lastActivity: string;
   assignedTo?: string;
   tags: string[];
+  audioRecordingUrl?: string;
   metadata: {
     pagesVisited: number;
     sessionDuration: string;

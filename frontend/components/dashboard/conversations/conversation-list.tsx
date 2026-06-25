@@ -157,6 +157,12 @@ export function ConversationList({
                     >
                       {conversation.status}
                     </Badge>
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground"
+                    >
+                      {conversation.channel || "chat"}
+                    </Badge>
                     <span className="truncate text-xs text-muted-foreground">
                       {lastMessage?.content || "No messages"}
                     </span>

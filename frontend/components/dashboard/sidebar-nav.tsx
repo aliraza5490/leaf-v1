@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   BookOpen,
+  Bot,
   ChevronDown,
+  FlaskConical,
   Home,
   Leaf,
   MessageSquare,
@@ -33,19 +36,43 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
+import { getConversationStats } from "@/lib/conversations/api";
 
 const navigationItems = [
   { title: "Overview", url: "/dashboard", icon: Home },
-  { title: "Conversations", url: "/dashboard/conversations", icon: MessageSquare, badge: 3 },
+  { title: "Conversations", url: "/dashboard/conversations", icon: MessageSquare },
   { title: "Products", url: "/dashboard/products", icon: Package },
   { title: "Knowledge Base", url: "/dashboard/knowledge-base", icon: BookOpen },
   { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
+  { title: "Bot Config", url: "/dashboard/bot-config", icon: Bot },
+  { title: "Playground", url: "/dashboard/playground", icon: FlaskConical },
 ];
 
 const managementItems = [
   { title: "Team", url: "/dashboard/team", icon: Users },
   { title: "Settings", url: "/dashboard/settings", icon: Settings },
 ];
+
+function ConversationsBadge() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    getConversationStats()
+      .then((stats) => setCount(stats.active))
+      .catch(() => setCount(null));
+
+    const interval = setInterval(() => {
+      getConversationStats()
+        .then((stats) => setCount(stats.active))
+        .catch(() => {});
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (count === null || count === 0) return null;
+  return <SidebarMenuBadge>{count}</SidebarMenuBadge>;
+}
 
 export function DashboardSidebar() {
   const pathname = usePathname();
@@ -74,7 +101,7 @@ export function DashboardSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname === item.url}
+                    isActive={pathname === item.url || (item.url !== "/dashboard" && pathname.startsWith(item.url))}
                     tooltip={item.title}
                   >
                     <Link href={item.url}>
@@ -82,9 +109,9 @@ export function DashboardSidebar() {
                       <span>{item.title}</span>
                     </Link>
                   </SidebarMenuButton>
-                  {item.badge && (
-                    <SidebarMenuBadge>{item.badge}</SidebarMenuBadge>
-                  )}
+                  {item.title === "Conversations" ? (
+                    <ConversationsBadge />
+                  ) : null}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

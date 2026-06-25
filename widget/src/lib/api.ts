@@ -1,15 +1,39 @@
 import type { Product, SSEEvent } from './types';
 
 const DEFAULT_API_URL = 'http://localhost:8000';
+const VISITOR_ID_KEY = 'leaf_visitor_id';
+
+export function getOrCreateVisitorId(): string {
+  try {
+    let id = localStorage.getItem(VISITOR_ID_KEY);
+    if (!id) {
+      id = `v_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+      localStorage.setItem(VISITOR_ID_KEY, id);
+    }
+    return id;
+  } catch {
+    return `v_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+  }
+}
 
 export async function createConversation(
   apiUrl: string,
   storeId: string,
+  visitorName?: string,
+  visitorEmail?: string,
+  visitorId?: string,
+  channel: string = 'chat',
 ): Promise<string> {
   const response = await fetch(`${apiUrl}/api/v1/chat/conversations`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ store_id: storeId }),
+    body: JSON.stringify({
+      store_id: storeId,
+      visitor_name: visitorName || undefined,
+      visitor_email: visitorEmail || undefined,
+      visitor_id: visitorId || undefined,
+      channel,
+    }),
   });
 
   if (!response.ok) {
@@ -91,4 +115,29 @@ export async function getConversationHistory(
 
 export function getApiUrl(configApiUrl?: string): string {
   return configApiUrl || DEFAULT_API_URL;
+}
+
+export function subscribeToAgentMessages(
+  apiUrl: string,
+  conversationId: string,
+  onMessage: (message: { id: string; sender: string; content: string; products?: Product[] }) => void,
+): () => void {
+  const eventSource = new EventSource(
+    `${apiUrl}/api/v1/chat/conversations/${conversationId}/stream`,
+  );
+
+  eventSource.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data.type === 'agent_message' && data.message) {
+        onMessage(data.message);
+      }
+    } catch {
+      // skip malformed events
+    }
+  };
+
+  return () => {
+    eventSource.close();
+  };
 }
