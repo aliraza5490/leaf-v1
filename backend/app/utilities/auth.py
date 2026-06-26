@@ -84,3 +84,21 @@ def get_user_from_token(
         raise HTTPException(status_code=400, detail="Inactive user")
         
     return user
+
+
+def require_admin(user=Depends(get_user_from_token)):
+    if user.role not in ("superadmin", "admin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required",
+        )
+    return user
+
+
+def require_superuser(user=Depends(get_user_from_token)):
+    if user.role != "superadmin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Superadmin access required",
+        )
+    return user

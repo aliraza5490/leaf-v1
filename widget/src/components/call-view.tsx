@@ -1,6 +1,6 @@
-import { useRef, type WheelEvent } from 'react';
 import type { Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
+import { ProductCarousel } from './product-carousel';
 
 interface CallViewProps {
   storeName: string;
@@ -76,18 +76,7 @@ export function CallView({
   voiceError,
   onEndCall 
 }: CallViewProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const hasProducts = products && products.length > 0;
-  const highlightedId = hasProducts ? products[0].id : null;
-
-  const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
-    if (e.deltaY !== 0) {
-      e.preventDefault();
-      if (scrollRef.current) {
-        scrollRef.current.scrollLeft += e.deltaY;
-      }
-    }
-  };
 
   const stateLabel = getStateLabel(voiceState);
   const stateColor = getStateColor(voiceState, primaryColor);
@@ -142,58 +131,11 @@ export function CallView({
 
       {hasProducts && (
         <div className="w-full mb-2 animate-leaf-slide-up">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider px-5">
-            Recommended for you
-          </p>
-          <div
-            ref={scrollRef}
-            onWheel={handleWheel}
-            style={{ width: '100%', overflowX: 'auto', scrollBehavior: 'smooth' }}
-            className="scrollbar-hide"
-          >
-            <div style={{ display: 'flex', gap: '12px', width: 'max-content', paddingTop: '15px', paddingLeft: '20px', paddingRight: '20px', paddingBottom: '12px' }}>
-              {products.map((product) => {
-                const isHighlighted = highlightedId === product.id;
-                return (
-                  <a
-                    key={product.id}
-                    href={product.url || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="no-underline block relative flex-shrink-0 w-[130px]"
-                  >
-                    {isHighlighted && (
-                      <div
-                        className="absolute -inset-1 rounded-xl animate-leaf-product-pulse"
-                        style={{ backgroundColor: primaryColor }}
-                      />
-                    )}
-                    <div
-                      className="relative rounded-lg border-2 bg-white transition-all"
-                      style={{
-                        borderColor: isHighlighted ? primaryColor : '#e5e7eb',
-                        boxShadow: isHighlighted ? `0 0 0 3px ${primaryColor}33, 0 4px 12px ${primaryColor}22` : 'none',
-                        transform: isHighlighted ? 'scale(1.03)' : 'scale(1)',
-                      }}
-                    >
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-24 object-cover rounded-t-md bg-gray-100"
-                        loading="lazy"
-                      />
-                      <div className="p-2">
-                        <p className="text-xs font-medium text-gray-900 truncate">{product.name}</p>
-                        <p className="text-xs font-semibold mt-0.5" style={{ color: primaryColor }}>
-                          ${product.price.toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
+          <ProductCarousel
+            products={products}
+            primaryColor={primaryColor}
+            label="Recommended for you"
+          />
         </div>
       )}
 

@@ -9,3 +9,5 @@ class GroupUserLink(SQLModel, table=True):
 
 from .product import Product, ProductBase, ProductCreate, ProductUpdate, ProductRead
 from .conversation import Conversation, ChatMessage
+from .store import Store, StoreBase, StoreUpdate, StoreRead
+from .system_setting import SystemSetting, SystemSettingBase, SystemSettingCreate, SystemSettingUpdate, SystemSettingRead

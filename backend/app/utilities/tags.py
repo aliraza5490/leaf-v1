@@ -6,3 +6,4 @@ class Tags(Enum):
     groups = "groups"
     products = "products"
     chat = "chat"
+    admin = "admin"

@@ -79,6 +79,7 @@ def seed_superuser(session: Session) -> None:
         full_name="Store Owner",
         store_id=SEED_STORE_ID,
         isActive=True,
+        role="superadmin",
     )
     session.add(superuser)
     session.commit()

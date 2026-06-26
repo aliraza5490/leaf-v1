@@ -83,12 +83,14 @@ function toProduct(p: BackendProduct): { id: string; title: string; price: numbe
 
 function toMessage(m: BackendMessage): Message {
   const productCard = m.products && m.products.length > 0 ? toProduct(m.products[0]) : undefined;
+  const products = m.products && m.products.length > 0 ? m.products.map(toProduct) : undefined;
   return {
     id: String(m.id),
     sender: m.sender as Message["sender"],
     content: m.content,
     timestamp: m.timestamp,
     productCard,
+    products,
     read: m.read,
   };
 }
