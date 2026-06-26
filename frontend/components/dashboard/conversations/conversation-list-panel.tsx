@@ -191,18 +191,7 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
           />
         </div>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-          {selectedId ? (
-            children
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <div className="text-center">
-                <p className="text-lg font-medium">No conversation selected</p>
-                <p className="text-sm text-muted-foreground">
-                  Select a conversation from the list to view details
-                </p>
-              </div>
-            </div>
-          )}
+          {children}
         </div>
       </div>
 
