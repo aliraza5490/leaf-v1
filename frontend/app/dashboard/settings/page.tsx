@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { SettingsSidebar } from "@/components/dashboard/settings/settings-sidebar";
 import { SettingsHeader } from "@/components/dashboard/settings/settings-header";
 import { GeneralSettings } from "@/components/dashboard/settings/sections/general-settings";
-import { AIAssistantSettings } from "@/components/dashboard/settings/sections/ai-assistant-settings";
 import { IntegrationSettings } from "@/components/dashboard/settings/sections/integration-settings";
 import { NotificationSettings } from "@/components/dashboard/settings/sections/notification-settings";
 import { BrandingSettings } from "@/components/dashboard/settings/sections/branding-settings";
@@ -14,7 +13,6 @@ import { AccountSettings } from "@/components/dashboard/settings/sections/accoun
 import type { SettingsSection } from "@/lib/settings/types";
 import {
   mockGeneralSettings,
-  mockAIAssistantSettings,
   mockIntegrationSettings,
   mockNotificationSettings,
   mockBrandingSettings,
@@ -27,7 +25,6 @@ export default function SettingsPage() {
   const [hasChanges, setHasChanges] = useState(false);
 
   const [generalSettings, setGeneralSettings] = useState(mockGeneralSettings);
-  const [aiSettings, setAISettings] = useState(mockAIAssistantSettings);
   const [integrationSettings, setIntegrationSettings] = useState(mockIntegrationSettings);
   const [notificationSettings, setNotificationSettings] = useState(mockNotificationSettings);
   const [brandingSettings, setBrandingSettings] = useState(mockBrandingSettings);
@@ -41,7 +38,6 @@ export default function SettingsPage() {
 
   const handleCancel = () => {
     setGeneralSettings(mockGeneralSettings);
-    setAISettings(mockAIAssistantSettings);
     setIntegrationSettings(mockIntegrationSettings);
     setNotificationSettings(mockNotificationSettings);
     setBrandingSettings(mockBrandingSettings);
@@ -60,16 +56,6 @@ export default function SettingsPage() {
             settings={generalSettings}
             onSettingsChange={(s) => {
               setGeneralSettings(s);
-              markAsChanged();
-            }}
-          />
-        );
-      case "ai-assistant":
-        return (
-          <AIAssistantSettings
-            settings={aiSettings}
-            onSettingsChange={(s) => {
-              setAISettings(s);
               markAsChanged();
             }}
           />

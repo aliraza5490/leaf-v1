@@ -1,6 +1,5 @@
 import type {
   GeneralSettings,
-  AIAssistantSettings,
   IntegrationSettings,
   NotificationSettings,
   BrandingSettings,
@@ -16,19 +15,6 @@ export const mockGeneralSettings: GeneralSettings = {
   timezone: "America/New_York",
   currency: "USD",
   dateFormat: "MM/DD/YYYY",
-};
-
-export const mockAIAssistantSettings: AIAssistantSettings = {
-  chatEnabled: true,
-  chatGreeting: "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?",
-  chatPlaceholder: "Type your message...",
-  voiceEnabled: true,
-  voiceName: "Leaf Assistant",
-  voiceSpeed: 1.0,
-  responseTone: "friendly",
-  maxResponseLength: 500,
-  productRecommendations: true,
-  fallbackMessage: "I'm sorry, I didn't quite understand that. Could you rephrase your question?",
 };
 
 export const mockIntegrationSettings: IntegrationSettings = {

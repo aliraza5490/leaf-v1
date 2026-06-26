@@ -1,6 +1,5 @@
 export type SettingsSection =
   | "general"
-  | "ai-assistant"
   | "integrations"
   | "notifications"
   | "branding"
@@ -15,19 +14,6 @@ export interface GeneralSettings {
   timezone: string;
   currency: string;
   dateFormat: string;
-}
-
-export interface AIAssistantSettings {
-  chatEnabled: boolean;
-  chatGreeting: string;
-  chatPlaceholder: string;
-  voiceEnabled: boolean;
-  voiceName: string;
-  voiceSpeed: number;
-  responseTone: "friendly" | "professional" | "casual";
-  maxResponseLength: number;
-  productRecommendations: boolean;
-  fallbackMessage: string;
 }
 
 export interface ApiKey {

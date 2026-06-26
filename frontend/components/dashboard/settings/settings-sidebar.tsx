@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Bot,
   Key,
   Layout,
   Bell,
@@ -19,7 +18,6 @@ interface SettingsSidebarProps {
 
 const settingsItems: { id: SettingsSection; label: string; icon: React.ElementType }[] = [
   { id: "general", label: "General", icon: SettingsIcon },
-  { id: "ai-assistant", label: "AI Assistant", icon: Bot },
   { id: "integrations", label: "Integrations", icon: Key },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "branding", label: "Branding", icon: Layout },

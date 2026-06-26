@@ -15,10 +15,6 @@ const sectionTitles: Record<SettingsSection, { title: string; description: strin
     title: "General Settings",
     description: "Manage your store information and preferences",
   },
-  "ai-assistant": {
-    title: "AI Assistant",
-    description: "Configure your chatbot and voice assistant behavior",
-  },
   integrations: {
     title: "Integrations",
     description: "Manage API keys, webhooks, and embed codes",
