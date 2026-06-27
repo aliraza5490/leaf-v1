@@ -54,7 +54,7 @@ export function useChat(config: WidgetConfig, greeting: string) {
   }, []);
 
   const submitVisitorInfo = useCallback(
-    async (data: PreChatFormData) => {
+    async (data: PreChatFormData, channel: string = 'chat') => {
       const visitorId = getOrCreateVisitorId();
       setState((prev) => ({ ...prev, visitorInfo: { name: data.name, email: data.email } }));
 
@@ -65,7 +65,7 @@ export function useChat(config: WidgetConfig, greeting: string) {
           data.name,
           data.email || undefined,
           visitorId,
-          'chat',
+          channel,
         );
         sessionRef.current = sessionId;
         setState((prev) => ({ ...prev, sessionId }));
@@ -78,8 +78,10 @@ export function useChat(config: WidgetConfig, greeting: string) {
             messages: [...prev.messages, createMessage('agent', msg.content, products)],
           }));
         });
+        return sessionId;
       } catch {
         // Conversation creation will be retried on first message
+        return undefined;
       }
     },
     [apiUrl, config.storeId],

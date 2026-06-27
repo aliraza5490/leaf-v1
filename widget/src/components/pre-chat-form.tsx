@@ -84,7 +84,7 @@ export function PreChatForm({ primaryColor, storeName, greeting, onSubmit }: Pre
           className="w-full text-sm font-medium text-white rounded-lg py-2.5 transition-all hover:opacity-90 active:scale-[0.98] cursor-pointer"
           style={{ backgroundColor: primaryColor }}
         >
-          Start Chat
+          Start Call
         </button>
       </form>
     </div>

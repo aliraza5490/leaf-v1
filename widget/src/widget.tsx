@@ -22,6 +22,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     isOpen,
     isTyping,
     isCallActive,
+    sessionId,
     visitorInfo,
     toggle,
     close,
@@ -109,7 +110,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     };
   }, [client]);
 
-  const handleStartCall = useCallback(async () => {
+  const handleStartCall = useCallback(async (visitorName?: string, visitorEmail?: string, conversationId?: string) => {
     startCall();
     setTranscript('');
     setAgentText('');
@@ -124,9 +125,10 @@ export function LeafWidget({ config }: LeafWidgetProps) {
           endpoint: `${config.apiUrl || 'http://localhost:8000'}/api/v1/voice/offer`,
           requestData: {
             storeId: config.storeId,
-            visitorName: visitorInfo?.name,
-            visitorEmail: visitorInfo?.email,
+            visitorName: visitorName || visitorInfo?.name,
+            visitorEmail: visitorEmail || visitorInfo?.email,
             visitorId,
+            conversationId: conversationId || sessionId,
           },
         },
       });
@@ -134,7 +136,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
       setError({ code: 'unknown' as VoiceErrorCode, message: `Failed to start call: ${err}` });
       setVoiceState('error');
     }
-  }, [client, config.apiUrl, config.storeId, visitorInfo, startCall]);
+  }, [client, config.apiUrl, config.storeId, visitorInfo, sessionId, startCall]);
 
   const handleEndCall = useCallback(async () => {
     endCall();
@@ -145,6 +147,14 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     setVoiceProducts([]);
     setError(null);
   }, [client, endCall]);
+
+  const handleSubmitVisitorInfo = useCallback(
+    async (data: { name: string; email: string }) => {
+      const activeSessionId = await submitVisitorInfo(data, 'voice');
+      await handleStartCall(data.name, data.email, activeSessionId);
+    },
+    [submitVisitorInfo, handleStartCall]
+  );
 
   const displayProducts = voiceProducts.length > 0 ? voiceProducts : normalizedProducts;
 
@@ -163,7 +173,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
             primaryColor={config.primaryColor || '#10b981'}
             storeName={config.storeName || 'Leaf Assistant'}
             greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
-            onSubmit={submitVisitorInfo}
+            onSubmit={handleSubmitVisitorInfo}
           />
         </div>
       )}
