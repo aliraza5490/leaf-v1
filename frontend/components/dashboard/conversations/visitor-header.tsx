@@ -3,7 +3,6 @@
 import { Globe, Clock, MousePointerClick, MoreHorizontal, CheckCircle2, UserPlus, FileDown, FileText, File } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -47,18 +46,6 @@ export function VisitorHeader({ conversation, teamMembers, onResolve, onAssign }
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge
-            variant="outline"
-            className={
-              conversation.status === "active"
-                ? "bg-chart-1/20 text-chart-1 border-chart-1/30"
-                : conversation.status === "waiting"
-                  ? "bg-chart-4/20 text-chart-4 border-chart-4/30"
-                  : "bg-chart-2/20 text-chart-2 border-chart-2/30"
-            }
-          >
-            {conversation.status}
-          </Badge>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="h-7 w-7">

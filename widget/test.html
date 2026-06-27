@@ -64,10 +64,26 @@
 
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      window.addEventListener('DOMContentLoaded', () => {
+      window.addEventListener('DOMContentLoaded', async () => {
+        // Dynamically resolve the storeId from the logged-in dashboard user.
+        // This ensures widget conversations appear in the dashboard.
+        let storeId = 'test_store'; // fallback
+        const token = localStorage.getItem('access_token');
+        if (token) {
+          try {
+            const res = await fetch('http://localhost:8000/api/v1/auth/me', {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+              const profile = await res.json();
+              if (profile.store_id) storeId = profile.store_id;
+            }
+          } catch (_) {}
+        }
+
         if (window.Leaf) {
           Leaf.init({
-            storeId: 'test_store',
+            storeId,
             apiUrl: 'http://localhost:8000',
             position: 'bottom-right',
             theme: 'light',

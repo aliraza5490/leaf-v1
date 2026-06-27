@@ -22,6 +22,17 @@ def login(user: UserLogin, session = Depends(get_session)):
     return auth_login(user, session)
 
 
+@auth_router.get("/me")
+def me(user: User = Depends(get_user_from_token)):
+    return {
+        "email": user.email,
+        "full_name": user.full_name,
+        "store_id": user.store_id,
+        "role": user.role,
+        "isActive": user.isActive,
+    }
+
+
 @auth_router.post("/forgot-password")
 def forgot_password(data: ForgotPasswordRequest, session = Depends(get_session)):
     return auth_forgot_password(data, session)

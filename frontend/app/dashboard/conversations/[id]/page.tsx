@@ -94,7 +94,6 @@ export default function ConversationPage({
       conversation={conversation}
       teamMembers={teamMembers}
       onSendReply={handleSendReply}
-      onQuickReply={handleQuickReply}
       onResolve={handleResolve}
       onAssign={handleAssign}
     />

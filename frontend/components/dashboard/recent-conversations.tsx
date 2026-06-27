@@ -131,12 +131,14 @@ export function RecentConversations() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={getStatusColor(conversation.status)}
-                      >
-                        {conversation.status}
-                      </Badge>
+                      {conversation.status !== "active" && (
+                        <Badge
+                          variant="outline"
+                          className={getStatusColor(conversation.status)}
+                        >
+                          {conversation.status}
+                        </Badge>
+                      )}
                     </TableCell>
                     <TableCell className="max-w-[200px] truncate text-sm text-muted-foreground">
                       {lastMessage?.content || "No messages"}

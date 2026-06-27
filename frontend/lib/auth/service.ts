@@ -112,3 +112,22 @@ export function getAuthHeaders(): Record<string, string> {
   const token = getAccessToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
+
+export interface UserProfile {
+  email: string;
+  full_name: string | null;
+  store_id: string;
+  role: string;
+  isActive: boolean;
+}
+
+export async function getMe(): Promise<UserProfile> {
+  const response = await fetch(
+    `${API_BASE_URL}${API_PREFIX}/auth/me`,
+    { headers: getAuthHeaders() }
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch user profile");
+  }
+  return response.json();
+}

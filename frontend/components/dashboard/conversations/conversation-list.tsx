@@ -50,7 +50,6 @@ export function ConversationList({
 }: ConversationListProps) {
   const filters: { label: string; value: ConversationStatus | "all" }[] = [
     { label: "All", value: "all" },
-    { label: "Active", value: "active" },
     { label: "Waiting", value: "waiting" },
     { label: "Resolved", value: "resolved" },
   ];
@@ -148,15 +147,17 @@ export function ConversationList({
                     </span>
                   </div>
                   <div className="mt-0.5 flex items-center gap-2">
-                    <Badge
-                      variant="outline"
-                      className={cn(
-                        "text-[10px] px-1.5 py-0",
-                        getStatusColor(conversation.status)
-                      )}
-                    >
-                      {conversation.status}
-                    </Badge>
+                    {conversation.status !== "active" && (
+                      <Badge
+                        variant="outline"
+                        className={cn(
+                          "text-[10px] px-1.5 py-0",
+                          getStatusColor(conversation.status)
+                        )}
+                      >
+                        {conversation.status}
+                      </Badge>
+                    )}
                     <Badge
                       variant="outline"
                       className="text-[10px] px-1.5 py-0 bg-muted text-muted-foreground"

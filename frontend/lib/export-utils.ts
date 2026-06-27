@@ -60,73 +60,199 @@ export function exportAsText(conversation: Conversation) {
   saveAs(blob, `conversation-${conversation.id}.txt`);
 }
 
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 export function exportAsPDF(conversation: Conversation) {
-  const doc = new jsPDF();
-  let y = 20;
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "none";
+  document.body.appendChild(iframe);
 
-  doc.setFontSize(18);
-  doc.text("Conversation Transcript", 20, y);
-  y += 12;
-
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.text("Visitor:", 20, y);
-  doc.setFont("helvetica", "normal");
-  doc.text(`${conversation.visitor.name} (${conversation.visitor.email})`, 50, y);
-  y += 7;
-
-  doc.setFont("helvetica", "bold");
-  doc.text("Status:", 20, y);
-  doc.setFont("helvetica", "normal");
-  doc.text(conversation.status, 50, y);
-  y += 7;
-
-  doc.setFont("helvetica", "bold");
-  doc.text("Started:", 20, y);
-  doc.setFont("helvetica", "normal");
-  doc.text(formatTimestamp(conversation.startedAt), 50, y);
-  y += 7;
-
-  doc.setFont("helvetica", "bold");
-  doc.text("Source:", 20, y);
-  doc.setFont("helvetica", "normal");
-  doc.text(conversation.metadata.source, 50, y);
-  y += 14;
-
-  doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.text("Messages", 20, y);
-  y += 10;
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-
-  for (const msg of conversation.messages) {
-    if (y > 270) {
-      doc.addPage();
-      y = 20;
-    }
-
-    doc.setFont("helvetica", "bold");
-    doc.text(`${getSenderLabel(msg.sender)} - ${formatTimestamp(msg.timestamp)}`, 20, y);
-    y += 6;
-
-    doc.setFont("helvetica", "normal");
-    const contentLines = doc.splitTextToSize(msg.content, 170);
-    doc.text(contentLines, 20, y);
-    y += contentLines.length * 5 + 2;
-
-    if (msg.productCard) {
-      doc.setFont("helvetica", "italic");
-      doc.text(`[Product: ${msg.productCard.title} - $${msg.productCard.price.toFixed(2)}]`, 20, y);
-      y += 6;
-    }
-
-    y += 4;
+  const doc = iframe.contentWindow?.document || iframe.contentDocument;
+  if (!doc) {
+    console.error("Could not access iframe document");
+    return;
   }
 
-  doc.save(`conversation-${conversation.id}.pdf`);
+  const html = `
+    <html>
+      <head>
+        <title>Conversation Transcript</title>
+        <style>
+          @page {
+            size: A4;
+            margin: 0;
+          }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #1f2937;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+          }
+          .print-container {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          .page-header-space {
+            height: 20mm;
+          }
+          .page-footer-space {
+            height: 20mm;
+          }
+          .print-content {
+            padding-left: 20mm;
+            padding-right: 20mm;
+          }
+          h1 {
+            font-size: 24px;
+            color: #111827;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 12px;
+            margin-top: 0;
+            margin-bottom: 24px;
+          }
+          .metadata {
+            margin-bottom: 32px;
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            gap: 8px 16px;
+            font-size: 14px;
+          }
+          .metadata-label {
+            font-weight: 600;
+            color: #4b5563;
+          }
+          .metadata-value {
+            color: #1f2937;
+          }
+          .messages-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-top: 36px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 8px;
+            color: #111827;
+          }
+          .message {
+            margin-bottom: 20px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+          }
+          .message-header {
+            font-weight: 600;
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 6px;
+          }
+          .message-content {
+            font-size: 14px;
+            color: #1f2937;
+            white-space: pre-wrap;
+          }
+          .product-card {
+            margin-top: 8px;
+            padding: 8px 16px;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 13px;
+            font-style: italic;
+            color: #374151;
+            display: inline-block;
+          }
+        </style>
+      </head>
+      <body>
+        <table class="print-container">
+          <thead>
+            <tr>
+              <td><div class="page-header-space"></div></td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="print-content">
+                <h1>Conversation Transcript</h1>
+                <div class="metadata">
+                  <div class="metadata-label">Visitor:</div>
+                  <div class="metadata-value">${escapeHtml(conversation.visitor.name)} (${escapeHtml(conversation.visitor.email)})</div>
+                  
+                  <div class="metadata-label">Status:</div>
+                  <div class="metadata-value">${escapeHtml(conversation.status)}</div>
+                  
+                  <div class="metadata-label">Started:</div>
+                  <div class="metadata-value">${escapeHtml(formatTimestamp(conversation.startedAt))}</div>
+                  
+                  <div class="metadata-label">Source:</div>
+                  <div class="metadata-value">${escapeHtml(conversation.metadata.source || "N/A")}</div>
+                </div>
+
+                <div class="messages-title">Messages</div>
+                ${conversation.messages
+                  .map(
+                    (msg) => `
+                  <div class="message">
+                    <div class="message-header">${escapeHtml(getSenderLabel(msg.sender))} - ${escapeHtml(
+                      formatTimestamp(msg.timestamp)
+                    )}</div>
+                    <div class="message-content">${escapeHtml(msg.content)}</div>
+                    ${
+                      msg.productCard
+                        ? `<div class="product-card">Product: ${escapeHtml(msg.productCard.title)} - $${msg.productCard.price.toFixed(
+                            2
+                          )}</div>`
+                        : ""
+                    }
+                  </div>
+                `
+                  )
+                  .join("")}
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td><div class="page-footer-space"></div></td>
+            </tr>
+          </tfoot>
+        </table>
+      </body>
+    </html>
+  `;
+
+  doc.open();
+  doc.write(html);
+  doc.close();
+
+  const triggerPrint = () => {
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+    setTimeout(() => {
+      document.body.removeChild(iframe);
+    }, 1000);
+  };
+
+  if (iframe.contentWindow) {
+    iframe.onload = triggerPrint;
+  } else {
+    setTimeout(triggerPrint, 500);
+  }
 }
+
 
 export async function exportAsWord(conversation: Conversation) {
   const children: Paragraph[] = [];

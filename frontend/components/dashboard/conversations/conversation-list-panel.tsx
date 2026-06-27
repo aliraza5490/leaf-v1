@@ -8,7 +8,7 @@ import { ConversationFilters } from "./conversation-filters";
 import { BulkActions } from "./bulk-actions";
 import { useConversations } from "@/hooks/use-conversations";
 import { getTeam } from "@/lib/conversations/api";
-import type { ConversationStatus } from "@/types/conversation";
+import type { ConversationStatus, ConversationChannel } from "@/types/conversation";
 import type { TeamMember } from "@/lib/conversations/types";
 
 export function ConversationListPanel({ children }: { children: React.ReactNode }) {
@@ -24,6 +24,7 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [activeFilter, setActiveFilter] = useState<ConversationStatus | "all">("all");
+  const [activeChannel, setActiveChannel] = useState<"all" | ConversationChannel>("all");
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
 
   const {
@@ -64,11 +65,28 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
     return counts;
   }, [conversations]);
 
+  const channelCounts = useMemo(() => {
+    const counts: Record<"all" | ConversationChannel, number> = {
+      all: conversations.length,
+      chat: 0,
+      voice: 0,
+    };
+    for (const c of conversations) {
+      const ch = (c.channel || "chat") as ConversationChannel;
+      if (ch in counts) counts[ch]++;
+    }
+    return counts;
+  }, [conversations]);
+
   const filteredConversations = useMemo(() => {
     let result = conversations;
 
     if (activeFilter !== "all") {
       result = result.filter((c) => c.status === activeFilter);
+    }
+
+    if (activeChannel !== "all") {
+      result = result.filter((c) => (c.channel || "chat") === activeChannel);
     }
 
     if (searchQuery) {
@@ -101,7 +119,7 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
     }
 
     return result;
-  }, [conversations, activeFilter, searchQuery, sortBy]);
+  }, [conversations, activeFilter, activeChannel, searchQuery, sortBy]);
 
   const allSelected =
     filteredConversations.length > 0 &&
@@ -171,9 +189,13 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
           onSearchChange={setSearchQuery}
           sortBy={sortBy}
           onSortChange={setSortBy}
+          activeChannel={activeChannel}
+          onChannelChange={setActiveChannel}
           totalCount={filterCounts[activeFilter]}
         />
       </div>
+
+
 
       <div className="flex flex-1 overflow-hidden rounded-lg border border-border/40">
         <div className="w-[400px] flex-shrink-0">
