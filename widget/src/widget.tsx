@@ -41,6 +41,8 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   useEffect(() => {
     if (!client) return;
 
+    (window as any).pipecatClient = client;
+
     const handleConnected = () => setVoiceState('listening');
     const handleDisconnected = () => setVoiceState('idle');
     const handleBotStartedSpeaking = () => setVoiceState('speaking');
@@ -62,21 +64,28 @@ export function LeafWidget({ config }: LeafWidgetProps) {
       }
     };
     const handleServerMessage = (data: unknown) => {
+      console.log("[Voice Widget] Received serverMessage:", data);
       if (!data || typeof data !== 'object') return;
       const msg = data as { type?: string; products?: unknown[] };
       if (msg.type === 'products' && Array.isArray(msg.products)) {
-        const products: Product[] = msg.products.map((p) => {
-          const prod = p as Record<string, unknown>;
-          return {
-            id: String(prod.id),
-            name: String(prod.name || ''),
-            price: Number(prod.price || 0),
-            image: String(prod.image || ''),
-            url: prod.url ? String(prod.url) : undefined,
-            description: prod.description ? String(prod.description) : undefined,
-          };
-        });
-        setVoiceProducts(products);
+        console.log("[Voice Widget] Parsing products:", msg.products);
+        try {
+          const products: Product[] = msg.products.map((p) => {
+            const prod = p as Record<string, unknown>;
+            return {
+              id: String(prod.id),
+              name: String(prod.name || ''),
+              price: Number(prod.price || 0),
+              image: String(prod.image || ''),
+              url: prod.url ? String(prod.url) : undefined,
+              description: prod.description ? String(prod.description) : undefined,
+            };
+          });
+          console.log("[Voice Widget] Successfully set voice products:", products);
+          setVoiceProducts(products);
+        } catch (e) {
+          console.error("[Voice Widget] Error parsing products payload:", e);
+        }
       }
     };
     const handleError = (message: unknown) => {

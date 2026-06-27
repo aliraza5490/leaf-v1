@@ -62,18 +62,22 @@
       </div>
     </div>
 
-    <script src="./dist/leaf-widget.js"></script>
+    <script type="module" src="/src/main.tsx"></script>
     <script>
-      Leaf.init({
-        storeId: 'test_store',
-        apiUrl: 'http://localhost:8000',
-        position: 'bottom-right',
-        theme: 'light',
-        primaryColor: '#10b981',
-        storeName: 'Leaf Demo Store',
-        greeting: "Hi! I'm Leaf, your AI shopping assistant. How can I help you today?",
-        placeholder: 'Ask me about products...',
-        showBranding: true,
+      window.addEventListener('DOMContentLoaded', () => {
+        if (window.Leaf) {
+          Leaf.init({
+            storeId: 'test_store',
+            apiUrl: 'http://localhost:8000',
+            position: 'bottom-right',
+            theme: 'light',
+            primaryColor: '#10b981',
+            storeName: 'Leaf Demo Store',
+            greeting: "Hi! I'm Leaf, your AI shopping assistant. How can I help you today?",
+            placeholder: 'Ask me about products...',
+            showBranding: true,
+          });
+        }
       });
     </script>
   </body>

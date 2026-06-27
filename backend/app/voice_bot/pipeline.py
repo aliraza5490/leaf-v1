@@ -17,6 +17,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
     UserTurnStoppedMessage,
 )
 from pipecat.processors.audio.audio_buffer_processor import AudioBufferProcessor
+from pipecat.processors.frameworks.rtvi import RTVIProcessor
 from pipecat.services.cartesia.turns.stt import CartesiaTurnsSTTService
 from pipecat.services.deepgram.tts import DeepgramTTSService
 from pipecat.services.groq.llm import GroqLLMService
@@ -31,7 +32,7 @@ from ..settings import settings
 from ..utilities.db import engine
 from .processors import ProductDataProcessor
 from .prompts import SYSTEM_INSTRUCTION
-from .tools import get_product_details_tool, product_search_tool
+from .tools import get_product_details_tool, product_search_tool, list_products_tool
 
 RECORDINGS_DIR = Path(__file__).resolve().parent.parent.parent / "recordings"
 SAMPLE_RATE = 24000
@@ -78,12 +79,15 @@ async def run_voice_bot(
         reasoning_effort="low"
     )
 
-    context = LLMContext(tools=[product_search_tool, get_product_details_tool])
-    logger.debug(f"[pipeline] LLM context initialized with tools: {[t.__name__ for t in [product_search_tool, get_product_details_tool]]}")
+    context = LLMContext(tools=[product_search_tool, get_product_details_tool, list_products_tool])
+    logger.debug(f"[pipeline] LLM context initialized with tools: {[t.__name__ for t in [product_search_tool, get_product_details_tool, list_products_tool]]}")
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(
         context,
         user_params=LLMUserAggregatorParams(),
     )
+
+    rtvi = RTVIProcessor()
+    rtvi_observer = rtvi.create_rtvi_observer()
 
     product_processor = ProductDataProcessor(webrtc_connection)
     audiobuffer = AudioBufferProcessor(
@@ -99,14 +103,15 @@ async def run_voice_bot(
     pipeline = Pipeline(
         [
             transport.input(),
+            rtvi,
             stt,
             user_aggregator,
             llm,
             tts,
             transport.output(),
             audiobuffer,
-            assistant_aggregator,
             product_processor,
+            assistant_aggregator,
         ]
     )
 
@@ -118,6 +123,7 @@ async def run_voice_bot(
             enable_metrics=True,
             enable_usage_metrics=True,
         ),
+        observers=[rtvi_observer],
         app_resources=resources,
     )
 
@@ -175,6 +181,7 @@ async def run_voice_bot(
     async def on_client_connected(transport, webrtc_conn):
         logger.info(f"Voice client connected: {conversation_id}")
         await audiobuffer.start_recording()
+        await rtvi.set_bot_ready()
         context.add_message(
             {"role": "developer", "content": "Start by concisely introducing yourself as Leaf, a shopping assistant."}
         )
