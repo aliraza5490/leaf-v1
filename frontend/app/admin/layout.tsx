@@ -25,14 +25,14 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user, isAdmin, isLoading, logout } = useAdminAuth();
+  const { user, isSuperAdmin, isLoading, logout } = useAdminAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAdmin) {
+    if (!isLoading && !isSuperAdmin) {
       router.push("/dashboard");
     }
-  }, [isLoading, isAdmin, router]);
+  }, [isLoading, isSuperAdmin, router]);
 
   if (isLoading) {
     return (
@@ -45,7 +45,7 @@ export default function AdminLayout({
     );
   }
 
-  if (!isAdmin) {
+  if (!isSuperAdmin) {
     return null;
   }
 

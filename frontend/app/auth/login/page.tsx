@@ -9,6 +9,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { decodeJwtPayload } from "@/hooks/use-admin-auth";
 import {
   Card,
   CardContent,
@@ -46,9 +47,17 @@ export default function LoginPage() {
   async function onSubmit(values: LoginFormValues) {
     setIsLoading(true);
     try {
-      await login(values);
+      const data = await login(values);
       toast.success("Logged in successfully");
-      router.push("/dashboard");
+
+      const payload = decodeJwtPayload(data.access_token);
+      const role = payload?.role;
+
+      if (role === "superadmin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "An unexpected error occurred";

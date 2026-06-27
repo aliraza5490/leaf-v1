@@ -9,7 +9,7 @@ interface AdminUser {
   role: UserRole;
 }
 
-function decodeJwtPayload(token: string): Record<string, unknown> | null {
+export function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) return null;
