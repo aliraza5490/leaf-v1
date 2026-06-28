@@ -1,4 +1,4 @@
-import { ChatIcon, CloseIcon } from './icons';
+import { ChatIcon, CloseIcon } from '@/components/ui/icons';
 
 interface ChatBubbleProps {
   onClick: () => void;

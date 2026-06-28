@@ -1,7 +1,7 @@
 import { ChatHeader } from './chat-header';
 import { MessageList } from './message-list';
 import { ChatInput } from './chat-input';
-import { CallView } from './call-view';
+import { CallView } from '@/components/voice/call-view';
 import type { Message, Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
 

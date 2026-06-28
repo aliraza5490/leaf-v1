@@ -1,7 +1,7 @@
 import type { Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
-import { ProductCarousel } from './product-carousel';
-import { MicIcon, PhoneIcon } from './icons';
+import { ProductCarousel } from '@/components/ui/product-carousel';
+import { MicIcon, PhoneIcon } from '@/components/ui/icons';
 
 interface CallViewProps {
   storeName: string;

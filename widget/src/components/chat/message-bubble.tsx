@@ -1,7 +1,7 @@
 import type { Message } from '@/lib/types';
-import { ProductCarousel } from './product-carousel';
-import { Markdown } from './markdown';
-import { AvatarIcon } from './icons';
+import { ProductCarousel } from '@/components/ui/product-carousel';
+import { Markdown } from '@/components/ui/markdown';
+import { AvatarIcon } from '@/components/ui/icons';
 
 interface MessageBubbleProps {
   message: Message;

@@ -1,4 +1,4 @@
-import { CloseIcon, PhoneIcon, AvatarIcon } from './icons';
+import { CloseIcon, PhoneIcon, AvatarIcon } from '@/components/ui/icons';
 
 interface ChatHeaderProps {
   storeName: string;

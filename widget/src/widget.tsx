@@ -1,7 +1,7 @@
 import { useChat } from '@/hooks/use-chat';
-import { ChatBubble } from '@/components/chat-bubble';
-import { ChatWindow } from '@/components/chat-window';
-import { PreChatForm } from '@/components/pre-chat-form';
+import { ChatBubble } from '@/components/chat/chat-bubble';
+import { ChatWindow } from '@/components/chat/chat-window';
+import { PreChatForm } from '@/components/chat/pre-chat-form';
 import type { WidgetConfig, Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
 import { normalizeProduct } from '@/lib/types';
@@ -13,6 +13,18 @@ import { PipecatClientProvider, PipecatClientAudio } from '@pipecat-ai/client-re
 
 interface LeafWidgetProps {
   config: WidgetConfig;
+}
+
+function PipecatWrapper({ client, children }: { client: PipecatClient | null; children: React.ReactNode }) {
+  if (!client) {
+    return <>{children}</>;
+  }
+  return (
+    <PipecatClientProvider client={client as any}>
+      {children}
+      <PipecatClientAudio />
+    </PipecatClientProvider>
+  );
 }
 
 export function LeafWidget({ config }: LeafWidgetProps) {
@@ -137,6 +149,8 @@ export function LeafWidget({ config }: LeafWidgetProps) {
       setVoiceState('error');
     });
 
+    setClient(newClient);
+
     try {
       const visitorId = getOrCreateVisitorId();
       await newClient.connect({
@@ -151,11 +165,11 @@ export function LeafWidget({ config }: LeafWidgetProps) {
           },
         },
       });
-      setClient(newClient);
     } catch (err) {
       newClient.disconnect().catch((disErr) => console.error('[Voice Widget] Error during connect failure cleanup:', disErr));
       setError({ code: 'unknown' as VoiceErrorCode, message: `Failed to start call: ${err}` });
       setVoiceState('error');
+      setClient(null);
     }
   }, [config.apiUrl, config.storeId, visitorInfo, sessionId, startCall]);
 
@@ -218,8 +232,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   const displayProducts = voiceProducts.length > 0 ? voiceProducts : normalizedProducts;
 
   const showPreChatForm = isOpen && !visitorInfo;
-  const showChat = isOpen && visitorInfo && !isCallActive;
-  const showCall = isOpen && visitorInfo && isCallActive;
+  const showChatWindow = isOpen && visitorInfo;
 
   return (
     <>
@@ -237,39 +250,13 @@ export function LeafWidget({ config }: LeafWidgetProps) {
         </div>
       )}
 
-      {showChat && (
-        <ChatWindow
-          isOpen={true}
-          messages={messages}
-          isTyping={isTyping}
-          isCallActive={false}
-          primaryColor={config.primaryColor || '#10b981'}
-          position={config.position || 'bottom-right'}
-          storeName={config.storeName || 'Leaf Assistant'}
-          storeLogo={config.storeLogo}
-          greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
-          placeholder={config.placeholder || 'Type your message...'}
-          showBranding={config.showBranding !== false}
-          products={displayProducts}
-          highlightedProductId={highlightedProductId}
-          voiceState={voiceState}
-          transcript={transcript}
-          agentText={agentText}
-          voiceError={error}
-          onStartCall={handleStartCall}
-          onEndCall={handleEndCall}
-          onClose={close}
-          onSend={sendMessage}
-        />
-      )}
-
-      {showCall && client && (
-        <PipecatClientProvider client={client as any}>
+      {showChatWindow && (
+        <PipecatWrapper client={client}>
           <ChatWindow
             isOpen={true}
             messages={messages}
             isTyping={isTyping}
-            isCallActive={true}
+            isCallActive={isCallActive}
             primaryColor={config.primaryColor || '#10b981'}
             position={config.position || 'bottom-right'}
             storeName={config.storeName || 'Leaf Assistant'}
@@ -288,8 +275,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
             onClose={close}
             onSend={sendMessage}
           />
-          <PipecatClientAudio />
-        </PipecatClientProvider>
+        </PipecatWrapper>
       )}
 
       <ChatBubble

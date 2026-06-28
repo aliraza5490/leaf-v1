@@ -1,4 +1,4 @@
-import { AvatarIcon } from './icons';
+import { AvatarIcon } from '@/components/ui/icons';
 
 export function TypingIndicator() {
   return (
