@@ -125,11 +125,19 @@ export function SessionHistory({
                 ? session.messages.length
                 : session.voiceEntries.length;
             return (
-              <button
+              <div
                 key={session.id}
                 onClick={() => onSelect(session.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelect(session.id);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
                 className={cn(
-                  "group flex w-full flex-col gap-1 rounded-lg px-3 py-2.5 text-left transition-colors",
+                  "group flex w-full flex-col gap-1 rounded-lg px-3 py-2.5 text-left transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                   activeSessionId === session.id
                     ? "bg-primary/10 border border-primary/20"
                     : "hover:bg-muted/50 border border-transparent"
@@ -165,7 +173,7 @@ export function SessionHistory({
                     {msgCount} {msgCount === 1 ? "message" : "messages"}
                   </span>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
