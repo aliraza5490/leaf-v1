@@ -26,11 +26,10 @@ export function MessageBubble({ message, primaryColor }: MessageBubbleProps) {
         )}
         <div className={`max-w-[80%] ${isUser ? 'ml-auto' : ''}`}>
           <div
-            className={`px-3.5 py-2.5 text-sm leading-relaxed ${
-              isUser
+            className={`px-3.5 py-2.5 text-sm leading-relaxed ${isUser
                 ? 'text-white rounded-2xl rounded-br-sm'
                 : 'text-gray-800 bg-gray-100 rounded-2xl rounded-bl-sm'
-            }`}
+              }`}
             style={isUser ? { backgroundColor: primaryColor } : undefined}
           >
             {isUser ? message.content : <Markdown content={message.content} primaryColor={primaryColor} />}
@@ -38,7 +37,7 @@ export function MessageBubble({ message, primaryColor }: MessageBubbleProps) {
         </div>
       </div>
       {hasProducts && (
-        <div className="mb-3 animate-leaf-slide-up">
+        <div className="mb-3 pl-4 animate-leaf-slide-up">
           <ProductCarousel products={message.products!} primaryColor={primaryColor} />
         </div>
       )}
