@@ -2,7 +2,6 @@ export type SettingsSection =
   | "general"
   | "integrations"
   | "notifications"
-  | "branding"
   | "team"
   | "account";
 
@@ -47,17 +46,6 @@ export interface NotificationSettings {
   escalationEmail: string;
 }
 
-export interface BrandingSettings {
-  logoUrl: string;
-  primaryColor: string;
-  secondaryColor: string;
-  fontFamily: string;
-  widgetPosition: "bottom-right" | "bottom-left";
-  widgetStyle: "bubble" | "expanded";
-  showBranding: boolean;
-  customCSS: string;
-}
-
 export type MemberRole = "admin" | "editor" | "viewer";
 export type MemberStatus = "active" | "invited" | "disabled";
 
@@ -78,3 +66,4 @@ export interface AccountSettings {
   sessionTimeout: number;
   theme: "light" | "dark" | "system";
 }
+

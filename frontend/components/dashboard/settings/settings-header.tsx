@@ -23,10 +23,6 @@ const sectionTitles: Record<SettingsSection, { title: string; description: strin
     title: "Notifications",
     description: "Set up email and in-app notification preferences",
   },
-  branding: {
-    title: "Branding",
-    description: "Customize the look and feel of your assistant",
-  },
   team: {
     title: "Team Management",
     description: "Manage team members and their permissions",

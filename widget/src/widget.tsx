@@ -1,4 +1,3 @@
-import { usePipecatClient } from '@pipecat-ai/client-react';
 import { useChat } from '@/hooks/use-chat';
 import { ChatBubble } from '@/components/chat-bubble';
 import { ChatWindow } from '@/components/chat-window';
@@ -8,6 +7,9 @@ import type { VoiceErrorCode } from '@/lib/voice-error';
 import { normalizeProduct } from '@/lib/types';
 import { getOrCreateVisitorId } from '@/lib/api';
 import { useEffect, useState, useCallback } from 'react';
+import { PipecatClient } from '@pipecat-ai/client-js';
+import { SmallWebRTCTransport } from '@pipecat-ai/small-webrtc-transport';
+import { PipecatClientProvider, PipecatClientAudio } from '@pipecat-ai/client-react';
 
 interface LeafWidgetProps {
   config: WidgetConfig;
@@ -15,7 +17,7 @@ interface LeafWidgetProps {
 
 export function LeafWidget({ config }: LeafWidgetProps) {
   const normalizedProducts: Product[] | undefined = config.products?.map(normalizeProduct);
-  const client = usePipecatClient();
+  const [client, setClient] = useState<PipecatClient | null>(null);
 
   const {
     messages,
@@ -39,17 +41,49 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   const [error, setError] = useState<{ code: VoiceErrorCode; message: string } | null>(null);
 
   useEffect(() => {
-    if (!client) return;
+    if (client) {
+      (window as any).pipecatClient = client;
+    }
+    return () => {
+      if (client) {
+        client.disconnect().catch((err) => console.error('[Voice Widget] Error during cleanup disconnect:', err));
+      }
+    };
+  }, [client]);
 
-    (window as any).pipecatClient = client;
+  const handleStartCall = useCallback(async (visitorName?: string, visitorEmail?: string, conversationId?: string) => {
+    // If visitorName is a React/DOM event (from onClick), clear it to avoid cyclic object serialization issues.
+    const actualName = (visitorName && typeof visitorName === 'string') ? visitorName : undefined;
+    const actualEmail = (visitorEmail && typeof visitorEmail === 'string') ? visitorEmail : undefined;
+    const actualConversationId = (conversationId && typeof conversationId === 'string') ? conversationId : undefined;
 
-    const handleConnected = () => setVoiceState('listening');
-    const handleDisconnected = () => setVoiceState('idle');
-    const handleBotStartedSpeaking = () => setVoiceState('speaking');
-    const handleBotStoppedSpeaking = () => setVoiceState('listening');
-    const handleUserStartedSpeaking = () => setVoiceState('listening');
-    const handleUserStoppedSpeaking = () => setVoiceState('processing');
-    const handleUserTranscript = (data: { text: string; final: boolean }) => {
+    startCall();
+    setTranscript('');
+    setAgentText('');
+    setVoiceProducts([]);
+    setError(null);
+    setVoiceState('connecting');
+
+    const transport = new SmallWebRTCTransport({
+      webrtcRequestParams: {
+        endpoint: `${config.apiUrl || 'http://localhost:8000'}/api/v1/voice/offer`,
+      },
+    });
+
+    const newClient = new PipecatClient({
+      transport,
+      enableMic: true,
+      enableCam: false,
+    });
+
+    // Register all event listeners immediately to prevent missing early events
+    newClient.on('connected', () => setVoiceState('listening'));
+    newClient.on('disconnected', () => setVoiceState('idle'));
+    newClient.on('botStartedSpeaking', () => setVoiceState('speaking'));
+    newClient.on('botStoppedSpeaking', () => setVoiceState('listening'));
+    newClient.on('userStartedSpeaking', () => setVoiceState('listening'));
+    newClient.on('userStoppedSpeaking', () => setVoiceState('processing'));
+    newClient.on('userTranscript', (data: { text: string; final: boolean }) => {
       if (data.text) {
         if (data.final) {
           setTranscript(prev => prev + ' ' + data.text);
@@ -57,13 +91,13 @@ export function LeafWidget({ config }: LeafWidgetProps) {
           setTranscript(data.text);
         }
       }
-    };
-    const handleBotTranscript = (data: { text: string }) => {
+    });
+    newClient.on('botTranscript', (data: { text: string }) => {
       if (data.text) {
         setAgentText(data.text);
       }
-    };
-    const handleServerMessage = (data: unknown) => {
+    });
+    newClient.on('serverMessage', (data: unknown) => {
       console.log("[Voice Widget] Received serverMessage:", data);
       if (!data || typeof data !== 'object') return;
       const msg = data as { type?: string; products?: unknown[] };
@@ -87,57 +121,26 @@ export function LeafWidget({ config }: LeafWidgetProps) {
           console.error("[Voice Widget] Error parsing products payload:", e);
         }
       }
-    };
-    const handleError = (message: unknown) => {
+    });
+    newClient.on('error', (message: unknown) => {
       const msg = message as { message?: string };
       setError({ code: 'unknown' as VoiceErrorCode, message: msg?.message || 'Connection failed' });
       setVoiceState('error');
-    };
+    });
 
-    client.on('connected', handleConnected);
-    client.on('disconnected', handleDisconnected);
-    client.on('botStartedSpeaking', handleBotStartedSpeaking);
-    client.on('botStoppedSpeaking', handleBotStoppedSpeaking);
-    client.on('userStartedSpeaking', handleUserStartedSpeaking);
-    client.on('userStoppedSpeaking', handleUserStoppedSpeaking);
-    client.on('userTranscript', handleUserTranscript);
-    client.on('botTranscript', handleBotTranscript);
-    client.on('serverMessage', handleServerMessage);
-    client.on('error', handleError);
-
-    return () => {
-      client.off('connected', handleConnected);
-      client.off('disconnected', handleDisconnected);
-      client.off('botStartedSpeaking', handleBotStartedSpeaking);
-      client.off('botStoppedSpeaking', handleBotStoppedSpeaking);
-      client.off('userStartedSpeaking', handleUserStartedSpeaking);
-      client.off('userStoppedSpeaking', handleUserStoppedSpeaking);
-      client.off('userTranscript', handleUserTranscript);
-      client.off('botTranscript', handleBotTranscript);
-      client.off('serverMessage', handleServerMessage);
-      client.off('error', handleError);
-    };
-  }, [client]);
-
-  const handleStartCall = useCallback(async (visitorName?: string, visitorEmail?: string, conversationId?: string) => {
-    startCall();
-    setTranscript('');
-    setAgentText('');
-    setVoiceProducts([]);
-    setError(null);
-    setVoiceState('connecting');
+    setClient(newClient);
 
     try {
       const visitorId = getOrCreateVisitorId();
-      await client.connect({
+      await newClient.connect({
         webrtcRequestParams: {
           endpoint: `${config.apiUrl || 'http://localhost:8000'}/api/v1/voice/offer`,
           requestData: {
             storeId: config.storeId,
-            visitorName: visitorName || visitorInfo?.name,
-            visitorEmail: visitorEmail || visitorInfo?.email,
+            visitorName: actualName || visitorInfo?.name,
+            visitorEmail: actualEmail || visitorInfo?.email,
             visitorId,
-            conversationId: conversationId || sessionId,
+            conversationId: actualConversationId || sessionId,
           },
         },
       });
@@ -145,11 +148,48 @@ export function LeafWidget({ config }: LeafWidgetProps) {
       setError({ code: 'unknown' as VoiceErrorCode, message: `Failed to start call: ${err}` });
       setVoiceState('error');
     }
-  }, [client, config.apiUrl, config.storeId, visitorInfo, sessionId, startCall]);
+  }, [config.apiUrl, config.storeId, visitorInfo, sessionId, startCall]);
 
   const handleEndCall = useCallback(async () => {
     endCall();
-    await client.disconnect();
+    if (client) {
+      // 1. Capture the underlying daily singleton before disconnecting/nullifying references
+      const daily = (client as any)._transport?.mediaManager?._daily;
+
+      // 2. Stop all local tracks explicitly
+      try {
+        const tracks = (client as any).tracks?.();
+        if (tracks) {
+          if (tracks.local) {
+            if (tracks.local instanceof MediaStream) {
+              tracks.local.getTracks().forEach((track: any) => track.stop());
+            } else {
+              if (tracks.local.audio) tracks.local.audio.stop();
+              if (tracks.local.video) tracks.local.video.stop();
+            }
+          }
+        }
+      } catch (err) {
+        console.error('[Voice Widget] Error stopping local tracks:', err);
+      }
+
+      // 3. Perform standard transport disconnect
+      try {
+        await client.disconnect();
+      } catch (err) {
+        console.error('[Voice Widget] Error during disconnect:', err);
+      }
+
+      // 4. Destroy the Daily call object singleton completely so that getCallInstance() starts fresh next time
+      try {
+        if (daily && typeof daily.destroy === 'function') {
+          await daily.destroy();
+        }
+      } catch (err) {
+        console.error('[Voice Widget] Error destroying daily call object:', err);
+      }
+    }
+    setClient(null);
     setVoiceState('idle');
     setTranscript('');
     setAgentText('');
@@ -212,29 +252,32 @@ export function LeafWidget({ config }: LeafWidgetProps) {
         />
       )}
 
-      {showCall && (
-        <ChatWindow
-          isOpen={true}
-          messages={messages}
-          isTyping={isTyping}
-          isCallActive={true}
-          primaryColor={config.primaryColor || '#10b981'}
-          position={config.position || 'bottom-right'}
-          storeName={config.storeName || 'Leaf Assistant'}
-          storeLogo={config.storeLogo}
-          greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
-          placeholder={config.placeholder || 'Type your message...'}
-          showBranding={config.showBranding !== false}
-          products={displayProducts}
-          voiceState={voiceState}
-          transcript={transcript}
-          agentText={agentText}
-          voiceError={error}
-          onStartCall={handleStartCall}
-          onEndCall={handleEndCall}
-          onClose={close}
-          onSend={sendMessage}
-        />
+      {showCall && client && (
+        <PipecatClientProvider client={client as any}>
+          <ChatWindow
+            isOpen={true}
+            messages={messages}
+            isTyping={isTyping}
+            isCallActive={true}
+            primaryColor={config.primaryColor || '#10b981'}
+            position={config.position || 'bottom-right'}
+            storeName={config.storeName || 'Leaf Assistant'}
+            storeLogo={config.storeLogo}
+            greeting={config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?"}
+            placeholder={config.placeholder || 'Type your message...'}
+            showBranding={config.showBranding !== false}
+            products={displayProducts}
+            voiceState={voiceState}
+            transcript={transcript}
+            agentText={agentText}
+            voiceError={error}
+            onStartCall={handleStartCall}
+            onEndCall={handleEndCall}
+            onClose={close}
+            onSend={sendMessage}
+          />
+          <PipecatClientAudio />
+        </PipecatClientProvider>
       )}
 
       <ChatBubble

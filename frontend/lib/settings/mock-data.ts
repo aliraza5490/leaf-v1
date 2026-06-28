@@ -2,7 +2,6 @@ import type {
   GeneralSettings,
   IntegrationSettings,
   NotificationSettings,
-  BrandingSettings,
   TeamMember,
   AccountSettings,
 } from "./types";
@@ -70,16 +69,7 @@ export const mockNotificationSettings: NotificationSettings = {
   escalationEmail: "escalations@leaf-store.com",
 };
 
-export const mockBrandingSettings: BrandingSettings = {
-  logoUrl: "",
-  primaryColor: "#10b981",
-  secondaryColor: "#059669",
-  fontFamily: "Inter",
-  widgetPosition: "bottom-right",
-  widgetStyle: "bubble",
-  showBranding: true,
-  customCSS: "",
-};
+
 
 export const mockTeamMembers: TeamMember[] = [
   {
@@ -170,11 +160,4 @@ export const webhookEvents = [
   { value: "visitor.engaged", label: "Visitor Engaged" },
 ];
 
-export const fontFamilies = [
-  { value: "Inter", label: "Inter" },
-  { value: "Roboto", label: "Roboto" },
-  { value: "Open Sans", label: "Open Sans" },
-  { value: "Lato", label: "Lato" },
-  { value: "Poppins", label: "Poppins" },
-  { value: "Montserrat", label: "Montserrat" },
-];
+

@@ -14,20 +14,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { BrandingSettings as BrandingSettingsType } from "@/lib/settings/types";
-import { fontFamilies } from "@/lib/settings/mock-data";
+import type { BrandingConfig } from "@/lib/bot-config/types";
+import { fontFamilies } from "@/lib/bot-config/mock-data";
 
-interface BrandingSettingsProps {
-  settings: BrandingSettingsType;
-  onSettingsChange: (settings: BrandingSettingsType) => void;
+interface BrandingConfigProps {
+  config: BrandingConfig;
+  onConfigChange: (config: BrandingConfig) => void;
 }
 
-export function BrandingSettings({ settings, onSettingsChange }: BrandingSettingsProps) {
-  const update = <K extends keyof BrandingSettingsType>(
+export function BrandingConfigSettings({ config, onConfigChange }: BrandingConfigProps) {
+  const update = <K extends keyof BrandingConfig>(
     key: K,
-    value: BrandingSettingsType[K]
+    value: BrandingConfig[K]
   ) => {
-    onSettingsChange({ ...settings, [key]: value });
+    onConfigChange({ ...config, [key]: value });
   };
 
   return (
@@ -49,9 +49,9 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
               <Label>Logo</Label>
               <div className="flex items-center gap-4">
                 <div className="h-16 w-16 rounded-lg border border-dashed border-muted-foreground/30 flex items-center justify-center bg-muted/30">
-                  {settings.logoUrl ? (
+                  {config.logoUrl ? (
                     <img
-                      src={settings.logoUrl}
+                      src={config.logoUrl}
                       alt="Logo"
                       className="h-12 w-12 object-contain"
                     />
@@ -61,7 +61,7 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
                 </div>
                 <div className="flex-1 space-y-2">
                   <Input
-                    value={settings.logoUrl}
+                    value={config.logoUrl}
                     onChange={(e) => update("logoUrl", e.target.value)}
                     placeholder="https://your-store.com/logo.png"
                   />
@@ -77,13 +77,13 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    value={settings.primaryColor}
+                    value={config.primaryColor}
                     onChange={(e) => update("primaryColor", e.target.value)}
                     className="h-10 w-10 rounded cursor-pointer border"
                   />
                   <Input
                     id="primaryColor"
-                    value={settings.primaryColor}
+                    value={config.primaryColor}
                     onChange={(e) => update("primaryColor", e.target.value)}
                     className="flex-1"
                   />
@@ -94,13 +94,13 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    value={settings.secondaryColor}
+                    value={config.secondaryColor}
                     onChange={(e) => update("secondaryColor", e.target.value)}
                     className="h-10 w-10 rounded cursor-pointer border"
                   />
                   <Input
                     id="secondaryColor"
-                    value={settings.secondaryColor}
+                    value={config.secondaryColor}
                     onChange={(e) => update("secondaryColor", e.target.value)}
                     className="flex-1"
                   />
@@ -109,7 +109,7 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
             </div>
             <div className="space-y-2">
               <Label>Font Family</Label>
-              <Select value={settings.fontFamily} onValueChange={(v) => update("fontFamily", v)}>
+              <Select value={config.fontFamily} onValueChange={(v) => update("fontFamily", v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -136,9 +136,9 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
             <div className="space-y-3">
               <Label>Widget Position</Label>
               <RadioGroup
-                value={settings.widgetPosition}
+                value={config.widgetPosition}
                 onValueChange={(v) =>
-                  update("widgetPosition", v as BrandingSettingsType["widgetPosition"])
+                  update("widgetPosition", v as BrandingConfig["widgetPosition"])
                 }
                 className="grid grid-cols-2 gap-4"
               >
@@ -159,9 +159,9 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
             <div className="space-y-3">
               <Label>Widget Style</Label>
               <RadioGroup
-                value={settings.widgetStyle}
+                value={config.widgetStyle}
                 onValueChange={(v) =>
-                  update("widgetStyle", v as BrandingSettingsType["widgetStyle"])
+                  update("widgetStyle", v as BrandingConfig["widgetStyle"])
                 }
                 className="grid grid-cols-2 gap-4"
               >
@@ -187,7 +187,7 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
                 </p>
               </div>
               <Switch
-                checked={settings.showBranding}
+                checked={config.showBranding}
                 onCheckedChange={(v) => update("showBranding", v)}
               />
             </div>
@@ -203,7 +203,7 @@ export function BrandingSettings({ settings, onSettingsChange }: BrandingSetting
           </CardHeader>
           <CardContent className="space-y-4">
             <Textarea
-              value={settings.customCSS}
+              value={config.customCSS}
               onChange={(e) => update("customCSS", e.target.value)}
               placeholder=".leaf-widget { /* your custom styles */ }"
               rows={12}

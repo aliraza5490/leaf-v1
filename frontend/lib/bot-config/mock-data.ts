@@ -3,6 +3,7 @@ import type {
   ModelApiConfig,
   ConversationFlowsConfig,
   GuardrailsConfig,
+  BrandingConfig,
 } from "./types";
 
 export const mockSystemPromptConfig: SystemPromptConfig = {
@@ -97,6 +98,17 @@ export const mockGuardrailsConfig: GuardrailsConfig = {
   customDisclaimer: "This is an AI assistant. Responses are generated automatically and may not always be accurate.",
 };
 
+export const mockBrandingConfig: BrandingConfig = {
+  logoUrl: "",
+  primaryColor: "#10b981",
+  secondaryColor: "#059669",
+  fontFamily: "Inter",
+  widgetPosition: "bottom-right",
+  widgetStyle: "bubble",
+  showBranding: true,
+  customCSS: "",
+};
+
 export const availableModels = [
   { value: "gpt-4o", label: "GPT-4o" },
   { value: "gpt-4o-mini", label: "GPT-4o Mini" },
@@ -129,3 +141,13 @@ export const personalityOptions = [
   "witty",
   "formal",
 ];
+
+export const fontFamilies = [
+  { value: "Inter", label: "Inter" },
+  { value: "Roboto", label: "Roboto" },
+  { value: "Open Sans", label: "Open Sans" },
+  { value: "Lato", label: "Lato" },
+  { value: "Poppins", label: "Poppins" },
+  { value: "Montserrat", label: "Montserrat" },
+];
+

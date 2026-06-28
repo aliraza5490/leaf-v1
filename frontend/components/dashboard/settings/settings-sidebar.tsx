@@ -2,7 +2,6 @@
 
 import {
   Key,
-  Layout,
   Bell,
   Settings as SettingsIcon,
   Users,
@@ -20,7 +19,6 @@ const settingsItems: { id: SettingsSection; label: string; icon: React.ElementTy
   { id: "general", label: "General", icon: SettingsIcon },
   { id: "integrations", label: "Integrations", icon: Key },
   { id: "notifications", label: "Notifications", icon: Bell },
-  { id: "branding", label: "Branding", icon: Layout },
   { id: "team", label: "Team", icon: Users },
   { id: "account", label: "Account", icon: UserCircle },
 ];

@@ -1,4 +1,4 @@
-export type BotConfigTab = "system-prompt" | "model-api" | "conversation-flows" | "guardrails";
+export type BotConfigTab = "system-prompt" | "model-api" | "conversation-flows" | "guardrails" | "branding";
 
 export interface SystemPromptConfig {
   botName: string;
@@ -57,3 +57,15 @@ export interface GuardrailsConfig {
   preventCompetitorMentions: boolean;
   customDisclaimer: string;
 }
+
+export interface BrandingConfig {
+  logoUrl: string;
+  primaryColor: string;
+  secondaryColor: string;
+  fontFamily: string;
+  widgetPosition: "bottom-right" | "bottom-left";
+  widgetStyle: "bubble" | "expanded";
+  showBranding: boolean;
+  customCSS: string;
+}
+

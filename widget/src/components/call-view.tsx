@@ -110,18 +110,6 @@ export function CallView({
           {stateLabel}
         </p>
         
-        {transcript && voiceState === 'listening' && (
-          <div className="px-6 text-center animate-leaf-fade-in">
-            <p className="text-sm text-gray-600 italic">{transcript}</p>
-          </div>
-        )}
-        
-        {agentText && voiceState === 'speaking' && (
-          <div className="px-6 text-center animate-leaf-fade-in max-w-[300px]">
-            <p className="text-sm text-gray-700">{agentText}</p>
-          </div>
-        )}
-        
         {voiceError && voiceState === 'error' && (
           <div className="px-6 text-center animate-leaf-fade-in max-w-[300px]">
             <p className="text-sm text-red-600">{getErrorMessage(voiceError.code)}</p>

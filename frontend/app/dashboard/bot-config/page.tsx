@@ -8,22 +8,25 @@ import { SystemPromptConfig } from "@/components/dashboard/bot-config/sections/s
 import { ModelApiConfig } from "@/components/dashboard/bot-config/sections/model-api-settings";
 import { ConversationFlowsConfig } from "@/components/dashboard/bot-config/sections/conversation-flows";
 import { GuardrailsConfig } from "@/components/dashboard/bot-config/sections/guardrails-filters";
+import { BrandingConfigSettings } from "@/components/dashboard/bot-config/sections/branding-settings";
 import type { BotConfigTab } from "@/lib/bot-config/types";
 import {
   mockSystemPromptConfig,
   mockModelApiConfig,
   mockConversationFlowsConfig,
   mockGuardrailsConfig,
+  mockBrandingConfig,
 } from "@/lib/bot-config/mock-data";
 
 export default function BotConfigPage() {
-  const [activeTab, setActiveTab] = useState<BotConfigTab>("system-prompt");
+  const [activeTab, setActiveTab] = useState<BotConfigTab>("branding");
   const [hasChanges, setHasChanges] = useState(false);
 
   const [systemPromptConfig, setSystemPromptConfig] = useState(mockSystemPromptConfig);
   const [modelApiConfig, setModelApiConfig] = useState(mockModelApiConfig);
   const [conversationFlowsConfig, setConversationFlowsConfig] = useState(mockConversationFlowsConfig);
   const [guardrailsConfig, setGuardrailsConfig] = useState(mockGuardrailsConfig);
+  const [brandingConfig, setBrandingConfig] = useState(mockBrandingConfig);
 
   const handleSave = () => {
     toast.success("Bot configuration saved successfully");
@@ -35,6 +38,7 @@ export default function BotConfigPage() {
     setModelApiConfig(mockModelApiConfig);
     setConversationFlowsConfig(mockConversationFlowsConfig);
     setGuardrailsConfig(mockGuardrailsConfig);
+    setBrandingConfig(mockBrandingConfig);
     setHasChanges(false);
   };
 
@@ -54,11 +58,22 @@ export default function BotConfigPage() {
         className="w-full"
       >
         <TabsList variant="line">
+          <TabsTrigger value="branding">Branding</TabsTrigger>
           <TabsTrigger value="system-prompt">System Prompt</TabsTrigger>
           <TabsTrigger value="model-api">Model & API</TabsTrigger>
           <TabsTrigger value="conversation-flows">Conversation Flows</TabsTrigger>
           <TabsTrigger value="guardrails">Guardrails</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="branding" className="mt-6">
+          <BrandingConfigSettings
+            config={brandingConfig}
+            onConfigChange={(c) => {
+              setBrandingConfig(c);
+              markAsChanged();
+            }}
+          />
+        </TabsContent>
 
         <TabsContent value="system-prompt" className="mt-6">
           <SystemPromptConfig
@@ -103,3 +118,4 @@ export default function BotConfigPage() {
     </div>
   );
 }
+

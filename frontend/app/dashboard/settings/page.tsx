@@ -7,7 +7,6 @@ import { SettingsHeader } from "@/components/dashboard/settings/settings-header"
 import { GeneralSettings } from "@/components/dashboard/settings/sections/general-settings";
 import { IntegrationSettings } from "@/components/dashboard/settings/sections/integration-settings";
 import { NotificationSettings } from "@/components/dashboard/settings/sections/notification-settings";
-import { BrandingSettings } from "@/components/dashboard/settings/sections/branding-settings";
 import { TeamSettings } from "@/components/dashboard/settings/sections/team-settings";
 import { AccountSettings } from "@/components/dashboard/settings/sections/account-settings";
 import type { SettingsSection } from "@/lib/settings/types";
@@ -15,7 +14,6 @@ import {
   mockGeneralSettings,
   mockIntegrationSettings,
   mockNotificationSettings,
-  mockBrandingSettings,
   mockTeamMembers,
   mockAccountSettings,
 } from "@/lib/settings/mock-data";
@@ -27,7 +25,6 @@ export default function SettingsPage() {
   const [generalSettings, setGeneralSettings] = useState(mockGeneralSettings);
   const [integrationSettings, setIntegrationSettings] = useState(mockIntegrationSettings);
   const [notificationSettings, setNotificationSettings] = useState(mockNotificationSettings);
-  const [brandingSettings, setBrandingSettings] = useState(mockBrandingSettings);
   const [teamMembers, setTeamMembers] = useState(mockTeamMembers);
   const [accountSettings, setAccountSettings] = useState(mockAccountSettings);
 
@@ -40,7 +37,6 @@ export default function SettingsPage() {
     setGeneralSettings(mockGeneralSettings);
     setIntegrationSettings(mockIntegrationSettings);
     setNotificationSettings(mockNotificationSettings);
-    setBrandingSettings(mockBrandingSettings);
     setTeamMembers(mockTeamMembers);
     setAccountSettings(mockAccountSettings);
     setHasChanges(false);
@@ -80,16 +76,7 @@ export default function SettingsPage() {
             }}
           />
         );
-      case "branding":
-        return (
-          <BrandingSettings
-            settings={brandingSettings}
-            onSettingsChange={(s) => {
-              setBrandingSettings(s);
-              markAsChanged();
-            }}
-          />
-        );
+
       case "team":
         return (
           <TeamSettings
