@@ -61,6 +61,8 @@ function PreBlock({ code, language }: PreBlockProps) {
   );
 }
 
+const LANGUAGE_REGEX = /language-(\w+)/;
+
 const components: Components = {
   p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
   strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
@@ -104,7 +106,7 @@ const components: Components = {
       const codeProps = child.props as any;
       const codeText = String(codeProps.children || '').replace(/\n$/, '');
       const className = codeProps.className || '';
-      const match = /language-(\w+)/.exec(className);
+      const match = LANGUAGE_REGEX.exec(className);
       const language = match ? match[1] : 'code';
       return <PreBlock code={codeText} language={language} />;
     }

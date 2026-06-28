@@ -6,7 +6,7 @@ import type { WidgetConfig, Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
 import { normalizeProduct } from '@/lib/types';
 import { getOrCreateVisitorId } from '@/lib/api';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { PipecatClient } from '@pipecat-ai/client-js';
 import { SmallWebRTCTransport } from '@pipecat-ai/small-webrtc-transport';
 import { PipecatClientProvider, PipecatClientAudio } from '@pipecat-ai/client-react';
@@ -16,7 +16,10 @@ interface LeafWidgetProps {
 }
 
 export function LeafWidget({ config }: LeafWidgetProps) {
-  const normalizedProducts: Product[] | undefined = config.products?.map(normalizeProduct);
+  const normalizedProducts = useMemo(
+    () => config.products?.map(normalizeProduct),
+    [config.products]
+  );
   const [client, setClient] = useState<PipecatClient | null>(null);
 
   const {
@@ -134,8 +137,6 @@ export function LeafWidget({ config }: LeafWidgetProps) {
       setVoiceState('error');
     });
 
-    setClient(newClient);
-
     try {
       const visitorId = getOrCreateVisitorId();
       await newClient.connect({
@@ -150,7 +151,9 @@ export function LeafWidget({ config }: LeafWidgetProps) {
           },
         },
       });
+      setClient(newClient);
     } catch (err) {
+      newClient.disconnect().catch((disErr) => console.error('[Voice Widget] Error during connect failure cleanup:', disErr));
       setError({ code: 'unknown' as VoiceErrorCode, message: `Failed to start call: ${err}` });
       setVoiceState('error');
     }

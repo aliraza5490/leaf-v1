@@ -17,6 +17,14 @@ export function mountWidget(config: WidgetConfig) {
   container.style.visibility = 'hidden';
   document.body.appendChild(container);
 
+  if (!document.getElementById('leaf-font-stylesheet')) {
+    const link = document.createElement('link');
+    link.id = 'leaf-font-stylesheet';
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+    document.head.appendChild(link);
+  }
+
   const root = createRoot(container);
   root.render(
     <LeafWidget config={config} />

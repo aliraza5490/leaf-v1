@@ -3,16 +3,21 @@ import type { Product, SSEEvent } from './types';
 const DEFAULT_API_URL = 'http://localhost:8000';
 const VISITOR_ID_KEY = 'leaf_visitor_id';
 
+let cachedVisitorId: string | null = null;
+
 export function getOrCreateVisitorId(): string {
+  if (cachedVisitorId) return cachedVisitorId;
   try {
     let id = localStorage.getItem(VISITOR_ID_KEY);
     if (!id) {
       id = `v_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
       localStorage.setItem(VISITOR_ID_KEY, id);
     }
+    cachedVisitorId = id;
     return id;
   } catch {
-    return `v_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    cachedVisitorId = `v_${Date.now()}_${Math.random().toString(36).slice(2, 11)}`;
+    return cachedVisitorId;
   }
 }
 
