@@ -32,7 +32,7 @@ from ..settings import settings
 from ..utilities.db import engine
 from .processors import ProductDataProcessor
 from .prompts import SYSTEM_INSTRUCTION
-from .tools import get_product_details_tool, product_search_tool, list_products_tool
+from .tools import get_product_details_tool, highlight_product, product_search_tool, list_products_tool
 
 RECORDINGS_DIR = Path(__file__).resolve().parent.parent.parent / "recordings"
 SAMPLE_RATE = 24000
@@ -79,8 +79,8 @@ async def run_voice_bot(
         reasoning_effort="low"
     )
 
-    context = LLMContext(tools=[product_search_tool, get_product_details_tool, list_products_tool])
-    logger.debug(f"[pipeline] LLM context initialized with tools: {[t.__name__ for t in [product_search_tool, get_product_details_tool, list_products_tool]]}")
+    context = LLMContext(tools=[product_search_tool, get_product_details_tool, list_products_tool, highlight_product])
+    logger.debug(f"[pipeline] LLM context initialized with tools: {[t.__name__ for t in [product_search_tool, get_product_details_tool, list_products_tool, highlight_product]]}")
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(
         context,
         user_params=LLMUserAggregatorParams(),

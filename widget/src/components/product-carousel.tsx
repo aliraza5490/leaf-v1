@@ -4,7 +4,7 @@ import type { Product } from '@/lib/types';
 interface ProductCarouselProps {
   products: Product[];
   primaryColor: string;
-  highlightFirst?: boolean;
+  highlightedProductId?: string | null;
   label?: string;
   className?: string;
 }
@@ -12,11 +12,12 @@ interface ProductCarouselProps {
 export function ProductCarousel({
   products,
   primaryColor,
-  highlightFirst = true,
+  highlightedProductId,
   label,
   className = '',
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -38,9 +39,28 @@ export function ProductCarousel({
     };
   }, []);
 
-  if (products.length === 0) return null;
+  // Auto-scroll to highlighted product
+  useEffect(() => {
+    if (!highlightedProductId || !scrollRef.current) return;
+    const card = cardRefs.current.get(highlightedProductId);
+    if (!card) return;
 
-  const highlightedId = highlightFirst ? products[0].id : null;
+    const container = scrollRef.current;
+    const cardLeft = card.offsetLeft;
+    const cardWidth = card.offsetWidth;
+    const containerWidth = container.clientWidth;
+    const scrollLeft = container.scrollLeft;
+
+    // If the card is not fully visible, scroll to center it
+    if (cardLeft < scrollLeft || cardLeft + cardWidth > scrollLeft + containerWidth) {
+      container.scrollTo({
+        left: cardLeft - containerWidth / 2 + cardWidth / 2,
+        behavior: 'smooth',
+      });
+    }
+  }, [highlightedProductId]);
+
+  if (products.length === 0) return null;
 
   return (
     <div className={`w-full ${className}`}>
@@ -56,7 +76,7 @@ export function ProductCarousel({
       >
         <div style={{ display: 'flex', gap: '12px', width: 'max-content', paddingTop: '15px', paddingLeft: '20px', paddingRight: '20px', paddingBottom: '12px' }}>
           {products.map((product) => {
-            const isHighlighted = highlightedId === product.id;
+            const isHighlighted = highlightedProductId === product.id;
             return (
               <a
                 key={product.id}
@@ -64,6 +84,10 @@ export function ProductCarousel({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-underline block relative flex-shrink-0 w-[130px]"
+                ref={(el) => {
+                  if (el) cardRefs.current.set(product.id, el);
+                  else cardRefs.current.delete(product.id);
+                }}
               >
                 {isHighlighted && (
                   <div
@@ -72,13 +96,24 @@ export function ProductCarousel({
                   />
                 )}
                 <div
-                  className="relative rounded-lg border-2 bg-white transition-all"
+                  className={`relative rounded-lg border-2 bg-white leaf-product-card-transition ${isHighlighted ? '' : ''}`}
                   style={{
                     borderColor: isHighlighted ? primaryColor : '#e5e7eb',
                     boxShadow: isHighlighted ? `0 0 0 3px ${primaryColor}33, 0 4px 12px ${primaryColor}22` : 'none',
                     transform: isHighlighted ? 'scale(1.03)' : 'scale(1)',
                   }}
                 >
+                  {isHighlighted && (
+                    <div
+                      className="absolute top-0 left-0 right-0 z-10 flex items-center justify-center gap-1 py-0.5 rounded-t-md text-white text-[9px] font-semibold uppercase tracking-wide animate-leaf-highlight-shimmer"
+                      style={{
+                        background: `linear-gradient(90deg, ${primaryColor}, ${primaryColor}cc, ${primaryColor})`,
+                      }}
+                    >
+                      <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6" /></svg>
+                      Discussing
+                    </div>
+                  )}
                   <img
                     src={product.image}
                     alt={product.name}
@@ -100,3 +135,4 @@ export function ProductCarousel({
     </div>
   );
 }
+

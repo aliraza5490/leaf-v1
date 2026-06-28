@@ -7,6 +7,7 @@ interface CallViewProps {
   storeLogo?: string;
   primaryColor: string;
   products?: Product[];
+  highlightedProductId?: string | null;
   voiceState: VoiceState;
   transcript: string;
   agentText: string;
@@ -70,6 +71,7 @@ export function CallView({
   storeLogo, 
   primaryColor, 
   products, 
+  highlightedProductId,
   voiceState,
   transcript,
   agentText,
@@ -122,6 +124,7 @@ export function CallView({
           <ProductCarousel
             products={products}
             primaryColor={primaryColor}
+            highlightedProductId={highlightedProductId}
             label="Recommended for you"
           />
         </div>

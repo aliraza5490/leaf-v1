@@ -100,3 +100,16 @@ async def list_products_tool(
         result = "\n".join(results)
         logger.debug(f"[list_products_tool] returning {len(results)} result(s):\n{result}")
         await params.result_callback(result)
+
+
+async def highlight_product(params: FunctionCallParams, product_id: int):
+    """Highlight a specific product in the customer's UI.
+    Call this BEFORE you start discussing a specific product so the customer
+    can see which product you are talking about.
+
+    Args:
+        product_id: The ID of the product to highlight.
+    """
+    logger.debug(f"[highlight_product] called with product_id={product_id}")
+    await params.result_callback(f"HIGHLIGHT:{product_id}")
+

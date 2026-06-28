@@ -38,6 +38,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   const [transcript, setTranscript] = useState('');
   const [agentText, setAgentText] = useState('');
   const [voiceProducts, setVoiceProducts] = useState<Product[]>([]);
+  const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
   const [error, setError] = useState<{ code: VoiceErrorCode; message: string } | null>(null);
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     setTranscript('');
     setAgentText('');
     setVoiceProducts([]);
+    setHighlightedProductId(null);
     setError(null);
     setVoiceState('connecting');
 
@@ -100,8 +102,11 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     newClient.on('serverMessage', (data: unknown) => {
       console.log("[Voice Widget] Received serverMessage:", data);
       if (!data || typeof data !== 'object') return;
-      const msg = data as { type?: string; products?: unknown[] };
-      if (msg.type === 'products' && Array.isArray(msg.products)) {
+      const msg = data as { type?: string; products?: unknown[]; productId?: unknown };
+      if (msg.type === 'highlight_product' && msg.productId) {
+        console.log("[Voice Widget] Highlighting product:", msg.productId);
+        setHighlightedProductId(String(msg.productId));
+      } else if (msg.type === 'products' && Array.isArray(msg.products)) {
         console.log("[Voice Widget] Parsing products:", msg.products);
         try {
           const products: Product[] = msg.products.map((p) => {
@@ -117,6 +122,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
           });
           console.log("[Voice Widget] Successfully set voice products:", products);
           setVoiceProducts(products);
+          setHighlightedProductId(null);
         } catch (e) {
           console.error("[Voice Widget] Error parsing products payload:", e);
         }
@@ -194,6 +200,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     setTranscript('');
     setAgentText('');
     setVoiceProducts([]);
+    setHighlightedProductId(null);
     setError(null);
   }, [client, endCall]);
 
@@ -241,6 +248,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
           placeholder={config.placeholder || 'Type your message...'}
           showBranding={config.showBranding !== false}
           products={displayProducts}
+          highlightedProductId={highlightedProductId}
           voiceState={voiceState}
           transcript={transcript}
           agentText={agentText}
@@ -267,6 +275,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
             placeholder={config.placeholder || 'Type your message...'}
             showBranding={config.showBranding !== false}
             products={displayProducts}
+            highlightedProductId={highlightedProductId}
             voiceState={voiceState}
             transcript={transcript}
             agentText={agentText}

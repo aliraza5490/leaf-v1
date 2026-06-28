@@ -18,6 +18,7 @@ interface ChatWindowProps {
   placeholder: string;
   showBranding: boolean;
   products?: Product[];
+  highlightedProductId?: string | null;
   voiceState: VoiceState;
   transcript: string;
   agentText: string;
@@ -41,6 +42,7 @@ export function ChatWindow({
   placeholder,
   showBranding,
   products,
+  highlightedProductId,
   voiceState,
   transcript,
   agentText,
@@ -74,6 +76,7 @@ export function ChatWindow({
           storeLogo={storeLogo}
           primaryColor={primaryColor}
           products={products}
+          highlightedProductId={highlightedProductId}
           voiceState={voiceState}
           transcript={transcript}
           agentText={agentText}

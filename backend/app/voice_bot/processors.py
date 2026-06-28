@@ -40,6 +40,8 @@ class ProductDataProcessor(FrameProcessor):
             log_to_file(msg)
             if frame.function_name in ("product_search_tool", "list_products_tool", "get_product_details_tool"):
                 await self._extract_and_send_products(frame)
+            elif frame.function_name == "highlight_product":
+                await self._send_highlight(frame)
             else:
                 logger.debug(f"[ProductDataProcessor] ignoring result for function '{frame.function_name}'")
                 log_to_file(f"ignoring result for function '{frame.function_name}'")
@@ -100,6 +102,30 @@ class ProductDataProcessor(FrameProcessor):
                 log_to_file(f"Failed to send products: {e}")
         else:
             log_to_file("self._last_products was empty after DB query")
+
+    async def _send_highlight(self, frame: FunctionCallResultFrame):
+        result = frame.result
+        if not result or not isinstance(result, str) or not result.startswith("HIGHLIGHT:"):
+            logger.debug(f"[ProductDataProcessor] highlight result malformed: {repr(result)}")
+            log_to_file(f"highlight result malformed: {repr(result)}")
+            return
+
+        product_id = result.split(":", 1)[1]
+        logger.debug(f"[ProductDataProcessor] sending highlight for product_id={product_id}")
+        log_to_file(f"sending highlight for product_id={product_id}")
+        try:
+            highlight_frame = RTVIServerMessageFrame(
+                data={
+                    "type": "highlight_product",
+                    "productId": product_id,
+                }
+            )
+            await self.push_frame(highlight_frame)
+            logger.debug("[ProductDataProcessor] highlight sent successfully")
+            log_to_file("highlight sent successfully")
+        except Exception as e:
+            logger.warning(f"Failed to send highlight via RTVIServerMessageFrame: {e}")
+            log_to_file(f"Failed to send highlight: {e}")
 
     def get_last_products(self) -> list[dict]:
         return self._last_products
