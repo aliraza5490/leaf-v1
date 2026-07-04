@@ -24,7 +24,7 @@
       "name": "Widget: Vite",
       "type": "node-terminal",
       "request": "launch",
-      "command": "npm run dev",
+      "command": "pnpm dev",
       "cwd": "${workspaceFolder}/widget",
       "serverReadyAction": {
         "action": "openExternally",
@@ -36,7 +36,11 @@
   "compounds": [
     {
       "name": "Full Stack",
-      "configurations": ["Backend: FastAPI (uv run)", "Frontend: Next.js", "Widget: Vite"],
+      "configurations": [
+        "Backend: FastAPI (uv run)",
+        "Frontend: Next.js",
+        "Widget: Vite"
+      ],
       "stopAll": true
     }
   ]
