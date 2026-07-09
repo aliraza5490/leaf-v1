@@ -2,7 +2,6 @@ services:
   db:
     image: pgvector/pgvector:pg18
     container_name: backend-db
-    restart: unless-stopped
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     environment:
