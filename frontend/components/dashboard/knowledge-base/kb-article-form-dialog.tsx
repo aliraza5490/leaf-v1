@@ -42,6 +42,7 @@ const articleFormSchema = z.object({
   source: z.enum(["manual", "document", "url", "product-sync"]),
   sourceUrl: z.string().optional(),
   linkedProducts: z.string().optional(),
+  icon: z.string().optional(),
 });
 
 type ArticleFormValues = z.infer<typeof articleFormSchema>;
@@ -72,6 +73,7 @@ export function KBArticleFormDialog({
       source: "manual",
       sourceUrl: "",
       linkedProducts: "",
+      icon: "none",
     },
   });
 
@@ -86,6 +88,7 @@ export function KBArticleFormDialog({
         source: article.source,
         sourceUrl: article.sourceUrl || "",
         linkedProducts: article.linkedProducts.join(", "),
+        icon: article.icon || "none",
       });
     } else {
       form.reset({
@@ -97,6 +100,7 @@ export function KBArticleFormDialog({
         source: "manual",
         sourceUrl: "",
         linkedProducts: "",
+        icon: "none",
       });
     }
   }, [article, form, open]);
@@ -116,6 +120,7 @@ export function KBArticleFormDialog({
       linkedProducts: data.linkedProducts
         ? data.linkedProducts.split(",").map((p) => p.trim()).filter(Boolean)
         : [],
+      icon: data.icon && data.icon !== "none" ? data.icon : undefined,
     };
     onSave(formData);
     onOpenChange(false);
@@ -211,6 +216,38 @@ export function KBArticleFormDialog({
                         <SelectItem value="active">Active</SelectItem>
                         <SelectItem value="draft">Draft</SelectItem>
                         <SelectItem value="archived">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="icon"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Visual Card Graphic</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Auto-detect (Default)" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Auto-detect (Default)</SelectItem>
+                        <SelectItem value="camera">Camera</SelectItem>
+                        <SelectItem value="headphones">Headphones</SelectItem>
+                        <SelectItem value="watch">Smartwatch</SelectItem>
+                        <SelectItem value="shipping">Shipping & Delivery</SelectItem>
+                        <SelectItem value="refund">Returns & Refunds</SelectItem>
+                        <SelectItem value="policy">Store Policies</SelectItem>
+                        <SelectItem value="account">Account & Orders</SelectItem>
+                        <SelectItem value="faq">FAQs</SelectItem>
+                        <SelectItem value="general">General / Default</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

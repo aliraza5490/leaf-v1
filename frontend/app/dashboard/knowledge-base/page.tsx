@@ -166,6 +166,7 @@ export default function KnowledgeBasePage() {
         linkedProducts: [],
         faqQuestion: data.faqQuestion,
         faqAnswer: data.faqAnswer,
+        icon: data.icon,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       };

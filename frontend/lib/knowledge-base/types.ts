@@ -19,6 +19,7 @@ export interface KBArticle {
   linkedProducts: string[];
   faqQuestion?: string;
   faqAnswer?: string;
+  icon?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -52,6 +53,7 @@ export interface KBArticleFormData {
   linkedProducts: string[];
   faqQuestion?: string;
   faqAnswer?: string;
+  icon?: string;
 }
 
 export interface KBFAQFormData {
@@ -60,6 +62,7 @@ export interface KBFAQFormData {
   category: string;
   tags: string[];
   status: KBStatus;
+  icon?: string;
 }
 
 export interface KBImportPreview {

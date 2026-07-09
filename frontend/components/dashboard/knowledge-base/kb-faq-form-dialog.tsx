@@ -39,6 +39,7 @@ const faqFormSchema = z.object({
   category: z.string().min(1, "Category is required"),
   tags: z.string(),
   status: z.enum(["active", "draft", "archived"]),
+  icon: z.string().optional(),
 });
 
 type FAQFormValues = z.infer<typeof faqFormSchema>;
@@ -66,6 +67,7 @@ export function KBFAQFormDialog({
       category: "",
       tags: "",
       status: "draft",
+      icon: "none",
     },
   });
 
@@ -77,6 +79,7 @@ export function KBFAQFormDialog({
         category: article.category,
         tags: article.tags.join(", "),
         status: article.status,
+        icon: article.icon || "none",
       });
     } else {
       form.reset({
@@ -85,6 +88,7 @@ export function KBFAQFormDialog({
         category: "",
         tags: "",
         status: "draft",
+        icon: "none",
       });
     }
   }, [article, form, open]);
@@ -98,6 +102,7 @@ export function KBFAQFormDialog({
         ? data.tags.split(",").map((t) => t.trim()).filter(Boolean)
         : [],
       status: data.status,
+      icon: data.icon && data.icon !== "none" ? data.icon : undefined,
     };
     onSave(formData);
     onOpenChange(false);
@@ -193,6 +198,38 @@ export function KBFAQFormDialog({
                         <SelectItem value="active">Active</SelectItem>
                         <SelectItem value="draft">Draft</SelectItem>
                         <SelectItem value="archived">Archived</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="icon"
+                render={({ field }) => (
+                  <FormItem className="sm:col-span-2">
+                    <FormLabel>Visual Card Graphic</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Auto-detect (Default)" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Auto-detect (Default)</SelectItem>
+                        <SelectItem value="camera">Camera</SelectItem>
+                        <SelectItem value="headphones">Headphones</SelectItem>
+                        <SelectItem value="watch">Smartwatch</SelectItem>
+                        <SelectItem value="shipping">Shipping & Delivery</SelectItem>
+                        <SelectItem value="refund">Returns & Refunds</SelectItem>
+                        <SelectItem value="policy">Store Policies</SelectItem>
+                        <SelectItem value="account">Account & Orders</SelectItem>
+                        <SelectItem value="faq">FAQs</SelectItem>
+                        <SelectItem value="general">General / Default</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
