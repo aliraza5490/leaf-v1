@@ -56,15 +56,15 @@ export async function getAdminStoreStats(): Promise<StoreStats> {
   return apiGet("/admin/stores/stats");
 }
 
-export async function getAdminStore(id: string): Promise<Store> {
-  return apiGet(`/admin/stores/${encodeURIComponent(id)}`);
+export async function getAdminStore(id: number): Promise<Store> {
+  return apiGet(`/admin/stores/${encodeURIComponent(String(id))}`);
 }
 
 export async function updateAdminStore(
-  id: string,
+  id: number,
   data: StoreUpdate
 ): Promise<Store> {
-  return apiPut(`/admin/stores/${encodeURIComponent(id)}`, data);
+  return apiPut(`/admin/stores/${encodeURIComponent(String(id))}`, data);
 }
 
 export async function getAdminOverview(): Promise<PlatformOverview> {

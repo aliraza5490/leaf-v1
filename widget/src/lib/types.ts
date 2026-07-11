@@ -2,7 +2,7 @@ export type WidgetPosition = 'bottom-right' | 'bottom-left';
 export type WidgetTheme = 'light' | 'dark' | 'auto';
 
 export interface WidgetConfig {
-  storeId: string;
+  storeId: number;
   apiUrl?: string;
   assetsBaseUrl?: string;
   position?: WidgetPosition;

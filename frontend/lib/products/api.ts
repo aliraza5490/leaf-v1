@@ -15,7 +15,7 @@ interface BackendProduct {
   url: string;
   category: string;
   tags: string[];
-  store_id: string;
+  store_id: number;
   sku: string;
   stock: number;
   status: Product["status"];

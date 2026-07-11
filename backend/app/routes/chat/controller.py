@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlmodel import Session
-from ...utilities.db import get_session
+from ...utilities.db import get_session, verify_store_exists
 from ...utilities.tags import Tags
 from .service import create_conversation, get_conversation, get_conversation_messages
 from ...agents.chat_agent import run_agent_stream
@@ -38,6 +38,7 @@ def create_new_conversation(
     request: CreateConversationRequest,
     session: Session = Depends(get_session),
 ):
+    verify_store_exists(request.store_id, session)
     conversation = create_conversation(
         store_id=request.store_id,
         session=session,
@@ -71,7 +72,11 @@ def read_conversation(conversation_id: int, session: Session = Depends(get_sessi
 
 
 @chat_router.post("/message")
-async def send_message(request: SendMessageRequest):
+async def send_message(
+    request: SendMessageRequest,
+    session: Session = Depends(get_session),
+):
+    verify_store_exists(request.store_id, session)
     async def event_generator():
         try:
             async for event in run_agent_stream(

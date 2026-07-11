@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ChatState, Message, WidgetConfig, Product } from '@/lib/types';
 import { normalizeProduct } from '@/lib/types';
 import { createConversation, sendMessage, getApiUrl, getOrCreateVisitorId, subscribeToAgentMessages } from '@/lib/api';
-import type { PreChatFormData } from '@/components/pre-chat-form';
+import type { PreChatFormData } from '@/components/chat/pre-chat-form';
 
 function createMessage(
   role: 'user' | 'assistant' | 'agent',

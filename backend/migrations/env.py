@@ -14,10 +14,13 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# from myapp import mymodel
-# target_metadata = mymodel.Base.metadata
+# Import all models to register them with SQLModel.metadata
+from app.models import GroupUserLink, Product, Conversation, Store, SystemSetting
+from app.models.user import User
+from app.models.item import Item
+from app.models.group import Group
+from app.models.conversation import ChatMessage
+
 target_metadata = SQLModel.metadata
 
 # other values from the config, defined by the needs of env.py,

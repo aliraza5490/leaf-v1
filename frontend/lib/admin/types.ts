@@ -3,7 +3,7 @@ export type UserRole = "superadmin" | "admin" | "user";
 export interface AdminUser {
   email: string;
   full_name: string | null;
-  store_id: string;
+  store_id: number;
   role: UserRole;
   isActive: boolean;
 }
@@ -15,7 +15,7 @@ export interface AdminUserUpdate {
 }
 
 export interface Store {
-  id: string;
+  id: number;
   name: string;
   owner_email: string | null;
   status: "active" | "suspended" | "trial";

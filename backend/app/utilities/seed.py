@@ -1,6 +1,6 @@
 import json
 from datetime import datetime
-from sqlmodel import Session, select, func
+from sqlmodel import Session, select, func, text
 
 
 from ..models.product import Product
@@ -104,12 +104,16 @@ def seed_products(session: Session):
 
 def seed_store(session: Session):
     existing = session.get(Store, SEED_STORE_ID)
-    if existing:
-        return
+    if not existing:
+        store = Store(
+            id=SEED_STORE_ID,
+            name="Leaf Demo Store",
+        )
+        session.add(store)
+        session.commit()
 
-    store = Store(
-        id=SEED_STORE_ID,
-        name="Leaf Demo Store",
+    # Synchronize the primary key sequence for the store table
+    session.execute(
+        text("SELECT setval(pg_get_serial_sequence('store', 'id'), COALESCE(max(id), 1)) FROM store;")
     )
-    session.add(store)
     session.commit()

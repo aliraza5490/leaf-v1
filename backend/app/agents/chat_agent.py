@@ -103,7 +103,7 @@ def _get_products_by_ids(product_ids: list[int]) -> list[dict]:
 async def run_agent_stream(
     conversation_id: int | str,
     user_message: str,
-    store_id: str = "",
+    store_id: int = 1,
 ) -> AsyncGenerator[dict, None]:
     conv_id_int = None
     try:
@@ -117,6 +117,8 @@ async def run_agent_stream(
             conversation = session.get(Conversation, conv_id_int)
         
         if not conversation:
+            from ..utilities.db import verify_store_exists
+            verify_store_exists(store_id, session)
             conversation = Conversation(store_id=store_id)
             session.add(conversation)
             session.commit()

@@ -1,9 +1,9 @@
 import asyncio
 from typing import List
 
-from fastapi import APIRouter, BackgroundTasks, Request
+from fastapi import APIRouter, BackgroundTasks, Request, HTTPException
 from loguru import logger
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Any, List, Optional
 from pipecat.transports.smallwebrtc.request_handler import (
     SmallWebRTCPatchRequest,
@@ -13,7 +13,7 @@ from pipecat.transports.smallwebrtc.request_handler import (
 from sqlmodel import Session
 
 from ..chat.service import create_conversation
-from ...utilities.db import engine
+from ...utilities.db import engine, verify_store_exists
 from ...utilities.tags import Tags
 from ...voice_bot import run_voice_bot
 
@@ -23,27 +23,23 @@ small_webrtc_handler = SmallWebRTCRequestHandler()
 
 
 class OfferRequestModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     sdp: str
     type: str
     pc_id: Optional[str] = None
     restart_pc: Optional[bool] = None
     request_data: Optional[Any] = Field(None, alias="requestData")
 
-    class Config:
-        populate_by_name = True
-
 
 class IceCandidateModel(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
     candidate: str
     sdp_mid: Optional[str] = Field(None, alias="sdpMid")
     sdp_mline_index: Optional[int] = Field(None, alias="sdpMLineIndex")
 
-    class Config:
-        populate_by_name = True
-
 
 class PatchRequestModel(BaseModel):
-    pc_id: str
+    pc_id: Optional[str] = None
     candidates: List[IceCandidateModel]
 
 
@@ -53,7 +49,7 @@ async def voice_offer(
     background_tasks: BackgroundTasks,
 ):
     logger.info(f"Received offer request: {request}")
-    store_id = 0
+    store_id_raw = None
     visitor_name = None
     visitor_email = None
     visitor_id = None
@@ -61,11 +57,6 @@ async def voice_offer(
 
     if request.request_data:
         store_id_raw = request.request_data.get("storeId")
-        if store_id_raw:
-            try:
-                store_id = int(store_id_raw)
-            except (ValueError, TypeError):
-                store_id = 0
         conversation_id_raw = request.request_data.get("conversationId")
         if conversation_id_raw:
             try:
@@ -76,8 +67,17 @@ async def voice_offer(
         visitor_email = request.request_data.get("visitorEmail")
         visitor_id = request.request_data.get("visitorId")
 
-    if not conversation_id:
-        with Session(engine) as session:
+    if not store_id_raw:
+        raise HTTPException(status_code=400, detail="storeId is required")
+
+    try:
+        store_id = int(store_id_raw)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="storeId must be an integer")
+
+    with Session(engine) as session:
+        verify_store_exists(store_id, session)
+        if not conversation_id:
             conversation = create_conversation(
                 store_id=store_id,
                 session=session,
@@ -110,6 +110,10 @@ async def voice_offer(
 @voice_router.patch("/offer")
 async def voice_ice_candidate(request: PatchRequestModel):
     logger.debug(f"Received ICE candidates: {request}")
+    if not request.pc_id:
+        logger.warning("Received ICE candidate patch request without pc_id")
+        return {"status": "success"}
+
     
     valid_candidates = []
     for c in request.candidates:

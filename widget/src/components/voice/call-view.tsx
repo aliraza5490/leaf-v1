@@ -56,8 +56,8 @@ export function CallView({
   products, 
   highlightedProductId,
   voiceState,
-  transcript,
-  agentText,
+  transcript: _transcript,
+  agentText: _agentText,
   voiceError,
   onEndCall 
 }: CallViewProps) {
@@ -68,42 +68,48 @@ export function CallView({
 
   return (
     <div className={`flex-1 flex flex-col w-full min-w-0 ${hasProducts ? 'pt-10' : 'pt-6'} pb-2 bg-gray-50 animate-leaf-fade-in`}>
-      <div className={`flex flex-col items-center mt-6 ${hasProducts ? 'mb-6' : 'mb-4'}`}>
-        <div className={`relative flex items-center justify-center ${hasProducts ? 'mb-10' : 'mb-6'}`}>
-          <div
-            className={`absolute w-28 h-28 rounded-full opacity-20 ${voiceState === 'listening' ? 'animate-leaf-glow-pulse' : voiceState === 'speaking' ? 'animate-leaf-glow-pulse' : ''}`}
-            style={{ backgroundColor: stateColor, animationDelay: '0s' }}
-          />
-          <div
-            className={`absolute w-24 h-24 rounded-full opacity-30 ${voiceState === 'listening' ? 'animate-leaf-glow-pulse' : voiceState === 'speaking' ? 'animate-leaf-glow-pulse' : ''}`}
-            style={{ backgroundColor: stateColor, animationDelay: '0.4s' }}
-          />
-          <div
-            className="relative w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg animate-leaf-glow-breathe"
-            style={{ backgroundColor: stateColor }}
-          >
-            {storeLogo ? (
-              <img src={storeLogo} alt="" className="w-16 h-16 rounded-full object-cover" />
-            ) : (
-              <MicIcon size={32} />
-            )}
-          </div>
-        </div>
+      {(!hasProducts || (voiceError && voiceState === 'error')) && (
+        <div className={`flex flex-col items-center mt-6 ${hasProducts ? 'mb-6' : 'mb-4'}`}>
+          {!hasProducts && (
+            <>
+              <div className="relative flex items-center justify-center mb-6">
+                <div
+                  className={`absolute w-28 h-28 rounded-full opacity-20 ${voiceState === 'listening' ? 'animate-leaf-glow-pulse' : voiceState === 'speaking' ? 'animate-leaf-glow-pulse' : ''}`}
+                  style={{ backgroundColor: stateColor, animationDelay: '0s' }}
+                />
+                <div
+                  className={`absolute w-24 h-24 rounded-full opacity-30 ${voiceState === 'listening' ? 'animate-leaf-glow-pulse' : voiceState === 'speaking' ? 'animate-leaf-glow-pulse' : ''}`}
+                  style={{ backgroundColor: stateColor, animationDelay: '0.4s' }}
+                />
+                <div
+                  className="relative w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg animate-leaf-glow-breathe"
+                  style={{ backgroundColor: stateColor }}
+                >
+                  {storeLogo ? (
+                    <img src={storeLogo} alt="" className="w-16 h-16 rounded-full object-cover" />
+                  ) : (
+                    <MicIcon size={32} />
+                  )}
+                </div>
+              </div>
 
-        <h3 className="text-base font-semibold text-gray-800 mb-0.5 mt-6">{storeName}</h3>
-        <p className="text-sm font-medium mb-2" style={{ color: stateColor }}>
-          {stateLabel}
-        </p>
-        
-        {voiceError && voiceState === 'error' && (
-          <div className="px-6 text-center animate-leaf-fade-in max-w-[300px]">
-            <p className="text-sm text-red-600">{getErrorMessage(voiceError.code)}</p>
-          </div>
-        )}
-      </div>
+              <h3 className="text-base font-semibold text-gray-800 mb-0.5 mt-6">{storeName}</h3>
+              <p className="text-sm font-medium mb-2" style={{ color: stateColor }}>
+                {stateLabel}
+              </p>
+            </>
+          )}
+          
+          {voiceError && voiceState === 'error' && (
+            <div className="px-6 text-center animate-leaf-fade-in max-w-[300px]">
+              <p className="text-sm text-red-600">{getErrorMessage(voiceError.code)}</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {hasProducts && (
-        <div className="w-full mb-2 animate-leaf-slide-up">
+        <div className="w-full mb-2 animate-leaf-slide-up flex-1 flex flex-col justify-center">
           <ProductCarousel
             products={products}
             primaryColor={primaryColor}

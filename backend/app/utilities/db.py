@@ -14,3 +14,14 @@ def create_db_and_tables():
 def get_session():
     with Session(engine) as session:
         yield session
+
+def verify_store_exists(store_id: int, session: Session) -> None:
+    from ..models.store import Store
+    from fastapi import HTTPException, status
+    store = session.get(Store, store_id)
+    if not store:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Store with id {store_id} not found"
+        )
+

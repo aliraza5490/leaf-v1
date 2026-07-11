@@ -39,7 +39,7 @@ interface BackendProduct {
 
 interface BackendConversation {
   id: string;
-  store_id: string;
+  store_id: number;
   channel: string;
   status: string;
   assigned_to: string | null;

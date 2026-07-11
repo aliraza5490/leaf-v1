@@ -67,7 +67,7 @@
       window.addEventListener('DOMContentLoaded', async () => {
         // Dynamically resolve the storeId from the logged-in dashboard user.
         // This ensures widget conversations appear in the dashboard.
-        let storeId = 'test_store'; // fallback
+        let storeId = 1; // fallback
         const token = localStorage.getItem('access_token');
         if (token) {
           try {
@@ -76,7 +76,7 @@
             });
             if (res.ok) {
               const profile = await res.json();
-              if (profile.store_id) storeId = profile.store_id;
+              if (profile.store_id) storeId = Number(profile.store_id);
             }
           } catch (_) {}
         }

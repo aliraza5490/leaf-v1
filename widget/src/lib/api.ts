@@ -23,7 +23,7 @@ export function getOrCreateVisitorId(): string {
 
 export async function createConversation(
   apiUrl: string,
-  storeId: string,
+  storeId: number,
   visitorName?: string,
   visitorEmail?: string,
   visitorId?: string,
@@ -53,7 +53,7 @@ export async function sendMessage(
   apiUrl: string,
   sessionId: string,
   message: string,
-  storeId: string,
+  storeId: number,
   onEvent: (event: SSEEvent) => void,
 ): Promise<void> {
   const response = await fetch(`${apiUrl}/api/v1/chat/message`, {

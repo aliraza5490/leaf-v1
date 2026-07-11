@@ -116,7 +116,7 @@ export function getAuthHeaders(): Record<string, string> {
 export interface UserProfile {
   email: string;
   full_name: string | null;
-  store_id: string;
+  store_id: number;
   role: string;
   isActive: boolean;
 }

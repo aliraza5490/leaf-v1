@@ -15,6 +15,44 @@ interface LeafWidgetProps {
   config: WidgetConfig;
 }
 
+function findMentionedProduct(text: string, products: Product[]): Product | null {
+  if (!text || !products || products.length === 0) return null;
+
+  const lowerText = text.toLowerCase();
+  let bestProduct: Product | null = null;
+  let maxIndex = -1;
+
+  for (const product of products) {
+    if (!product.name) continue;
+
+    const nameLower = product.name.toLowerCase();
+    
+    // 1. Try matching the full product name first
+    let idx = lowerText.lastIndexOf(nameLower);
+
+    // 2. If not found, try matching the first two words
+    if (idx === -1) {
+      const words = nameLower.split(/\s+/).filter(w => w.length > 1);
+      if (words.length >= 2) {
+        const firstTwo = words.slice(0, 2).join(' ');
+        idx = lowerText.lastIndexOf(firstTwo);
+      } else if (words.length === 1) {
+        idx = lowerText.lastIndexOf(words[0]);
+      }
+    }
+
+    if (idx !== -1 && idx >= maxIndex) {
+      if (idx === maxIndex && bestProduct && product.name.length <= bestProduct.name.length) {
+        continue;
+      }
+      maxIndex = idx;
+      bestProduct = product;
+    }
+  }
+
+  return bestProduct;
+}
+
 function PipecatWrapper({ client, children }: { client: PipecatClient | null; children: React.ReactNode }) {
   if (!client) {
     return <>{children}</>;
@@ -230,6 +268,16 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   );
 
   const displayProducts = voiceProducts.length > 0 ? voiceProducts : normalizedProducts;
+
+  // Auto-highlight product mentioned in agent's spoken transcript
+  useEffect(() => {
+    if (agentText && displayProducts && displayProducts.length > 0) {
+      const mentioned = findMentionedProduct(agentText, displayProducts);
+      if (mentioned) {
+        setHighlightedProductId(mentioned.id);
+      }
+    }
+  }, [agentText, displayProducts]);
 
   const showPreChatForm = isOpen && !visitorInfo;
   const showChatWindow = isOpen && visitorInfo;

@@ -8,7 +8,7 @@ export interface Product {
   tags: string[];
   images: string[];
   url?: string;
-  storeId?: string;
+  storeId?: number;
   stock: number;
   status: ProductStatus;
   createdAt: string;
