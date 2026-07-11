@@ -9,17 +9,20 @@ from ..utilities.db import engine
 
 
 async def product_search_tool(
-    params: FunctionCallParams, query: str
+    params: FunctionCallParams,
+    query: str,
+    limit: int = 5
 ):
     """Search for products by name, description, category, or tags.
     Returns a list of matching products with their details.
 
     Args:
         query: The search query for finding products.
-        store_id: Optional store ID to filter products.
+        limit: Maximum number of products to list (defaults to 5, max 5).
     """
     store = params.app_resources.store_id
-    logger.debug(f"[product_search_tool] called with query='{query}', store_id='{store}', resolved_store='{store}'")
+    limit = min(limit, 5)
+    logger.debug(f"[product_search_tool] called with query='{query}', store_id='{store}', resolved_store='{store}', limit={limit}")
     with Session(engine) as session:
         store_val = None
         if store:
@@ -27,7 +30,7 @@ async def product_search_tool(
                 store_val = int(store)
             except (ValueError, TypeError):
                 pass
-        products = search_products(query, session, store_val, limit=5)
+        products = search_products(query, session, store_val, limit=limit)
         logger.debug(f"[product_search_tool] found {len(products)} product(s)")
         if not products:
             result = "No products found matching your query."
@@ -73,17 +76,18 @@ async def list_products_tool(
     params: FunctionCallParams,
     query: str = "",
     store_id: str = "",
-    limit: int = 10
+    limit: int = 5
 ):
-    """List all available products in the store.
+    """List the top 5 available products in the store.
     Returns a list of products with their details.
 
     Args:
         query: Optional search/filter query.
         store_id: Optional store ID to filter products.
-        limit: Maximum number of products to list.
+        limit: Maximum number of products to list (defaults to 5, max 5).
     """
     store = store_id or params.app_resources.store_id
+    limit = min(limit, 5)
     logger.debug(f"[list_products_tool] called with store_id='{store}', query='{query}', limit={limit}")
     with Session(engine) as session:
         query_select = select(Product).where(Product.status == "active")
@@ -116,6 +120,7 @@ async def highlight_product(params: FunctionCallParams, product_id: int):
     """Highlight a specific product in the customer's UI.
     Call this BEFORE you start discussing a specific product so the customer
     can see which product you are talking about.
+    Do NOT mention that you are highlighting or showing the product to the user in your speech.
 
     Args:
         product_id: The ID of the product to highlight.

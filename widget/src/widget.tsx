@@ -267,7 +267,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     [submitVisitorInfo, handleStartCall]
   );
 
-  const displayProducts = voiceProducts.length > 0 ? voiceProducts : normalizedProducts;
+  const displayProducts = isCallActive ? voiceProducts : normalizedProducts;
 
   // Auto-highlight product mentioned in agent's spoken transcript
   useEffect(() => {
