@@ -147,7 +147,7 @@ const FAKESTORE_PRODUCTS = [
     description: "100% POLYURETHANE (shell) 100% POLYESTER (lining). Faux leather material for style and comfort. Hand wash cold / Hang dry.",
     price: 29.95,
     category: "Women's Clothing",
-    image: "https://images.unsplash.com/photo-1508427953056-b00b8d78ef65?w=500&auto=format&fit=crop&q=80",
+    image: "https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=500&auto=format&fit=crop&q=80",
     stock: 55
   }
 ];

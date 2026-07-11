@@ -161,7 +161,7 @@ SEED_PRODUCTS = [
         "name": "Lock and Love Women's Removable Hooded Jacket",
         "description": "100% POLYURETHANE (shell) 100% POLYESTER (lining). Faux leather material for style and comfort. Hand wash cold / Hang dry.",
         "price": 29.95,
-        "images": json.dumps(["https://images.unsplash.com/photo-1508427953056-b00b8d78ef65?w=500&auto=format&fit=crop&q=80"]),
+        "images": json.dumps(["https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=500&auto=format&fit=crop&q=80"]),
         "url": "#",
         "category": "Women's Clothing",
         "tags": "jacket,hooded,leather,faux,women",
