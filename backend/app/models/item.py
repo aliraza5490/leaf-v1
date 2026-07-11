@@ -9,7 +9,7 @@ class ItemBase(SQLModel):
 
 class Item(ItemBase, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    user_id: EmailStr | None = Field(default=None, foreign_key="user.email")
+    user_id: int | None = Field(default=None, foreign_key="user.id")
     user: "User" = Relationship(back_populates="items")
 
 from .user import User

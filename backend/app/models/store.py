@@ -17,9 +17,10 @@ class StoreBase(SQLModel):
 
 
 class Store(StoreBase, table=True):
-    id: str = Field(primary_key=True, max_length=64)
+    id: int | None = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+
 
 
 class StoreUpdate(SQLModel):
@@ -29,6 +30,6 @@ class StoreUpdate(SQLModel):
 
 
 class StoreRead(StoreBase):
-    id: str
+    id: int
     created_at: datetime
     updated_at: datetime

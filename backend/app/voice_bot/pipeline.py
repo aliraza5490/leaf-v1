@@ -41,14 +41,14 @@ CHUNK_DURATION = 30
 
 @dataclass
 class AppResources:
-    store_id: str
-    conversation_id: str
+    store_id: int
+    conversation_id: int
 
 
 async def run_voice_bot(
     webrtc_connection: SmallWebRTCConnection,
-    store_id: str,
-    conversation_id: str,
+    store_id: int,
+    conversation_id: int,
 ):
     logger.info(f"Starting voice bot for conversation {conversation_id}")
 

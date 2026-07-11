@@ -27,7 +27,7 @@ def _to_conversation_dict(conv: Conversation, messages: list[ChatMessage] | None
         }
 
     visitor = {
-        "name": conv.visitor_name or f"Visitor {conv.visitor_id or conv.id[:8]}",
+        "name": conv.visitor_name or f"Visitor {conv.visitor_id or str(conv.id)}",
         "email": conv.visitor_email or "",
     }
 
@@ -82,7 +82,7 @@ def _to_message_dict(msg: ChatMessage) -> dict:
 
 def list_conversations(
     session: Session,
-    store_id: str,
+    store_id: int,
     q: str | None = None,
     status: str | None = None,
     channel: str | None = None,
@@ -141,7 +141,7 @@ def list_conversations(
     }
 
 
-def get_conversation_detail(conversation_id: str, store_id: str, session: Session) -> dict:
+def get_conversation_detail(conversation_id: int, store_id: int, session: Session) -> dict:
     conv = session.exec(
         select(Conversation).where(
             Conversation.id == conversation_id,
@@ -167,8 +167,8 @@ def get_conversation_detail(conversation_id: str, store_id: str, session: Sessio
 
 
 def update_conversation(
-    conversation_id: str,
-    store_id: str,
+    conversation_id: int,
+    store_id: int,
     session: Session,
     status: str | None = None,
     assigned_to: str | None = None,
@@ -203,7 +203,7 @@ def update_conversation(
     return _to_conversation_dict(conv, messages)
 
 
-def delete_conversation(conversation_id: str, store_id: str, session: Session) -> dict:
+def delete_conversation(conversation_id: int, store_id: int, session: Session) -> dict:
     conv = session.exec(
         select(Conversation).where(
             Conversation.id == conversation_id,
@@ -226,13 +226,20 @@ def delete_conversation(conversation_id: str, store_id: str, session: Session) -
 def bulk_operation(
     action: str,
     ids: list[str],
-    store_id: str,
+    store_id: int,
     session: Session,
     assigned_to: str | None = None,
 ) -> dict:
+    int_ids = []
+    for i in ids:
+        try:
+            int_ids.append(int(i))
+        except (ValueError, TypeError):
+            pass
+
     conversations = session.exec(
         select(Conversation).where(
-            Conversation.id.in_(ids),
+            Conversation.id.in_(int_ids),
             Conversation.store_id == store_id,
         )
     ).all()
@@ -269,12 +276,14 @@ def bulk_operation(
         raise HTTPException(status_code=400, detail=f"Unknown action: {action}")
 
     session.commit()
+
     return {"count": len(conversations)}
 
 
+
 def send_agent_reply(
-    conversation_id: str,
-    store_id: str,
+    conversation_id: int,
+    store_id: int,
     content: str,
     session: Session,
 ) -> dict:
@@ -312,7 +321,7 @@ def send_agent_reply(
     return message_dict
 
 
-def get_stats(store_id: str, session: Session) -> dict:
+def get_stats(store_id: int, session: Session) -> dict:
     total = session.exec(
         select(func.count()).select_from(Conversation).where(Conversation.store_id == store_id)
     ).one()
@@ -348,7 +357,7 @@ def get_stats(store_id: str, session: Session) -> dict:
     }
 
 
-def get_trends(store_id: str, session: Session, range_days: int = 7) -> dict:
+def get_trends(store_id: int, session: Session, range_days: int = 7) -> dict:
     end_date = datetime.utcnow()
     start_date = end_date - timedelta(days=range_days)
 
@@ -384,7 +393,7 @@ def get_trends(store_id: str, session: Session, range_days: int = 7) -> dict:
     return {"trends": result}
 
 
-def get_recent(store_id: str, session: Session, limit: int = 5) -> dict:
+def get_recent(store_id: int, session: Session, limit: int = 5) -> dict:
     conversations = session.exec(
         select(Conversation)
         .where(Conversation.store_id == store_id)
@@ -404,7 +413,7 @@ def get_recent(store_id: str, session: Session, limit: int = 5) -> dict:
     return {"conversations": result}
 
 
-def get_analytics_summary(store_id: str, session: Session) -> dict:
+def get_analytics_summary(store_id: int, session: Session) -> dict:
     stats = get_stats(store_id, session)
     return {
         "totalConversations": stats["total"],
@@ -415,11 +424,11 @@ def get_analytics_summary(store_id: str, session: Session) -> dict:
     }
 
 
-def get_analytics_volume(store_id: str, session: Session, range_days: int = 30) -> dict:
+def get_analytics_volume(store_id: int, session: Session, range_days: int = 30) -> dict:
     return get_trends(store_id, session, range_days)
 
 
-def get_analytics_channels(store_id: str, session: Session) -> dict:
+def get_analytics_channels(store_id: int, session: Session) -> dict:
     chat_count = session.exec(
         select(func.count()).select_from(Conversation).where(
             Conversation.store_id == store_id,
@@ -442,7 +451,7 @@ def get_analytics_channels(store_id: str, session: Session) -> dict:
     }
 
 
-def get_analytics_heatmap(store_id: str, session: Session) -> dict:
+def get_analytics_heatmap(store_id: int, session: Session) -> dict:
     conversations = session.exec(
         select(Conversation).where(Conversation.store_id == store_id)
     ).all()
@@ -461,7 +470,7 @@ def get_analytics_heatmap(store_id: str, session: Session) -> dict:
     return {"heatmap": heatmap}
 
 
-def get_analytics_top_products(store_id: str, session: Session, limit: int = 10) -> dict:
+def get_analytics_top_products(store_id: int, session: Session, limit: int = 10) -> dict:
     messages = session.exec(
         select(ChatMessage)
         .join(Conversation, ChatMessage.conversation_id == Conversation.id)

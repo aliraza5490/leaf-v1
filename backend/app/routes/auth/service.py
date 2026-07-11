@@ -4,11 +4,11 @@ from sqlmodel import select, Session
 from ...utilities.auth import get_password_hash, verify_password, create_access_token
 from ...settings import settings
 from datetime import timedelta
-import uuid
+import secrets
 
 
 def _generate_store_id() -> str:
-    return f"store_{uuid.uuid4().hex[:12]}"
+    return f"store_{secrets.token_hex(6)}"
 
 
 def register(user: UserCreate, session: Session):
@@ -22,11 +22,24 @@ def register(user: UserCreate, session: Session):
             detail="Email already registered"
         )
 
+    store_id = user.store_id
+    if not store_id:
+        from ...models.store import Store
+        store = Store(
+            name=f"{user.full_name or 'My'}'s Store",
+            status="active",
+            plan="free",
+        )
+        session.add(store)
+        session.commit()
+        session.refresh(store)
+        store_id = store.id
+
     new_user = User(
         email=user.email,
         hashed_password=get_password_hash(user.password),
         full_name=user.full_name,
-        store_id=user.store_id or _generate_store_id(),
+        store_id=store_id,
         isActive=True
     )
 

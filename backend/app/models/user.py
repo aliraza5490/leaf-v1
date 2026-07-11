@@ -8,9 +8,9 @@ VALID_ROLES = ("superadmin", "admin", "user")
 
 
 class UserBase(SQLModel):
-    email: EmailStr = Field(primary_key=True)
+    email: EmailStr = Field(unique=True, index=True)
     full_name: Optional[Annotated[str, StringConstraints(min_length=6, max_length=64)]] = None
-    store_id: str = ""
+    store_id: Optional[int] = Field(default=None, foreign_key="store.id")
     role: Annotated[str, StringConstraints(max_length=20)] = "user"
 
     @field_validator("role")
@@ -27,6 +27,7 @@ class UserLogin(SQLModel):
 
 
 class User(UserBase, table=True):
+    id: int | None = Field(default=None, primary_key=True)
     isActive: bool = False
     hashed_password: str = Field()
     items: List["Item"] = Relationship(back_populates='user')

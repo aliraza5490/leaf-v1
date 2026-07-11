@@ -9,7 +9,13 @@ def product_search(query: str, store_id: str = "") -> str:
     """Search for products by name, description, category, or tags.
     Returns a list of matching products with their details."""
     with Session(engine) as session:
-        products = search_products(query, session, store_id if store_id else None, limit=5)
+        store_id_val = None
+        if store_id:
+            try:
+                store_id_val = int(store_id)
+            except (ValueError, TypeError):
+                pass
+        products = search_products(query, session, store_id_val, limit=5)
         if not products:
             return "No products found matching your query."
         results = []

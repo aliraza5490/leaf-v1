@@ -58,7 +58,7 @@ def trends(
         users = session.exec(
             select(func.count())
             .select_from(User)
-            .where(User.store_id != "")
+            .where(User.store_id.is_not(None))
         ).one()
 
         stores = session.exec(

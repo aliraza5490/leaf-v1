@@ -57,7 +57,7 @@ def get_product(product_id: int, session: Session) -> Product:
     return product
 
 
-def get_product_for_store(product_id: int, store_id: str, session: Session) -> Product:
+def get_product_for_store(product_id: int, store_id: int, session: Session) -> Product:
     product = session.exec(
         select(Product).where(Product.id == product_id, Product.store_id == store_id)
     ).first()
@@ -66,7 +66,7 @@ def get_product_for_store(product_id: int, store_id: str, session: Session) -> P
     return product
 
 
-def create_product(product: ProductCreate, store_id: str, session: Session) -> dict:
+def create_product(product: ProductCreate, store_id: int, session: Session) -> dict:
     product_data = Product(**product.model_dump())
     product_data.store_id = store_id
     if not product_data.images:
@@ -79,7 +79,7 @@ def create_product(product: ProductCreate, store_id: str, session: Session) -> d
 
 def get_all_products(
     session: Session,
-    store_id: str,
+    store_id: int,
     q: str | None = None,
     category: str | None = None,
     status: str | None = None,
@@ -128,7 +128,7 @@ def get_all_products(
 
 
 def update_product(
-    product_id: int, product: ProductUpdate, store_id: str, session: Session
+    product_id: int, product: ProductUpdate, store_id: int, session: Session
 ) -> dict:
     product_data = get_product_for_store(product_id, store_id, session)
 
@@ -144,7 +144,7 @@ def update_product(
     return _to_read_dict(product_data)
 
 
-def delete_product(product_id: int, store_id: str, session: Session) -> dict:
+def delete_product(product_id: int, store_id: int, session: Session) -> dict:
     product_data = get_product_for_store(product_id, store_id, session)
     session.delete(product_data)
     session.commit()
@@ -152,7 +152,7 @@ def delete_product(product_id: int, store_id: str, session: Session) -> dict:
 
 
 def bulk_create_products(
-    products: list[ProductCreate], store_id: str, session: Session
+    products: list[ProductCreate], store_id: int, session: Session
 ) -> dict:
     created = []
     for product in products:
@@ -168,7 +168,7 @@ def bulk_create_products(
     return {"products": [_to_read_dict(p) for p in created], "count": len(created)}
 
 
-def get_categories(store_id: str, session: Session) -> dict:
+def get_categories(store_id: int, session: Session) -> dict:
     rows = session.exec(
         select(Product.category, func.count(Product.id))
         .where(Product.store_id == store_id, Product.category != "")
@@ -182,7 +182,7 @@ def get_categories(store_id: str, session: Session) -> dict:
     }
 
 
-def search_products(query: str, session: Session, store_id: str | None = None, limit: int = 5):
+def search_products(query: str, session: Session, store_id: int | None = None, limit: int = 5):
     search_query = select(Product).where(
         (Product.name.ilike(f"%{query}%")) |
         (Product.description.ilike(f"%{query}%")) |

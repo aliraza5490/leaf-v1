@@ -8,7 +8,7 @@ from .routes.api_router import api_router
 from contextlib import asynccontextmanager
 from .utilities.db import get_session, create_db_and_tables, engine
 from .settings import settings
-from .utilities.seed import seed_products, seed_superuser
+from .utilities.seed import seed_products, seed_superuser, seed_store
 from sqlmodel import Session
 
 RECORDINGS_DIR = Path(__file__).resolve().parent.parent / "recordings"
@@ -21,9 +21,11 @@ async def lifespan(app: FastAPI):
     get_session()
     create_db_and_tables()
     with Session(engine) as session:
+        seed_store(session)
         seed_superuser(session)
         seed_products(session)
     yield  # This is crucial - it yields control back to FastAPI
+
     # Cleanup: Code after this will run when app shuts down
     # You can add cleanup code here if needed
     pass

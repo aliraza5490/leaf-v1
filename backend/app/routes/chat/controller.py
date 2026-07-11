@@ -13,7 +13,7 @@ chat_router = APIRouter(prefix="/chat", tags=[Tags.chat])
 
 
 class CreateConversationRequest(BaseModel):
-    store_id: str = ""
+    store_id: int
     visitor_name: str | None = None
     visitor_email: str | None = None
     visitor_id: str | None = None
@@ -23,12 +23,12 @@ class CreateConversationRequest(BaseModel):
 class SendMessageRequest(BaseModel):
     session_id: str
     message: str
-    store_id: str = ""
+    store_id: int
 
 
 class ConversationResponse(BaseModel):
     id: str
-    store_id: str
+    store_id: int
     created_at: str
     updated_at: str
 
@@ -58,7 +58,7 @@ def create_new_conversation(
 
 
 @chat_router.get("/conversations/{conversation_id}")
-def read_conversation(conversation_id: str, session: Session = Depends(get_session)):
+def read_conversation(conversation_id: int, session: Session = Depends(get_session)):
     conversation = get_conversation(conversation_id, session)
     messages = get_conversation_messages(conversation_id, session)
     return {
@@ -96,11 +96,11 @@ async def send_message(request: SendMessageRequest):
 
 
 @chat_router.get("/conversations/{conversation_id}/stream")
-async def stream_conversation(conversation_id: str):
+async def stream_conversation(conversation_id: int):
     """SSE stream for live conversation updates (agent messages)."""
 
     async def event_generator():
-        async for event in stream_manager.subscribe(conversation_id):
+        async for event in stream_manager.subscribe(str(conversation_id)):
             yield event
 
     return StreamingResponse(

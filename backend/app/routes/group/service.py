@@ -99,7 +99,7 @@ def add_user_to_group(group_id: int, user_to_add_email: str, user: User, session
             detail="Only the group admin can add users to this group"
         )
 
-    user_to_add = session.get(User, user_to_add_email)
+    user_to_add = session.exec(select(User).where(User.email == user_to_add_email)).first()
     if not user_to_add:
         raise HTTPException(
             status_code=404,
@@ -126,7 +126,7 @@ def remove_user_from_group(group_id: int, user_to_remove_email: str, user: User,
             detail="Only the group admin can remove users from this group"
         )
 
-    user_to_remove = session.get(User, user_to_remove_email)
+    user_to_remove = session.exec(select(User).where(User.email == user_to_remove_email)).first()
     if not user_to_remove:
         raise HTTPException(
             status_code=404,

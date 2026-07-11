@@ -21,7 +21,13 @@ async def product_search_tool(
     store = params.app_resources.store_id
     logger.debug(f"[product_search_tool] called with query='{query}', store_id='{store}', resolved_store='{store}'")
     with Session(engine) as session:
-        products = search_products(query, session, store if store else None, limit=5)
+        store_val = None
+        if store:
+            try:
+                store_val = int(store)
+            except (ValueError, TypeError):
+                pass
+        products = search_products(query, session, store_val, limit=5)
         logger.debug(f"[product_search_tool] found {len(products)} product(s)")
         if not products:
             result = "No products found matching your query."
@@ -82,7 +88,11 @@ async def list_products_tool(
     with Session(engine) as session:
         query_select = select(Product).where(Product.status == "active")
         if store:
-            query_select = query_select.where(Product.store_id == store)
+            try:
+                store_val = int(store)
+                query_select = query_select.where(Product.store_id == store_val)
+            except (ValueError, TypeError):
+                pass
         products = session.exec(query_select.limit(limit)).all()
         logger.debug(f"[list_products_tool] found {len(products)} active product(s)")
         if not products:

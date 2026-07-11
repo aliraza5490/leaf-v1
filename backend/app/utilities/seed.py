@@ -1,14 +1,17 @@
 import json
-from sqlmodel import Session, select
+from datetime import datetime
+from sqlmodel import Session, select, func
+
 
 from ..models.product import Product
 from ..models.user import User
+from ..models.store import Store
+from ..models.conversation import Conversation, ChatMessage
 from ..settings import settings
 from ..utilities.auth import get_password_hash
 
 
-SEED_STORE_ID = "test_store"
-
+SEED_STORE_ID = 1
 
 SEED_PRODUCTS = [
     {
@@ -96,4 +99,17 @@ def seed_products(session: Session):
         product = Product(**product_data)
         session.add(product)
 
+    session.commit()
+
+
+def seed_store(session: Session):
+    existing = session.get(Store, SEED_STORE_ID)
+    if existing:
+        return
+
+    store = Store(
+        id=SEED_STORE_ID,
+        name="Leaf Demo Store",
+    )
+    session.add(store)
     session.commit()

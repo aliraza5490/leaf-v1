@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session, select, func
+from sqlmodel import Session, select, func, cast, String
 from typing import Optional
 from datetime import datetime
 
@@ -29,10 +29,10 @@ def list_stores(
 
     if q:
         query = query.where(
-            (Store.name.ilike(f"%{q}%")) | (Store.id.ilike(f"%{q}%"))
+            (Store.name.ilike(f"%{q}%")) | (cast(Store.id, String).ilike(f"%{q}%"))
         )
         count_query = count_query.where(
-            (Store.name.ilike(f"%{q}%")) | (Store.id.ilike(f"%{q}%"))
+            (Store.name.ilike(f"%{q}%")) | (cast(Store.id, String).ilike(f"%{q}%"))
         )
     if status:
         query = query.where(Store.status == status)
@@ -104,7 +104,7 @@ def store_stats(
 
 @admin_stores_router.get("/{store_id}", response_model=dict)
 def get_store(
-    store_id: str,
+    store_id: int,
     admin: User = Depends(require_admin),
     session: Session = Depends(get_session),
 ):
@@ -132,7 +132,7 @@ def get_store(
 
 @admin_stores_router.patch("/{store_id}", response_model=StoreRead)
 def update_store(
-    store_id: str,
+    store_id: int,
     update: StoreUpdate,
     admin: User = Depends(require_admin),
     session: Session = Depends(get_session),

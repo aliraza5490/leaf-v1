@@ -17,7 +17,7 @@ class ProductBase(SQLModel):
     url: str = ""
     category: Annotated[str, StringConstraints(max_length=100)] = ""
     tags: str = ""
-    store_id: str = ""
+    store_id: Optional[int] = Field(default=None, foreign_key="store.id")
     sku: Annotated[str, StringConstraints(max_length=100)] = ""
     stock: int = Field(default=0, ge=0)
     status: Annotated[str, StringConstraints(max_length=20)] = "active"
@@ -63,7 +63,7 @@ class ProductUpdate(SQLModel):
     url: Optional[str] = None
     category: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     tags: Optional[str] = None
-    store_id: Optional[str] = None
+    store_id: Optional[int] = None
     sku: Optional[Annotated[str, StringConstraints(max_length=100)]] = None
     stock: Optional[int] = Field(default=None, ge=0)
     status: Optional[Annotated[str, StringConstraints(max_length=20)]] = None

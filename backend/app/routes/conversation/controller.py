@@ -138,7 +138,7 @@ def analytics_top_products(
 
 @conversations_router.get("/{conversation_id}")
 def get_one(
-    conversation_id: str,
+    conversation_id: int,
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session),
 ):
@@ -147,7 +147,7 @@ def get_one(
 
 @conversations_router.patch("/{conversation_id}")
 def update_one(
-    conversation_id: str,
+    conversation_id: int,
     update: ConversationUpdate,
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session),
@@ -164,7 +164,7 @@ def update_one(
 
 @conversations_router.delete("/{conversation_id}")
 def delete_one(
-    conversation_id: str,
+    conversation_id: int,
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session),
 ):
@@ -188,7 +188,7 @@ def bulk(
 
 @conversations_router.post("/{conversation_id}/messages")
 def agent_reply(
-    conversation_id: str,
+    conversation_id: int,
     request: AgentReplyRequest,
     user: User = Depends(get_user_from_token),
     session: Session = Depends(get_session),

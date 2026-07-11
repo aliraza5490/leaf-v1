@@ -5,7 +5,7 @@ from ...models.conversation import Conversation, ChatMessage
 
 
 def create_conversation(
-    store_id: str,
+    store_id: int,
     session: Session,
     visitor_name: str | None = None,
     visitor_email: str | None = None,
@@ -25,7 +25,7 @@ def create_conversation(
     return conversation
 
 
-def get_conversation(conversation_id: str, session: Session) -> Conversation:
+def get_conversation(conversation_id: int, session: Session) -> Conversation:
     conversation = session.exec(
         select(Conversation).where(Conversation.id == conversation_id)
     ).first()
@@ -35,7 +35,7 @@ def get_conversation(conversation_id: str, session: Session) -> Conversation:
     return conversation
 
 
-def get_conversation_messages(conversation_id: str, session: Session) -> list[dict]:
+def get_conversation_messages(conversation_id: int, session: Session) -> list[dict]:
     messages = session.exec(
         select(ChatMessage)
         .where(ChatMessage.conversation_id == conversation_id)

@@ -1,12 +1,11 @@
 from typing import Optional, List
 from datetime import datetime
 from sqlmodel import SQLModel, Field, Relationship
-import uuid
 
 
 class Conversation(SQLModel, table=True):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
-    store_id: str = Field(index=True)
+    id: Optional[int] = Field(default=None, primary_key=True)
+    store_id: int = Field(index=True, foreign_key="store.id")
     channel: str = Field(default="chat", max_length=20)
     status: str = Field(default="active", max_length=20, index=True)
     assigned_to: Optional[str] = Field(default=None, foreign_key="user.email")
@@ -24,7 +23,7 @@ class Conversation(SQLModel, table=True):
 
 class ChatMessage(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    conversation_id: str = Field(foreign_key="conversation.id", index=True)
+    conversation_id: int = Field(foreign_key="conversation.id", index=True)
     role: str = Field(max_length=20)
     sender: str = Field(default="visitor", max_length=20)
     content: str

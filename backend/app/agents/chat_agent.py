@@ -45,11 +45,15 @@ def _get_agent():
     return agent
 
 
-def _get_conversation_history(conversation_id: str) -> list[BaseMessage]:
+def _get_conversation_history(conversation_id: int | str) -> list[BaseMessage]:
+    try:
+        conversation_id_int = int(conversation_id)
+    except (ValueError, TypeError):
+        return []
     with Session(engine) as session:
         messages = session.exec(
             select(ChatMessage)
-            .where(ChatMessage.conversation_id == conversation_id)
+            .where(ChatMessage.conversation_id == conversation_id_int)
             .order_by(ChatMessage.created_at)
         ).all()
         history = []
@@ -97,21 +101,30 @@ def _get_products_by_ids(product_ids: list[int]) -> list[dict]:
 
 
 async def run_agent_stream(
-    conversation_id: str,
+    conversation_id: int | str,
     user_message: str,
     store_id: str = "",
 ) -> AsyncGenerator[dict, None]:
+    conv_id_int = None
+    try:
+        conv_id_int = int(conversation_id)
+    except (ValueError, TypeError):
+        pass
+
     with Session(engine) as session:
-        conversation = session.exec(
-            select(Conversation).where(Conversation.id == conversation_id)
-        ).first()
+        conversation = None
+        if conv_id_int is not None:
+            conversation = session.get(Conversation, conv_id_int)
+        
         if not conversation:
-            conversation = Conversation(id=conversation_id, store_id=store_id)
+            conversation = Conversation(store_id=store_id)
             session.add(conversation)
             session.commit()
+            session.refresh(conversation)
+            conv_id_int = conversation.id
 
         user_msg = ChatMessage(
-            conversation_id=conversation_id,
+            conversation_id=conv_id_int,
             role="user",
             sender="visitor",
             content=user_message,
@@ -120,7 +133,7 @@ async def run_agent_stream(
         session.commit()
 
     agent = _get_agent()
-    history = _get_conversation_history(conversation_id)
+    history = _get_conversation_history(conv_id_int)
 
     input_messages = [SystemMessage(content=SYSTEM_PROMPT)] + history
 
@@ -153,7 +166,7 @@ async def run_agent_stream(
 
     with Session(engine) as session:
         assistant_msg = ChatMessage(
-            conversation_id=conversation_id,
+            conversation_id=conv_id_int,
             role="assistant",
             sender="ai",
             content=full_response,
@@ -161,9 +174,7 @@ async def run_agent_stream(
         )
         session.add(assistant_msg)
 
-        conversation = session.exec(
-            select(Conversation).where(Conversation.id == conversation_id)
-        ).first()
+        conversation = session.get(Conversation, conv_id_int)
         if conversation:
             from datetime import datetime
             conversation.updated_at = datetime.utcnow()

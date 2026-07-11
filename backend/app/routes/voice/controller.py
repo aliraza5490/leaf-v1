@@ -53,15 +53,25 @@ async def voice_offer(
     background_tasks: BackgroundTasks,
 ):
     logger.info(f"Received offer request: {request}")
-    store_id = ""
+    store_id = 0
     visitor_name = None
     visitor_email = None
     visitor_id = None
     conversation_id = None
 
     if request.request_data:
-        store_id = request.request_data.get("storeId", "")
-        conversation_id = request.request_data.get("conversationId")
+        store_id_raw = request.request_data.get("storeId")
+        if store_id_raw:
+            try:
+                store_id = int(store_id_raw)
+            except (ValueError, TypeError):
+                store_id = 0
+        conversation_id_raw = request.request_data.get("conversationId")
+        if conversation_id_raw:
+            try:
+                conversation_id = int(conversation_id_raw)
+            except (ValueError, TypeError):
+                conversation_id = None
         visitor_name = request.request_data.get("visitorName")
         visitor_email = request.request_data.get("visitorEmail")
         visitor_id = request.request_data.get("visitorId")
