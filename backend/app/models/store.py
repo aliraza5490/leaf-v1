@@ -1,3 +1,4 @@
+import secrets
 from datetime import datetime
 from typing import Optional
 from pydantic import StringConstraints
@@ -14,6 +15,8 @@ class StoreBase(SQLModel):
     owner_email: Optional[str] = Field(default=None, foreign_key="user.email")
     status: Annotated[str, StringConstraints(max_length=20)] = "active"
     plan: Annotated[str, StringConstraints(max_length=20)] = "free"
+    client_token: Optional[str] = Field(default_factory=lambda: secrets.token_hex(32), max_length=128)
+    allowed_origins: Optional[str] = Field(default="*", max_length=512)
 
 
 class Store(StoreBase, table=True):

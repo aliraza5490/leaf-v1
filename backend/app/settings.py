@@ -100,6 +100,9 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = "gpt-4o"
     DEEPGRAM_API_KEY: str = ""
     CARTESIA_API_KEY: str = ""
+    RABBITMQ_URL: str = "amqp://guest:guest@localhost:5672//"
+    REDIS_URL: str = "redis://localhost:6379/0"
+
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":

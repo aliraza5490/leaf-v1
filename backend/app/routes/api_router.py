@@ -8,6 +8,7 @@ from .voice.controller import voice_router
 from .conversation.controller import conversations_router
 from .team.controller import team_router
 from .admin import admin_router
+from .analytics.controller import analytics_router
 from ..settings import settings
 
 api_router = APIRouter(prefix=settings.API_V1_STR)
@@ -21,3 +22,4 @@ api_router.include_router(voice_router)
 api_router.include_router(conversations_router)
 api_router.include_router(team_router)
 api_router.include_router(admin_router)
+api_router.include_router(analytics_router)

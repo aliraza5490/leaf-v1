@@ -12,16 +12,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCssVariable } from "@/hooks/use-css-variable";
-
-const data = [
-  { name: "00:00", visitors: 12 },
-  { name: "04:00", visitors: 8 },
-  { name: "08:00", visitors: 45 },
-  { name: "12:00", visitors: 89 },
-  { name: "16:00", visitors: 120 },
-  { name: "20:00", visitors: 78 },
-  { name: "Now", visitors: 95 },
-];
+import { useAnalyticsVisitorActivity } from "@/hooks/use-conversation-stats";
 
 export function VisitorChart() {
   const chart3 = useCssVariable("--chart-3");
@@ -29,6 +20,8 @@ export function VisitorChart() {
   const card = useCssVariable("--card");
   const border = useCssVariable("--border");
   const radius = useCssVariable("--radius");
+
+  const { activity, loading } = useAnalyticsVisitorActivity();
 
   return (
     <Card className="col-span-3">
@@ -39,8 +32,18 @@ export function VisitorChart() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data} margin={{ left: -20 }}>
+        {loading ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            Loading...
+          </div>
+        ) : activity.length === 0 ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            No data yet
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={activity} margin={{ left: -20 }}>
+
             <CartesianGrid strokeDasharray="3 3" stroke={border} />
             <XAxis
               dataKey="name"
@@ -65,7 +68,9 @@ export function VisitorChart() {
             />
           </BarChart>
         </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );
 }
+

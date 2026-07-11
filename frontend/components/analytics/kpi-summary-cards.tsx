@@ -3,21 +3,22 @@
 import {
   CheckCircle,
   Star,
+
   Clock,
   MousePointerClick,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useConversationStats } from "@/hooks/use-conversation-stats";
+import { useAnalyticsKpiSummary } from "@/hooks/use-conversation-stats";
 
 export function KpiSummaryCards() {
-  const { stats, loading } = useConversationStats();
+  const { kpis, loading } = useAnalyticsKpiSummary();
 
-  const total = stats?.total ?? 0;
-  const resolved = stats?.resolved ?? 0;
+  const total = kpis?.total ?? 0;
+  const resolved = kpis?.resolved ?? 0;
   const resolutionRate = total > 0 ? ((resolved / total) * 100).toFixed(1) : "0";
 
-  const kpis = [
+  const cards = [
     {
       title: "Resolution Rate",
       value: loading ? "..." : `${resolutionRate}%`,
@@ -28,7 +29,7 @@ export function KpiSummaryCards() {
     },
     {
       title: "CSAT Score",
-      value: loading ? "..." : "4.6/5",
+      value: loading ? "..." : `${kpis?.csat ?? 4.6}/5`,
       change: "+0.3",
       trend: "up",
       icon: Star,
@@ -36,7 +37,7 @@ export function KpiSummaryCards() {
     },
     {
       title: "Avg Session Duration",
-      value: loading ? "..." : "3m 42s",
+      value: loading ? "..." : (kpis?.sessionDuration ?? "0s"),
       change: "-12s",
       trend: "down",
       icon: Clock,
@@ -44,7 +45,7 @@ export function KpiSummaryCards() {
     },
     {
       title: "Product Click-Throughs",
-      value: loading ? "..." : "847",
+      value: loading ? "..." : String(kpis?.productClicks ?? 0),
       change: "+18.7%",
       trend: "up",
       icon: MousePointerClick,
@@ -54,7 +55,7 @@ export function KpiSummaryCards() {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {kpis.map((kpi) => (
+      {cards.map((kpi) => (
         <Card key={kpi.title}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -80,3 +81,4 @@ export function KpiSummaryCards() {
     </div>
   );
 }
+

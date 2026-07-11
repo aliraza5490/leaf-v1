@@ -18,6 +18,8 @@ dependencies = [
     "langchain-core>=0.3",
     "sse-starlette>=2.0",
     "pipecat-ai[webrtc,deepgram,groq,cartesia,silero,runner]",
+    "celery==5.6.3",
+    "redis>=8.0.1",
 ]
 
 [build-system]

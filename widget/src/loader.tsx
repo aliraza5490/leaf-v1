@@ -1,12 +1,16 @@
 import { createRoot } from 'react-dom/client';
 import { LeafWidget } from './widget';
 import type { WidgetConfig } from './lib/types';
+import { tracker } from './lib/tracker';
 import './styles/widget.css';
 
 const CONTAINER_ID = 'leaf-widget-container';
 
 export function mountWidget(config: WidgetConfig) {
+  tracker.init(config.storeId, config.clientToken || '', config.apiUrl || 'http://localhost:8000');
+
   const existing = document.getElementById(CONTAINER_ID);
+
   if (existing) {
     existing.remove();
   }

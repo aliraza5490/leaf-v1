@@ -12,14 +12,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCssVariable } from "@/hooks/use-css-variable";
-
-const data = [
-  { name: "Product Inquiry", count: 1245 },
-  { name: "Order Support", count: 832 },
-  { name: "Returns & Refunds", count: 421 },
-  { name: "General FAQ", count: 687 },
-  { name: "Recommendations", count: 534 },
-];
+import { useAnalyticsIntents } from "@/hooks/use-conversation-stats";
 
 export function IntentBreakdownChart() {
   const chart4 = useCssVariable("--chart-4");
@@ -27,6 +20,8 @@ export function IntentBreakdownChart() {
   const card = useCssVariable("--card");
   const border = useCssVariable("--border");
   const radius = useCssVariable("--radius");
+
+  const { intents, loading } = useAnalyticsIntents();
 
   return (
     <Card className="col-span-3">
@@ -37,8 +32,18 @@ export function IntentBreakdownChart() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data} layout="vertical" margin={{ left: -20 }}>
+        {loading ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            Loading...
+          </div>
+        ) : intents.length === 0 ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            No data yet
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={intents} layout="vertical" margin={{ left: -20 }}>
+
             <CartesianGrid strokeDasharray="3 3" stroke={border} />
             <XAxis
               type="number"
@@ -66,7 +71,9 @@ export function IntentBreakdownChart() {
             />
           </BarChart>
         </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );
 }
+

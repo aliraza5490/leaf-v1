@@ -7,3 +7,4 @@ class Tags(Enum):
     products = "products"
     chat = "chat"
     admin = "admin"
+    analytics = "analytics"

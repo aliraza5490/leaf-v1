@@ -31,6 +31,13 @@
         "pattern": "Local:.*http://localhost:([0-9]+)",
         "uriFormat": "http://localhost:%s"
       }
+    },
+    {
+      "name": "Backend: Celery Worker",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "uv run celery -A app.tasks.celery_app worker --loglevel=info -P solo",
+      "cwd": "${workspaceFolder}/backend"
     }
   ],
   "compounds": [
@@ -38,10 +45,11 @@
       "name": "Full Stack",
       "configurations": [
         "Backend: FastAPI (uv run)",
+        "Backend: Celery Worker",
         "Frontend: Next.js",
         "Widget: Vite"
       ],
       "stopAll": true
     }
   ]
-}
+}

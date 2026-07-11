@@ -29,6 +29,7 @@ def register(user: UserCreate, session: Session):
             name=f"{user.full_name or 'My'}'s Store",
             status="active",
             plan="free",
+            allowed_origins="*"
         )
         session.add(store)
         session.commit()

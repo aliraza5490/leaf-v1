@@ -195,6 +195,11 @@ def update_conversation(
     session.commit()
     session.refresh(conv)
 
+    if status == "resolved":
+        from ...tasks.analytics_tasks import assess_conversation_task
+        assess_conversation_task.delay(conversation_id, store_id)
+
+
     messages = session.exec(
         select(ChatMessage)
         .where(ChatMessage.conversation_id == conversation_id)
@@ -276,6 +281,11 @@ def bulk_operation(
         raise HTTPException(status_code=400, detail=f"Unknown action: {action}")
 
     session.commit()
+
+    if action == "resolve":
+        from ...tasks.analytics_tasks import assess_conversation_task
+        for conv in conversations:
+            assess_conversation_task.delay(conv.id, store_id)
 
     return {"count": len(conversations)}
 

@@ -13,15 +13,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCssVariable } from "@/hooks/use-css-variable";
-
-const data = [
-  { name: "Week 1", csat: 4.3, responses: 120 },
-  { name: "Week 2", csat: 4.5, responses: 145 },
-  { name: "Week 3", csat: 4.4, responses: 162 },
-  { name: "Week 4", csat: 4.7, responses: 138 },
-  { name: "Week 5", csat: 4.6, responses: 189 },
-  { name: "Week 6", csat: 4.8, responses: 156 },
-];
+import { useAnalyticsSatisfaction } from "@/hooks/use-conversation-stats";
 
 export function SatisfactionTrendChart() {
   const chart2 = useCssVariable("--chart-2");
@@ -30,6 +22,8 @@ export function SatisfactionTrendChart() {
   const card = useCssVariable("--card");
   const border = useCssVariable("--border");
   const radius = useCssVariable("--radius");
+
+  const { satisfaction, loading } = useAnalyticsSatisfaction();
 
   return (
     <Card className="col-span-4">
@@ -40,8 +34,18 @@ export function SatisfactionTrendChart() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <ComposedChart data={data} margin={{ left: -20 }}>
+        {loading ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            Loading...
+          </div>
+        ) : satisfaction.length === 0 ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            No data yet
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <ComposedChart data={satisfaction} margin={{ left: -20 }}>
+
             <CartesianGrid strokeDasharray="3 3" stroke={border} />
             <XAxis
               dataKey="name"
@@ -84,7 +88,9 @@ export function SatisfactionTrendChart() {
             />
           </ComposedChart>
         </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );
 }
+

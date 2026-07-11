@@ -56,8 +56,8 @@ export function CallView({
   products, 
   highlightedProductId,
   voiceState,
-  transcript,
-  agentText,
+  transcript: _transcript,
+  agentText: _agentText,
   voiceError,
   onEndCall 
 }: CallViewProps) {

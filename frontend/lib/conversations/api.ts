@@ -223,3 +223,28 @@ export async function getAnalyticsTopProducts(limit: number = 10): Promise<TopPr
 export async function getTeam(): Promise<TeamResponse> {
   return apiGet<TeamResponse>("/team/");
 }
+
+export async function getAnalyticsKpiSummary(): Promise<{ total: number; resolved: number; csat: number; sessionDuration: string; productClicks: number }> {
+  return apiGet<{ total: number; resolved: number; csat: number; sessionDuration: string; productClicks: number }>("/analytics/kpis");
+}
+
+export async function getAnalyticsGeography(): Promise<{ name: string; visitors: number }[]> {
+  return apiGet<{ name: string; visitors: number }[]>("/analytics/geography");
+}
+
+export async function getAnalyticsSatisfaction(): Promise<{ name: string; csat: number; responses: number }[]> {
+  return apiGet<{ name: string; csat: number; responses: number }[]>("/analytics/satisfaction");
+}
+
+export async function getAnalyticsIntents(): Promise<{ name: string; count: number }[]> {
+  return apiGet<{ name: string; count: number }[]>("/analytics/intents");
+}
+
+export async function getAnalyticsAiPerformance(): Promise<{ subject: string; score: number }[]> {
+  return apiGet<{ subject: string; score: number }[]>("/analytics/ai-performance");
+}
+
+export async function getAnalyticsVisitorActivity(): Promise<{ name: string; visitors: number }[]> {
+  return apiGet<{ name: string; visitors: number }[]>("/analytics/visitor-activity");
+}
+

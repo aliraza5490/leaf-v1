@@ -12,17 +12,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCssVariable } from "@/hooks/use-css-variable";
-
-const data = [
-  { name: "United States", visitors: 1245 },
-  { name: "United Kingdom", visitors: 832 },
-  { name: "Canada", visitors: 621 },
-  { name: "Germany", visitors: 498 },
-  { name: "France", visitors: 387 },
-  { name: "Australia", visitors: 312 },
-  { name: "Netherlands", visitors: 245 },
-  { name: "India", visitors: 198 },
-];
+import { useAnalyticsGeography } from "@/hooks/use-conversation-stats";
 
 export function VisitorGeographyChart() {
   const chart3 = useCssVariable("--chart-3");
@@ -30,6 +20,8 @@ export function VisitorGeographyChart() {
   const card = useCssVariable("--card");
   const border = useCssVariable("--border");
   const radius = useCssVariable("--radius");
+
+  const { geography, loading } = useAnalyticsGeography();
 
   return (
     <Card className="col-span-4">
@@ -40,8 +32,18 @@ export function VisitorGeographyChart() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data} layout="vertical" margin={{ left: -20 }}>
+        {loading ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            Loading...
+          </div>
+        ) : geography.length === 0 ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            No data yet
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={geography} layout="vertical" margin={{ left: -20 }}>
+
             <CartesianGrid strokeDasharray="3 3" stroke={border} />
             <XAxis
               type="number"
@@ -69,7 +71,9 @@ export function VisitorGeographyChart() {
             />
           </BarChart>
         </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );
 }
+

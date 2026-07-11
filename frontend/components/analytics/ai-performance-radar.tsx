@@ -12,14 +12,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCssVariable } from "@/hooks/use-css-variable";
-
-const data = [
-  { subject: "Intent Accuracy", score: 92 },
-  { subject: "Response Quality", score: 88 },
-  { subject: "Resolution Rate", score: 94 },
-  { subject: "Avg Confidence", score: 85 },
-  { subject: "Multi-language", score: 78 },
-];
+import { useAnalyticsAiPerformance } from "@/hooks/use-conversation-stats";
 
 export function AiPerformanceRadar() {
   const chart5 = useCssVariable("--chart-5");
@@ -27,6 +20,8 @@ export function AiPerformanceRadar() {
   const card = useCssVariable("--card");
   const border = useCssVariable("--border");
   const radius = useCssVariable("--radius");
+
+  const { performance, loading } = useAnalyticsAiPerformance();
 
   return (
     <Card className="col-span-3">
@@ -37,8 +32,18 @@ export function AiPerformanceRadar() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <RadarChart data={data}>
+        {loading ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            Loading...
+          </div>
+        ) : performance.length === 0 ? (
+          <div className="flex h-[300px] items-center justify-center text-muted-foreground">
+            No data yet
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height={300}>
+            <RadarChart data={performance}>
+
             <PolarGrid stroke={border} />
             <PolarAngleAxis
               dataKey="subject"
@@ -65,7 +70,9 @@ export function AiPerformanceRadar() {
             />
           </RadarChart>
         </ResponsiveContainer>
+        )}
       </CardContent>
     </Card>
   );
 }
+

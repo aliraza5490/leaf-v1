@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import type { Product } from '@/lib/types';
+import { tracker } from '@/lib/tracker';
 
 interface ProductCarouselProps {
   products: Product[];
@@ -84,11 +85,13 @@ export function ProductCarousel({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="no-underline block relative flex-shrink-0 w-[130px]"
+                onClick={() => tracker.track('product_click', { productId: product.id, productName: product.name })}
                 ref={(el) => {
                   if (el) cardRefs.current.set(product.id, el);
                   else cardRefs.current.delete(product.id);
                 }}
               >
+
                 {isHighlighted && (
                   <div
                     className="absolute -inset-1 rounded-xl animate-leaf-product-pulse"

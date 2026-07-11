@@ -3,6 +3,7 @@ export type WidgetTheme = 'light' | 'dark' | 'auto';
 
 export interface WidgetConfig {
   storeId: string;
+  clientToken?: string;
   apiUrl?: string;
   assetsBaseUrl?: string;
   position?: WidgetPosition;
@@ -15,6 +16,7 @@ export interface WidgetConfig {
   showBranding?: boolean;
   products?: RawProduct[];
 }
+
 
 export interface Product {
   id: string;

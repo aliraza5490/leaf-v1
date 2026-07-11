@@ -10,6 +10,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { PipecatClient } from '@pipecat-ai/client-js';
 import { SmallWebRTCTransport } from '@pipecat-ai/small-webrtc-transport';
 import { PipecatClientProvider, PipecatClientAudio } from '@pipecat-ai/client-react';
+import { tracker } from '@/lib/tracker';
 
 interface LeafWidgetProps {
   config: WidgetConfig;
@@ -56,7 +57,50 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
   const [error, setError] = useState<{ code: VoiceErrorCode; message: string } | null>(null);
 
+  // 1. Observer: Track widget open/close
+  const [hasOpened, setHasOpened] = useState(false);
   useEffect(() => {
+    if (isOpen) {
+      tracker.track('widget_toggle', { isOpen: true });
+      setHasOpened(true);
+    } else if (hasOpened) {
+      tracker.track('widget_toggle', { isOpen: false });
+    }
+  }, [isOpen]);
+
+  // 2. Observer: Track voice call session start/end
+  const [wasCallActive, setWasCallActive] = useState(false);
+  useEffect(() => {
+    if (isCallActive) {
+      tracker.track('voice_start');
+      setWasCallActive(true);
+    } else if (wasCallActive) {
+      tracker.track('voice_end');
+      setWasCallActive(false);
+    }
+  }, [isCallActive]);
+
+  // 3. Observer: Track chat start (first creation of conversation)
+  const [hasStartedChat, setHasStartedChat] = useState(false);
+  useEffect(() => {
+    if (sessionId && !hasStartedChat) {
+      tracker.track('chat_start');
+      setHasStartedChat(true);
+    }
+  }, [sessionId]);
+
+  // 4. Observer: Track chat messages sent by user
+  const userMsgCount = messages.filter((m) => m.role === 'user').length;
+  const [lastUserMsgCount, setLastUserMsgCount] = useState(0);
+  useEffect(() => {
+    if (userMsgCount > lastUserMsgCount) {
+      tracker.track('chat_message');
+      setLastUserMsgCount(userMsgCount);
+    }
+  }, [userMsgCount]);
+
+  useEffect(() => {
+
     if (client) {
       (window as any).pipecatClient = client;
     }
