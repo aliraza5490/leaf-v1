@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { 
-  AudioLines, MapPin, Globe, Laptop, Compass, User, 
-  Copy, Check, Sparkles, X, ChevronDown, Calendar, Clock, MousePointerClick 
+import {
+  AudioLines, MapPin, Globe, Laptop, Compass, User,
+  Copy, Check, Sparkles, X, ChevronDown, Calendar, Clock, MousePointerClick
 } from "lucide-react";
 
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -41,7 +41,7 @@ function getVisitorDetails(id: string | number) {
   const locations = ["New York, NY", "San Francisco, CA", "London, UK", "Berlin, Germany", "Tokyo, Japan", "Toronto, ON"];
   const devices = ["MacBook Pro (macOS)", "iPhone 15 Pro (iOS)", "Windows 11 PC (Chrome)", "iPad Pro (iPadOS)"];
   const pages = ["/store/products/fjallraven-backpack", "/cart", "/checkout", "/category/mens-clothing", "/help/returns"];
-  
+
   return {
     browser: browsers[hash % browsers.length],
     location: locations[hash % locations.length],
@@ -56,10 +56,10 @@ function generateAiSummary(conversation: Conversation) {
   if (messages.length === 0) {
     return "No messages exchanged in this session yet.";
   }
-  
+
   const visitorMessages = messages.filter(m => m.sender === "visitor").map(m => m.content.toLowerCase());
   const contentStr = visitorMessages.join(" ");
-  
+
   if (contentStr.includes("return") || contentStr.includes("refund") || contentStr.includes("policy")) {
     return "Visitor is inquiring about the return policy and conditions for products. They are checking how to process a refund or return an item.";
   }
@@ -72,11 +72,11 @@ function generateAiSummary(conversation: Conversation) {
   if (contentStr.includes("order") || contentStr.includes("confirm") || contentStr.includes("track")) {
     return "Visitor is checking on an order status (shipping status, tracking number, or delivery date confirmation).";
   }
-  
+
   if (conversation.channel === "voice") {
     return "Voice support call: The caller is speaking with the AI voice assistant regarding product availability and checkout assistance.";
   }
-  
+
   return "Visitor initiated contact to ask about store products, pricing, and general availability of items on the catalog.";
 }
 
@@ -143,9 +143,8 @@ export function ConversationDetail({
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-foreground flex items-center gap-1.5">
                 <AudioLines className="h-4 w-4 text-primary animate-pulse" />
-                Voice Message
+                Session Recording
               </span>
-              <span className="text-muted-foreground font-medium">Recording</span>
             </div>
             <audio
               controls
@@ -189,9 +188,9 @@ export function ConversationDetail({
                   <span className="text-xs text-muted-foreground truncate flex-1" title={conversation.visitor.email}>
                     {conversation.visitor.email}
                   </span>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     className="h-5 w-5 text-muted-foreground hover:text-foreground shrink-0"
                     onClick={handleCopyEmail}
                     title="Copy email"
@@ -260,19 +259,19 @@ export function ConversationDetail({
           <div className="text-[10px] font-bold text-muted-foreground tracking-wider uppercase">
             Conversation Tags
           </div>
-          
+
           <div className="flex flex-wrap gap-1.5">
             {conversation.tags.length === 0 ? (
               <span className="text-xs text-muted-foreground italic">No tags added yet.</span>
             ) : (
               conversation.tags.map((tag) => (
-                <Badge 
-                  key={tag} 
-                  variant="secondary" 
+                <Badge
+                  key={tag}
+                  variant="secondary"
                   className="text-[10px] px-2 py-0.5 flex items-center gap-1 bg-muted/80 text-foreground border border-border/20"
                 >
                   {tag}
-                  <button 
+                  <button
                     onClick={() => handleRemoveTag(tag)}
                     className="hover:text-destructive text-muted-foreground/80 font-semibold"
                   >
