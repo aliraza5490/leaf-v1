@@ -6,11 +6,18 @@ interface ChatHeaderProps {
   greeting: string;
   primaryColor: string;
   isCallActive?: boolean;
+  callDuration?: number;
   onStartCall?: () => void;
   onClose: () => void;
 }
 
-export function ChatHeader({ storeName, storeLogo, greeting, primaryColor, isCallActive, onStartCall, onClose }: ChatHeaderProps) {
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+export function ChatHeader({ storeName, storeLogo, greeting, primaryColor, isCallActive, callDuration = 0, onStartCall, onClose }: ChatHeaderProps) {
   return (
     <div
       className="flex items-center gap-3 px-4 py-3 text-white rounded-t-xl"
@@ -25,7 +32,9 @@ export function ChatHeader({ storeName, storeLogo, greeting, primaryColor, isCal
       </div>
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-sm leading-tight truncate">{storeName}</h3>
-        <p className="text-xs text-white/80 truncate">{isCallActive ? 'In call...' : (greeting.length > 50 ? greeting.slice(0, 50) + '...' : greeting)}</p>
+        <p className="text-xs text-white/80 truncate">
+          {isCallActive ? `🟢 Connected • ${formatDuration(callDuration)}` : (greeting.length > 50 ? greeting.slice(0, 50) + '...' : greeting)}
+        </p>
       </div>
       {!isCallActive && onStartCall && (
         <button

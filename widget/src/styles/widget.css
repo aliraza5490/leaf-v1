@@ -142,3 +142,32 @@
 .leaf-widget-root .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
+
+@keyframes leaf-orb-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px var(--orb-glow-color, rgba(139, 92, 246, 0.25)), 0 0 30px var(--orb-glow-color, rgba(139, 92, 246, 0.1));
+    transform: scale(0.97);
+  }
+  50% {
+    box-shadow: 0 0 28px var(--orb-glow-color, rgba(139, 92, 246, 0.5)), 0 0 55px var(--orb-glow-color, rgba(139, 92, 246, 0.25));
+    transform: scale(1.03);
+  }
+}
+
+.animate-leaf-orb-glow {
+  animation: leaf-orb-glow 2.5s ease-in-out infinite;
+}
+
+@keyframes sound-wave {
+  0%, 100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-sound-wave {
+  animation: sound-wave 0.8s ease-in-out infinite;
+  transform-origin: center;
+}

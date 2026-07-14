@@ -96,16 +96,16 @@ export function ProductCarousel({
                   />
                 )}
                 <div
-                  className={`relative rounded-lg border-2 bg-white leaf-product-card-transition ${isHighlighted ? '' : ''}`}
+                  className={`relative rounded-xl border bg-white leaf-product-card-transition transition-all duration-300 ${isHighlighted ? 'border-transparent' : 'border-gray-100 hover:border-gray-200/80 hover:shadow-md hover:-translate-y-1'}`}
                   style={{
-                    borderColor: isHighlighted ? primaryColor : '#e5e7eb',
-                    boxShadow: isHighlighted ? `0 0 0 3px ${primaryColor}33, 0 4px 12px ${primaryColor}22` : 'none',
-                    transform: isHighlighted ? 'scale(1.03)' : 'scale(1)',
+                    borderColor: isHighlighted ? primaryColor : undefined,
+                    boxShadow: isHighlighted ? `0 0 0 3px ${primaryColor}22, 0 8px 20px ${primaryColor}15` : undefined,
+                    transform: isHighlighted ? 'scale(1.02)' : undefined,
                   }}
                 >
                   {isHighlighted && (
                     <div
-                      className="absolute top-0 left-0 right-0 z-10 flex items-center justify-center gap-1 py-0.5 rounded-t-md text-white text-[9px] font-semibold uppercase tracking-wide animate-leaf-highlight-shimmer"
+                      className="absolute top-0 left-0 right-0 z-10 flex items-center justify-center gap-1 py-0.5 rounded-t-xl text-white text-[9px] font-semibold uppercase tracking-wide animate-leaf-highlight-shimmer"
                       style={{
                         background: `linear-gradient(90deg, ${primaryColor}, ${primaryColor}cc, ${primaryColor})`,
                       }}
@@ -117,14 +117,36 @@ export function ProductCarousel({
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-24 object-cover rounded-t-md bg-gray-100"
+                    className="w-full h-24 object-cover rounded-t-xl bg-gray-100"
                     loading="lazy"
                   />
                   <div className="p-2">
-                    <p className="text-xs font-medium text-gray-900 truncate">{product.name}</p>
-                    <p className="text-xs font-semibold mt-0.5" style={{ color: primaryColor }}>
-                      ${product.price.toFixed(2)}
-                    </p>
+                    <p className="text-[11px] font-semibold text-gray-900 truncate leading-tight">{product.name}</p>
+                    
+                    {/* Simulated Stars & Rating */}
+                    <div className="flex items-center gap-0.5 mt-0.5 mb-1 text-amber-400">
+                      <span className="text-[10px]">★★★★★</span>
+                      <span className="text-[9px] text-gray-400 ml-1 font-medium">4.8</span>
+                    </div>
+
+                    {/* Price & sleek '+' action button */}
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-xs font-bold" style={{ color: primaryColor }}>
+                        ${product.price.toFixed(2)}
+                      </p>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          console.log(`[Product] Added ${product.name} to cart.`);
+                        }}
+                        className="w-5 h-5 rounded-full flex items-center justify-center text-white bg-gray-900 hover:bg-gray-800 transition-all cursor-pointer active:scale-90"
+                        style={{ backgroundColor: primaryColor }}
+                        aria-label="Add to cart"
+                      >
+                        <span className="text-xs font-bold leading-none">+</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </a>

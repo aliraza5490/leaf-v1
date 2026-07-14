@@ -23,6 +23,7 @@ interface ChatWindowProps {
   transcript: string;
   agentText: string;
   voiceError: { code: VoiceErrorCode; message: string } | null;
+  callDuration: number;
   onStartCall: () => void;
   onEndCall: () => void;
   onClose: () => void;
@@ -47,6 +48,7 @@ export function ChatWindow({
   transcript,
   agentText,
   voiceError,
+  callDuration,
   onStartCall,
   onEndCall,
   onClose,
@@ -67,12 +69,12 @@ export function ChatWindow({
         greeting={greeting}
         primaryColor={primaryColor}
         isCallActive={isCallActive}
+        callDuration={callDuration}
         onStartCall={onStartCall}
         onClose={onClose}
       />
       {isCallActive ? (
         <CallView
-          storeName={storeName}
           storeLogo={storeLogo}
           primaryColor={primaryColor}
           products={products}
@@ -90,10 +92,10 @@ export function ChatWindow({
         </>
       )}
       {showBranding && (
-        <div className="text-center py-1.5 bg-gray-50 border-t border-gray-100">
-          <span className="text-[10px] text-gray-400">
+        <div className={`text-center py-1.5 ${isCallActive ? 'bg-transparent text-gray-300' : 'bg-gray-50 border-t border-gray-100'}`}>
+          <span className={`text-[10px] ${isCallActive ? 'text-gray-400/50' : 'text-gray-400'}`}>
             Powered by{' '}
-            <span className="font-semibold text-gray-500">Leaf</span>
+            <span className={`font-semibold ${isCallActive ? 'text-gray-400/70' : 'text-gray-500'}`}>Leaf</span>
           </span>
         </div>
       )}

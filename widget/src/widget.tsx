@@ -93,6 +93,21 @@ export function LeafWidget({ config }: LeafWidgetProps) {
   const [voiceProducts, setVoiceProducts] = useState<Product[]>([]);
   const [highlightedProductId, setHighlightedProductId] = useState<string | null>(null);
   const [error, setError] = useState<{ code: VoiceErrorCode; message: string } | null>(null);
+  const [callDuration, setCallDuration] = useState(0);
+
+  useEffect(() => {
+    let interval: any;
+    if (isCallActive) {
+      interval = setInterval(() => {
+        setCallDuration((prev) => prev + 1);
+      }, 1000);
+    } else {
+      setCallDuration(0);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isCallActive]);
 
   useEffect(() => {
     if (client) {
@@ -331,6 +346,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
             transcript={transcript}
             agentText={agentText}
             voiceError={error}
+            callDuration={callDuration}
             onStartCall={handleStartCall}
             onEndCall={handleEndCall}
             onClose={close}
