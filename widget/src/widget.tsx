@@ -133,7 +133,6 @@ export function LeafWidget({ config }: LeafWidgetProps) {
 
     // Register all event listeners immediately to prevent missing early events
     newClient.on('connected', () => setVoiceState('listening'));
-    newClient.on('disconnected', () => setVoiceState('idle'));
     newClient.on('botStartedSpeaking', () => setVoiceState('speaking'));
     newClient.on('botStoppedSpeaking', () => setVoiceState('listening'));
     newClient.on('userStartedSpeaking', () => setVoiceState('listening'));
@@ -258,6 +257,20 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     setHighlightedProductId(null);
     setError(null);
   }, [client, endCall]);
+
+  useEffect(() => {
+    if (!client) return;
+
+    const handleDisconnected = () => {
+      console.log('[Voice Widget] Client disconnected event received, cleaning up...');
+      handleEndCall();
+    };
+
+    client.on('disconnected', handleDisconnected);
+    return () => {
+      client.off('disconnected', handleDisconnected);
+    };
+  }, [client, handleEndCall]);
 
   const handleSubmitVisitorInfo = useCallback(
     async (data: { name: string; email: string }) => {

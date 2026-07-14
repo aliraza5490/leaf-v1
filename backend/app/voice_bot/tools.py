@@ -1,6 +1,8 @@
 from loguru import logger
 from sqlmodel import Session, select
 
+from pipecat.frames.frames import EndWorkerFrame, TTSSpeakFrame
+from pipecat.processors.frame_processor import FrameDirection
 from pipecat.services.llm_service import FunctionCallParams
 
 from ..models.product import Product
@@ -127,4 +129,19 @@ async def highlight_product(params: FunctionCallParams, product_id: int):
     """
     logger.debug(f"[highlight_product] called with product_id={product_id}")
     await params.result_callback(f"HIGHLIGHT:{product_id}")
+
+
+async def end_conversation(params: FunctionCallParams):
+    """End the conversation and shut down the bot.
+
+    Call this when the user says goodbye or the task is complete.
+    """
+    logger.debug("[end_conversation] called")
+    await params.llm.push_frame(TTSSpeakFrame("Have a nice day!"))
+
+    # Resolve the function call so the LLM call doesn't hang
+    await params.result_callback({"status": "ended"})
+
+    # Signal that the worker should end after processing this frame
+    await params.llm.push_frame(EndWorkerFrame(), FrameDirection.DOWNSTREAM)
 
