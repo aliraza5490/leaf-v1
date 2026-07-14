@@ -65,12 +65,70 @@ function PipecatWrapper({ client, children }: { client: PipecatClient | null; ch
   );
 }
 
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
 export function LeafWidget({ config }: LeafWidgetProps) {
   const normalizedProducts = useMemo(
     () => config.products?.map(normalizeProduct),
     [config.products]
   );
   const [client, setClient] = useState<PipecatClient | null>(null);
+
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    try {
+      const saved = localStorage.getItem('leaf_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('leaf_cart', JSON.stringify(cart));
+    } catch (e) {
+      console.error('[Cart] Failed to save cart to localStorage', e);
+    }
+  }, [cart]);
+
+  const handleAddToCart = useCallback((product: Product, quantity: number = 1) => {
+    setCart((prev) => {
+      const existingIndex = prev.findIndex((item) => item.product.id === product.id);
+      if (existingIndex > -1) {
+        const newCart = [...prev];
+        newCart[existingIndex].quantity += quantity;
+        return newCart;
+      }
+      return [...prev, { product, quantity }];
+    });
+  }, []);
+
+  const handleUpdateCartQuantity = useCallback((productId: string, quantity: number) => {
+    setCart((prev) => {
+      if (quantity <= 0) {
+        return prev.filter((item) => item.product.id !== productId);
+      }
+      return prev.map((item) =>
+        item.product.id === productId ? { ...item, quantity } : item
+      );
+    });
+  }, []);
+
+  const handleRemoveFromCart = useCallback((productId: string) => {
+    setCart((prev) => prev.filter((item) => item.product.id !== productId));
+  }, []);
+
+  const handleClearCart = useCallback(() => {
+    setCart([]);
+  }, []);
+
+  const handleCartClick = useCallback(() => {
+    setIsCartOpen((prev) => !prev);
+  }, []);
 
   const {
     messages,
@@ -85,7 +143,13 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     endCall,
     submitVisitorInfo,
     sendMessage,
-  } = useChat(config, config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?");
+  } = useChat(
+    config,
+    config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?",
+    handleAddToCart,
+    handleRemoveFromCart,
+    handleUpdateCartQuantity
+  );
 
   const [voiceState, setVoiceState] = useState<VoiceState>('idle');
   const [transcript, setTranscript] = useState('');
@@ -169,10 +233,21 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     newClient.on('serverMessage', (data: unknown) => {
       console.log("[Voice Widget] Received serverMessage:", data);
       if (!data || typeof data !== 'object') return;
-      const msg = data as { type?: string; products?: unknown[]; productId?: unknown };
+      const msg = data as { type?: string; products?: unknown[]; productId?: unknown; product?: unknown; quantity?: number };
       if (msg.type === 'highlight_product' && msg.productId) {
         console.log("[Voice Widget] Highlighting product:", msg.productId);
         setHighlightedProductId(String(msg.productId));
+      } else if (msg.type === 'add_to_cart' && msg.product) {
+        console.log("[Voice Widget] Adding product to cart:", msg.product);
+        const p = normalizeProduct(msg.product as any);
+        const quantity = (msg.quantity as number) || 1;
+        handleAddToCart(p, quantity);
+      } else if (msg.type === 'remove_from_cart' && msg.productId) {
+        console.log("[Voice Widget] Removing product from cart:", msg.productId);
+        handleRemoveFromCart(String(msg.productId));
+      } else if (msg.type === 'edit_cart_quantity' && msg.productId) {
+        console.log("[Voice Widget] Editing cart quantity:", msg.productId, msg.quantity);
+        handleUpdateCartQuantity(String(msg.productId), (msg.quantity as number) || 1);
       } else if (msg.type === 'products' && Array.isArray(msg.products)) {
         console.log("[Voice Widget] Parsing products:", msg.products);
         try {
@@ -347,6 +422,13 @@ export function LeafWidget({ config }: LeafWidgetProps) {
             agentText={agentText}
             voiceError={error}
             callDuration={callDuration}
+            cart={cart}
+            isCartOpen={isCartOpen}
+            onCartClick={handleCartClick}
+            onAddToCart={handleAddToCart}
+            onUpdateCartQuantity={handleUpdateCartQuantity}
+            onRemoveFromCart={handleRemoveFromCart}
+            onClearCart={handleClearCart}
             onStartCall={handleStartCall}
             onEndCall={handleEndCall}
             onClose={close}

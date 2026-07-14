@@ -7,6 +7,7 @@ interface ProductCarouselProps {
   highlightedProductId?: string | null;
   label?: string;
   className?: string;
+  onAddToCart?: (product: Product) => void;
 }
 
 export function ProductCarousel({
@@ -15,6 +16,7 @@ export function ProductCarousel({
   highlightedProductId,
   label,
   className = '',
+  onAddToCart,
 }: ProductCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Map<string, HTMLElement>>(new Map());
@@ -138,7 +140,9 @@ export function ProductCarousel({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          console.log(`[Product] Added ${product.name} to cart.`);
+                          if (onAddToCart) {
+                            onAddToCart(product);
+                          }
                         }}
                         className="w-5 h-5 rounded-full flex items-center justify-center text-white bg-gray-900 hover:bg-gray-800 transition-all cursor-pointer active:scale-90"
                         style={{ backgroundColor: primaryColor }}

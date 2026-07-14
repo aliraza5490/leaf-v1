@@ -64,9 +64,12 @@ export interface ChatState {
 }
 
 export interface SSEEvent {
-  type: 'token' | 'products' | 'done' | 'error';
+  type: 'token' | 'products' | 'done' | 'error' | 'add_to_cart' | 'remove_from_cart' | 'edit_cart_quantity';
   content?: string;
   products?: RawProduct[];
+  product?: RawProduct;
+  productId?: string;
+  quantity?: number;
 }
 
 export type VoiceState = 'idle' | 'connecting' | 'listening' | 'processing' | 'speaking' | 'error';

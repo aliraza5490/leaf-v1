@@ -1,4 +1,4 @@
-import { CloseIcon, PhoneIcon, AvatarIcon } from '@/components/ui/icons';
+import { CloseIcon, PhoneIcon, AvatarIcon, CartIcon } from '@/components/ui/icons';
 
 interface ChatHeaderProps {
   storeName: string;
@@ -9,6 +9,9 @@ interface ChatHeaderProps {
   callDuration?: number;
   onStartCall?: () => void;
   onClose: () => void;
+  onCartClick?: () => void;
+  isCartOpen?: boolean;
+  cartItemCount?: number;
 }
 
 function formatDuration(seconds: number): string {
@@ -17,7 +20,19 @@ function formatDuration(seconds: number): string {
   return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
-export function ChatHeader({ storeName, storeLogo, greeting, primaryColor, isCallActive, callDuration = 0, onStartCall, onClose }: ChatHeaderProps) {
+export function ChatHeader({
+  storeName,
+  storeLogo,
+  greeting,
+  primaryColor,
+  isCallActive,
+  callDuration = 0,
+  onStartCall,
+  onClose,
+  onCartClick,
+  isCartOpen = false,
+  cartItemCount = 0,
+}: ChatHeaderProps) {
   return (
     <div
       className="flex items-center gap-3 px-4 py-3 text-white rounded-t-xl"
@@ -33,9 +48,24 @@ export function ChatHeader({ storeName, storeLogo, greeting, primaryColor, isCal
       <div className="flex-1 min-w-0">
         <h3 className="font-semibold text-sm leading-tight truncate">{storeName}</h3>
         <p className="text-xs text-white/80 truncate">
-          {isCallActive ? `🟢 Connected • ${formatDuration(callDuration)}` : (greeting.length > 50 ? greeting.slice(0, 50) + '...' : greeting)}
+          {isCallActive ? `🟢 Connected • ${formatDuration(callDuration)}` : (isCartOpen ? "Reviewing Cart & Checkout" : (greeting.length > 50 ? greeting.slice(0, 50) + '...' : greeting))}
         </p>
       </div>
+      {onCartClick && (
+        <button
+          onClick={onCartClick}
+          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer relative"
+          aria-label="View Cart"
+          style={isCartOpen ? { backgroundColor: 'rgba(255, 255, 255, 0.25)' } : undefined}
+        >
+          <CartIcon size={16} />
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center px-1 border border-white">
+              {cartItemCount}
+            </span>
+          )}
+        </button>
+      )}
       {!isCallActive && onStartCall && (
         <button
           onClick={onStartCall}

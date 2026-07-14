@@ -2,8 +2,14 @@ import { ChatHeader } from './chat-header';
 import { MessageList } from './message-list';
 import { ChatInput } from './chat-input';
 import { CallView } from '@/components/voice/call-view';
+import { CartView } from './cart-view';
 import type { Message, Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
+
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
 
 interface ChatWindowProps {
   isOpen: boolean;
@@ -28,6 +34,13 @@ interface ChatWindowProps {
   onEndCall: () => void;
   onClose: () => void;
   onSend: (message: string) => void;
+  cart: CartItem[];
+  isCartOpen: boolean;
+  onCartClick: () => void;
+  onAddToCart: (product: Product) => void;
+  onUpdateCartQuantity: (productId: string, quantity: number) => void;
+  onRemoveFromCart: (productId: string) => void;
+  onClearCart: () => void;
 }
 
 export function ChatWindow({
@@ -53,14 +66,22 @@ export function ChatWindow({
   onEndCall,
   onClose,
   onSend,
+  cart,
+  isCartOpen,
+  onCartClick,
+  onAddToCart,
+  onUpdateCartQuantity,
+  onRemoveFromCart,
+  onClearCart,
 }: ChatWindowProps) {
   if (!isOpen) return null;
 
   const posClass = position === 'bottom-right' ? 'right-5' : 'left-5';
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
     <div
-      className={`fixed bottom-24 ${posClass} z-[999998] ${isCallActive && products?.length ? 'w-[550px] h-[670px]' : 'w-[380px] h-[450px]'} max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
+      className={`fixed bottom-24 ${posClass} z-[999998] ${isCartOpen ? 'w-[380px] h-[550px]' : (isCallActive && products?.length ? 'w-[550px] h-[670px]' : 'w-[380px] h-[450px]')} max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
       style={{ fontFamily: 'var(--leaf-font, Inter, system-ui, sans-serif)' }}
     >
       <ChatHeader
@@ -72,8 +93,20 @@ export function ChatWindow({
         callDuration={callDuration}
         onStartCall={onStartCall}
         onClose={onClose}
+        onCartClick={onCartClick}
+        isCartOpen={isCartOpen}
+        cartItemCount={cartItemCount}
       />
-      {isCallActive ? (
+      {isCartOpen ? (
+        <CartView
+          cart={cart}
+          primaryColor={primaryColor}
+          onUpdateQuantity={onUpdateCartQuantity}
+          onRemoveItem={onRemoveFromCart}
+          onClearCart={onClearCart}
+          onBackToChat={onCartClick}
+        />
+      ) : isCallActive ? (
         <CallView
           storeLogo={storeLogo}
           primaryColor={primaryColor}
@@ -84,10 +117,11 @@ export function ChatWindow({
           agentText={agentText}
           voiceError={voiceError}
           onEndCall={onEndCall}
+          onAddToCart={onAddToCart}
         />
       ) : (
         <>
-          <MessageList messages={messages} isTyping={isTyping} primaryColor={primaryColor} />
+          <MessageList messages={messages} isTyping={isTyping} primaryColor={primaryColor} onAddToCart={onAddToCart} />
           <ChatInput onSend={onSend} placeholder={placeholder} primaryColor={primaryColor} disabled={isTyping} />
         </>
       )}

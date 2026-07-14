@@ -1,4 +1,4 @@
-import type { Message } from '@/lib/types';
+import type { Message, Product } from '@/lib/types';
 import { ProductCarousel } from '@/components/ui/product-carousel';
 import { Markdown } from '@/components/ui/markdown';
 import { AvatarIcon } from '@/components/ui/icons';
@@ -6,9 +6,10 @@ import { AvatarIcon } from '@/components/ui/icons';
 interface MessageBubbleProps {
   message: Message;
   primaryColor: string;
+  onAddToCart?: (product: Product) => void;
 }
 
-export function MessageBubble({ message, primaryColor }: MessageBubbleProps) {
+export function MessageBubble({ message, primaryColor, onAddToCart }: MessageBubbleProps) {
   const isUser = message.role === 'user';
   const hasProducts = !isUser && message.products && message.products.length > 0;
 
@@ -34,7 +35,7 @@ export function MessageBubble({ message, primaryColor }: MessageBubbleProps) {
       </div>
       {hasProducts && (
         <div className="mb-3 pl-4 animate-leaf-slide-up">
-          <ProductCarousel products={message.products!} primaryColor={primaryColor} />
+          <ProductCarousel products={message.products!} primaryColor={primaryColor} onAddToCart={onAddToCart} />
         </div>
       )}
     </>

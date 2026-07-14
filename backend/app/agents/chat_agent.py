@@ -20,6 +20,9 @@ Your role:
 
 Guidelines:
 - When a customer asks about products, use the product_search tool to find relevant items
+- When a customer wants to add a product to their shopping cart, use the add_to_cart tool with the product's ID. If you don't know the product ID, first search for the product or ask the customer to clarify. Always confirm to the customer that you have successfully added the item to their cart.
+- When a customer wants to remove an item from their cart, use the remove_from_cart tool with the product's ID. If you don't know the product ID, first search or ask them. Always confirm the removal.
+- When a customer wants to change or update the quantity of an item in their cart (e.g. "change quantity of product 3 to 2" or "set quantity to 4"), use the edit_cart_quantity tool with the product's ID and new quantity. Always confirm the update.
 - Present products naturally in conversation, mentioning key details like name, price, and features
 - If no products match, suggest alternative search terms or browse the catalog
 - Keep responses concise but informative (2-4 sentences typically)
@@ -156,9 +159,45 @@ async def run_agent_stream(
                     yield {"type": "token", "content": chunk.content}
 
         elif kind == "on_tool_end":
+            tool_name = event.get("name", "")
             tool_output = event.get("data", {}).get("output", "")
             if tool_output:
                 tool_outputs.append(str(tool_output))
+                if tool_name == "add_to_cart":
+                    try:
+                        import json
+                        data = json.loads(str(tool_output))
+                        if isinstance(data, dict) and data.get("action") == "add_to_cart":
+                            yield {
+                                "type": "add_to_cart",
+                                "product": data.get("product"),
+                                "quantity": data.get("quantity", 1)
+                            }
+                    except Exception:
+                        pass
+                elif tool_name == "remove_from_cart":
+                    try:
+                        import json
+                        data = json.loads(str(tool_output))
+                        if isinstance(data, dict) and data.get("action") == "remove_from_cart":
+                            yield {
+                                "type": "remove_from_cart",
+                                "productId": data.get("product_id")
+                            }
+                    except Exception:
+                        pass
+                elif tool_name == "edit_cart_quantity":
+                    try:
+                        import json
+                        data = json.loads(str(tool_output))
+                        if isinstance(data, dict) and data.get("action") == "edit_cart_quantity":
+                            yield {
+                                "type": "edit_cart_quantity",
+                                "productId": data.get("product_id"),
+                                "quantity": data.get("quantity", 1)
+                            }
+                    except Exception:
+                        pass
 
     product_ids = _extract_product_ids(full_response + " ".join(tool_outputs))
     products = _get_products_by_ids(product_ids)

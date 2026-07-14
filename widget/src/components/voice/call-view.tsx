@@ -13,6 +13,7 @@ interface CallViewProps {
   agentText: string;
   voiceError: { code: VoiceErrorCode; message: string } | null;
   onEndCall: () => void;
+  onAddToCart?: (product: Product) => void;
 }
 
 function getStateColor(state: VoiceState, primaryColor: string): string {
@@ -57,7 +58,8 @@ export function CallView({
   transcript: _transcript,
   agentText: _agentText,
   voiceError,
-  onEndCall 
+  onEndCall,
+  onAddToCart
 }: CallViewProps) {
   const hasProducts = products && products.length > 0;
   const stateColor = getStateColor(voiceState, primaryColor);
@@ -143,6 +145,7 @@ export function CallView({
             primaryColor={primaryColor}
             highlightedProductId={highlightedProductId}
             label="Suggested while we chat"
+            onAddToCart={onAddToCart}
           />
         </div>
       )}

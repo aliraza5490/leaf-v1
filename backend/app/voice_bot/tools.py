@@ -145,3 +145,39 @@ async def end_conversation(params: FunctionCallParams):
     # Signal that the worker should end after processing this frame
     await params.llm.push_frame(EndWorkerFrame(), FrameDirection.DOWNSTREAM)
 
+
+async def add_to_cart_tool(params: FunctionCallParams, product_id: int, quantity: int = 1):
+    """Add a specific product to the customer's shopping cart by its ID.
+    Always inform the customer that the product has been successfully added to their cart.
+
+    Args:
+        product_id: The ID of the product to add to the cart.
+        quantity: The quantity to add (defaults to 1).
+    """
+    logger.debug(f"[add_to_cart_tool] called with product_id={product_id}, quantity={quantity}")
+    await params.result_callback(f"ADD_TO_CART:{product_id}:{quantity}")
+
+
+async def remove_from_cart_tool(params: FunctionCallParams, product_id: int):
+    """Remove a specific product from the customer's shopping cart by its ID.
+    Always inform the customer that the product has been successfully removed from their cart.
+
+    Args:
+        product_id: The ID of the product to remove from the cart.
+    """
+    logger.debug(f"[remove_from_cart_tool] called with product_id={product_id}")
+    await params.result_callback(f"REMOVE_FROM_CART:{product_id}")
+
+
+async def edit_cart_quantity_tool(params: FunctionCallParams, product_id: int, quantity: int):
+    """Edit/update the quantity of a specific product in the customer's shopping cart by its ID.
+    If quantity is 0 or less, the product will be removed.
+    Always inform the customer that the quantity has been successfully updated.
+
+    Args:
+        product_id: The ID of the product.
+        quantity: The new quantity to set in the cart.
+    """
+    logger.debug(f"[edit_cart_quantity_tool] called with product_id={product_id}, quantity={quantity}")
+    await params.result_callback(f"EDIT_CART_QUANTITY:{product_id}:{quantity}")
+

@@ -39,6 +39,9 @@ from .tools import (
     highlight_product,
     product_search_tool,
     list_products_tool,
+    add_to_cart_tool,
+    remove_from_cart_tool,
+    edit_cart_quantity_tool,
 )
 
 RECORDINGS_DIR = Path(__file__).resolve().parent.parent.parent / "recordings"
@@ -87,10 +90,13 @@ async def run_voice_bot(
             list_products_tool,
             highlight_product,
             end_conversation,
+            add_to_cart_tool,
+            remove_from_cart_tool,
+            edit_cart_quantity_tool,
         ]
     )
     logger.debug(
-        f"[pipeline] LLM context initialized with tools: {[t.__name__ for t in [product_search_tool, get_product_details_tool, list_products_tool, highlight_product, end_conversation]]}"
+        f"[pipeline] LLM context initialized with tools: {[t.__name__ for t in [product_search_tool, get_product_details_tool, list_products_tool, highlight_product, end_conversation, add_to_cart_tool, remove_from_cart_tool, edit_cart_quantity_tool]]}"
     )
     user_aggregator, assistant_aggregator = LLMContextAggregatorPair(
         context,

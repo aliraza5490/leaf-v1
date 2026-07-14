@@ -18,7 +18,13 @@ function createMessage(
   };
 }
 
-export function useChat(config: WidgetConfig, greeting: string) {
+export function useChat(
+  config: WidgetConfig,
+  greeting: string,
+  onAddToCart?: (product: Product, quantity: number) => void,
+  onRemoveFromCart?: (productId: string) => void,
+  onUpdateCartQuantity?: (productId: string, quantity: number) => void,
+) {
   const [state, setState] = useState<ChatState>({
     messages: [createMessage('assistant', greeting)],
     isOpen: false,
@@ -154,6 +160,18 @@ export function useChat(config: WidgetConfig, greeting: string) {
             });
           } else if (event.type === 'products' && event.products) {
             products = event.products.map(normalizeProduct);
+          } else if (event.type === 'add_to_cart' && event.product) {
+            if (onAddToCart) {
+              onAddToCart(normalizeProduct(event.product), event.quantity || 1);
+            }
+          } else if (event.type === 'remove_from_cart' && event.productId) {
+            if (onRemoveFromCart) {
+              onRemoveFromCart(event.productId);
+            }
+          } else if (event.type === 'edit_cart_quantity' && event.productId) {
+            if (onUpdateCartQuantity) {
+              onUpdateCartQuantity(event.productId, event.quantity || 1);
+            }
           } else if (event.type === 'error') {
             setState((prev) => {
               const msgs = [...prev.messages];

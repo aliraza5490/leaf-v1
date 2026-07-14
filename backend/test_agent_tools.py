@@ -3,7 +3,17 @@ import logging
 
 logging.disable(logging.CRITICAL)
 
-from app.agents.tools import product_search, get_product_details
+from app.agents.tools import product_search, get_product_details, add_to_cart, remove_from_cart, edit_cart_quantity
+from sqlmodel import Session, select
+from app.models.product import Product
+from app.utilities.db import engine
+
+with Session(engine) as session:
+    prods = session.exec(select(Product)).all()
+    actual_ids = [p.id for p in prods]
+    first_id = actual_ids[0] if actual_ids else 5
+    second_id = actual_ids[1] if len(actual_ids) > 1 else 6
+    third_id = actual_ids[2] if len(actual_ids) > 2 else 7
 
 passed = 0
 failed = 0
@@ -92,8 +102,8 @@ check("contains URL:", "URL:" in result, result[:200])
 print("\n=== get_product_details ===\n")
 
 # 10. Get existing product
-print("[10] Get existing product (ID=5, Organic Green Tea)")
-result = get_product_details.invoke({"product_id": 5})
+print(f"[10] Get existing product (ID={first_id}, Organic Green Tea)")
+result = get_product_details.invoke({"product_id": first_id})
 check("returns string", isinstance(result, str))
 check("contains Organic Green Tea", "Organic Green Tea" in result, result[:200])
 check("contains price 12.99", "12.99" in result, result[:200])
@@ -102,8 +112,8 @@ check("contains tags", "tea,organic,green tea,japanese" in result, result[:300])
 check("contains Image:", "Image:" in result, result[:200])
 
 # 11. Get another product
-print("\n[11] Get product ID=7 (Cotton Tote Bag)")
-result = get_product_details.invoke({"product_id": 7})
+print(f"\n[11] Get product ID={third_id} (Cotton Tote Bag)")
+result = get_product_details.invoke({"product_id": third_id})
 check("returns string", isinstance(result, str))
 check("contains Cotton Tote Bag", "Cotton Tote Bag" in result, result[:200])
 check("contains price 18.50", "18.50" in result, result[:200])
@@ -115,10 +125,53 @@ result = get_product_details.invoke({"product_id": 99999})
 check("returns not-found message", "not found" in result.lower(), result[:200])
 
 # 13. Verify detail format includes Tags field
-print("\n[13] Verify detail format includes Tags")
-result = get_product_details.invoke({"product_id": 6})
+print(f"\n[13] Verify detail format includes Tags (ID={second_id})")
+result = get_product_details.invoke({"product_id": second_id})
 check("contains Tags:", "Tags:" in result, result[:300])
 check("contains bamboo tag", "bamboo" in result, result[:300])
+
+
+# ── add_to_cart ─────────────────────────────────────────────────────
+
+print("\n=== add_to_cart ===\n")
+
+# 14. Add valid product to cart
+print(f"[14] Add valid product ID={first_id} (Organic Green Tea) to cart")
+result = add_to_cart.invoke({"product_id": first_id, "quantity": 2})
+check("returns string", isinstance(result, str))
+check("contains action add_to_cart", "add_to_cart" in result, result)
+check("contains Organic Green Tea", "Organic Green Tea" in result, result)
+check("contains quantity 2", '"quantity": 2' in result, result)
+
+# 15. Add non-existent product to cart
+print("\n[15] Add non-existent product ID=99999 to cart")
+result = add_to_cart.invoke({"product_id": 99999})
+check("returns not-found message", "not found" in result.lower(), result)
+
+
+# ── remove_from_cart ────────────────────────────────────────────────
+
+print("\n=== remove_from_cart ===\n")
+
+# 16. Remove product from cart
+print(f"[16] Remove product ID={first_id} from cart")
+result = remove_from_cart.invoke({"product_id": first_id})
+check("returns string", isinstance(result, str))
+check("contains action remove_from_cart", "remove_from_cart" in result, result)
+check("contains product_id", f'"product_id": "{first_id}"' in result, result)
+
+
+# ── edit_cart_quantity ──────────────────────────────────────────────
+
+print("\n=== edit_cart_quantity ===\n")
+
+# 17. Edit cart quantity
+print(f"[17] Edit product ID={first_id} quantity to 5")
+result = edit_cart_quantity.invoke({"product_id": first_id, "quantity": 5})
+check("returns string", isinstance(result, str))
+check("contains action edit_cart_quantity", "edit_cart_quantity" in result, result)
+check("contains product_id", f'"product_id": "{first_id}"' in result, result)
+check("contains quantity 5", '"quantity": 5' in result, result)
 
 
 # ── Summary ─────────────────────────────────────────────────────────
