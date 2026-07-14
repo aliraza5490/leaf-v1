@@ -100,6 +100,8 @@ class Settings(BaseSettings):
     OPENAI_MODEL: str = "gpt-4o"
     DEEPGRAM_API_KEY: str = ""
     CARTESIA_API_KEY: str = ""
+    GOOGLE_API_KEY: str = ""
+    GOOGLE_MODEL: str = "gemini-2.5-flash"
 
     def _check_default_secret(self, var_name: str, value: str | None) -> None:
         if value == "changethis":

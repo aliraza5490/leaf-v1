@@ -3,12 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Leaf Sandbox Storefront</title>
-    <!-- Force Vite to process and inject Tailwind CSS styles -->
-    <link rel="stylesheet" href="/src/styles/widget.css" />
+    <title>Leaf Widget Dev</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .demo-content {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      h1 { color: #333; }
+      p { color: #666; line-height: 1.6; }
+    </style>
   </head>
-  <body class="bg-slate-50 text-slate-900 min-h-screen dark:bg-slate-950 dark:text-slate-50">
-    <div id="root"></div>
-    <script type="module" src="/src/demo-app.tsx"></script>
+  <body>
+    <div class="demo-content">
+      <h1>Leaf Widget Demo Page</h1>
+      <p>This is a sample page to test the Leaf chat widget. The widget should appear in the bottom-right corner.</p>
+      <p>Try clicking the chat bubble to open the conversation!</p>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      window.addEventListener('DOMContentLoaded', () => {
+        if (window.Leaf) {
+          window.Leaf.init({
+            storeId: 1,
+            position: 'bottom-right',
+            theme: 'light',
+            primaryColor: '#10b981',
+            storeName: 'Leaf Demo Store',
+            greeting: "Hi! I'm Leaf, your AI shopping assistant. How can I help you today?",
+          });
+        }
+      });
+    </script>
   </body>
 </html>

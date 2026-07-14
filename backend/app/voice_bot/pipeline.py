@@ -19,8 +19,9 @@ from pipecat.processors.aggregators.llm_response_universal import (
 from pipecat.processors.audio.audio_buffer_processor import AudioBufferProcessor
 from pipecat.processors.frameworks.rtvi import RTVIProcessor
 from pipecat.services.cartesia.turns.stt import CartesiaTurnsSTTService
-from pipecat.services.deepgram.tts import DeepgramTTSService
-from pipecat.services.groq.llm import GroqLLMService
+from pipecat.services.cartesia.tts import CartesiaTTSService
+from pipecat.services.openai.llm import OpenAILLMService
+from pipecat.services.google.llm import GoogleLLMService
 from pipecat.transports.base_transport import TransportParams
 from pipecat.transports.smallwebrtc.connection import SmallWebRTCConnection
 from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
@@ -63,20 +64,14 @@ async def run_voice_bot(
     stt = CartesiaTurnsSTTService(
         api_key=settings.CARTESIA_API_KEY,
     )
-    tts = DeepgramTTSService(
-        api_key=settings.DEEPGRAM_API_KEY,
-        settings=DeepgramTTSService.Settings(
-            voice="aura-2-helena-en",
-        ),
+    tts = CartesiaTTSService(
+        api_key=settings.CARTESIA_API_KEY,
+        voice_id="db6b0ed5-d5d3-463d-ae85-518a07d3c2b4",
     )
 
-    llm = GroqLLMService(
-        api_key=settings.OPENAI_API_KEY,
-        settings=GroqLLMService.Settings(
-            model=settings.OPENAI_MODEL,
-            system_instruction=SYSTEM_INSTRUCTION,
-        ),
-        reasoning_effort="low"
+    llm = GoogleLLMService(
+        api_key=settings.GOOGLE_API_KEY,
+        model=settings.GOOGLE_MODEL,
     )
 
     context = LLMContext(tools=[product_search_tool, get_product_details_tool, list_products_tool, highlight_product])
