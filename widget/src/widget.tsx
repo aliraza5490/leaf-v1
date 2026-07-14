@@ -323,6 +323,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
             visitorEmail: actualEmail || visitorInfo?.email,
             visitorId,
             conversationId: actualConversationId || sessionId,
+            greeting: config.greeting || "Hello! I'm Leaf, your AI shopping assistant. How can I help you today?",
           },
         },
       });
@@ -332,7 +333,7 @@ export function LeafWidget({ config }: LeafWidgetProps) {
       setVoiceState('error');
       setClient(null);
     }
-  }, [config.apiUrl, config.storeId, visitorInfo, sessionId, startCall]);
+  }, [config.apiUrl, config.storeId, config.greeting, visitorInfo, sessionId, startCall]);
 
   const handleEndCall = useCallback(async () => {
     endCall();

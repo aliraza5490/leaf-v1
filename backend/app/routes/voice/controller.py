@@ -55,6 +55,7 @@ async def voice_offer(
     visitor_id = None
     conversation_id = None
 
+    greeting = None
     if request.request_data:
         store_id_raw = request.request_data.get("storeId")
         conversation_id_raw = request.request_data.get("conversationId")
@@ -66,6 +67,7 @@ async def voice_offer(
         visitor_name = request.request_data.get("visitorName")
         visitor_email = request.request_data.get("visitorEmail")
         visitor_id = request.request_data.get("visitorId")
+        greeting = request.request_data.get("greeting")
 
     if not store_id_raw:
         raise HTTPException(status_code=400, detail="storeId is required")
@@ -89,7 +91,7 @@ async def voice_offer(
             conversation_id = conversation.id
 
     async def webrtc_connection_callback(connection):
-        background_tasks.add_task(run_voice_bot, connection, store_id, conversation_id)
+        background_tasks.add_task(run_voice_bot, connection, store_id, conversation_id, greeting)
 
     from pipecat.transports.smallwebrtc.request_handler import SmallWebRTCRequest
     pipecat_request = SmallWebRTCRequest(

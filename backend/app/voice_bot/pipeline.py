@@ -6,7 +6,7 @@ from pathlib import Path
 
 from loguru import logger
 from pipecat.audio.vad.silero import SileroVADAnalyzer
-from pipecat.frames.frames import LLMRunFrame
+from pipecat.frames.frames import LLMRunFrame, TTSSpeakFrame
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.worker import PipelineParams, PipelineWorker
 from pipecat.processors.aggregators.llm_context import LLMContext
@@ -59,6 +59,7 @@ async def run_voice_bot(
     webrtc_connection: SmallWebRTCConnection,
     store_id: int,
     conversation_id: int,
+    greeting: str | None = None,
 ):
     logger.info(f"Starting voice bot for conversation {conversation_id}")
 
@@ -199,11 +200,24 @@ async def run_voice_bot(
         logger.info(f"Voice client connected: {conversation_id}")
         await audiobuffer.start_recording()
         await rtvi.set_bot_ready()
+        
+        # Add the main system instruction
         context.add_message(
-            {"role": "developer", "content": "Start by concisely introducing yourself as Leaf, a shopping assistant."}
+            {"role": "developer", "content": SYSTEM_INSTRUCTION}
         )
-        logger.debug(f"[pipeline] queuing LLMRunFrame for conversation {conversation_id}")
-        await worker.queue_frames([LLMRunFrame()])
+        
+        if greeting:
+            logger.info(f"Speaking initial greeting for conversation {conversation_id}: {greeting}")
+            context.add_message(
+                {"role": "assistant", "content": greeting}
+            )
+            await worker.queue_frames([TTSSpeakFrame(greeting)])
+        else:
+            context.add_message(
+                {"role": "developer", "content": "Start by concisely introducing yourself as Leaf, a shopping assistant."}
+            )
+            logger.debug(f"[pipeline] queuing LLMRunFrame for conversation {conversation_id}")
+            await worker.queue_frames([LLMRunFrame()])
 
     @audiobuffer.event_handler("on_audio_data")
     async def on_audio_data(buffer, audio, sample_rate, num_channels):
