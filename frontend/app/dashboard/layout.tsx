@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { NotificationsPopover } from "@/components/dashboard/notifications-popover";
+import { IntegrationModal } from "@/components/dashboard/integration-modal";
 
 export default function DashboardLayout({
   children,
@@ -40,6 +41,7 @@ export default function DashboardLayout({
             />
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <IntegrationModal />
             <ThemeCustomizer />
             <NotificationsPopover />
             <DropdownMenu>
