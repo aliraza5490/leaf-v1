@@ -46,7 +46,7 @@ export async function createConversation(
   }
 
   const data = await response.json();
-  return data.id;
+  return String(data.id);
 }
 
 export async function sendMessage(
@@ -60,7 +60,7 @@ export async function sendMessage(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      session_id: sessionId,
+      session_id: String(sessionId),
       message,
       store_id: storeId,
     }),

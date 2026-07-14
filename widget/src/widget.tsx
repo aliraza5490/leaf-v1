@@ -95,6 +95,40 @@ export function LeafWidget({ config }: LeafWidgetProps) {
     }
   }, [cart]);
 
+  // Handle theme changes
+  useEffect(() => {
+    const container = document.getElementById('leaf-widget-container');
+    if (!container) return;
+
+    const theme = config.theme || 'light';
+
+    const applyTheme = (isDark: boolean) => {
+      if (isDark) {
+        container.classList.add('dark');
+      } else {
+        container.classList.remove('dark');
+      }
+    };
+
+    if (theme === 'dark') {
+      applyTheme(true);
+    } else if (theme === 'light') {
+      applyTheme(false);
+    } else if (theme === 'auto') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      applyTheme(mediaQuery.matches);
+
+      const listener = (e: MediaQueryListEvent) => {
+        applyTheme(e.matches);
+      };
+
+      mediaQuery.addEventListener('change', listener);
+      return () => {
+        mediaQuery.removeEventListener('change', listener);
+      };
+    }
+  }, [config.theme]);
+
   const handleAddToCart = useCallback((product: Product, quantity: number = 1) => {
     setCart((prev) => {
       const existingIndex = prev.findIndex((item) => item.product.id === product.id);
@@ -384,12 +418,13 @@ export function LeafWidget({ config }: LeafWidgetProps) {
 
   const showPreChatForm = isOpen && !visitorInfo;
   const showChatWindow = isOpen && visitorInfo;
+  const posClass = (config.position || 'bottom-right') === 'bottom-right' ? 'right-5' : 'left-5';
 
   return (
     <>
       {showPreChatForm && (
         <div
-          className="fixed bottom-24 right-5 z-[999998] w-[380px] h-[450px] max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up"
+          className={`fixed bottom-24 ${posClass} z-[999998] w-[380px] h-[450px] max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white dark:bg-zinc-900 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
           style={{ fontFamily: 'var(--leaf-font, Inter, system-ui, sans-serif)' }}
         >
           <PreChatForm

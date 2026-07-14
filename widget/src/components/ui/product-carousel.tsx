@@ -98,7 +98,7 @@ export function ProductCarousel({
                   />
                 )}
                 <div
-                  className={`relative rounded-xl border bg-white leaf-product-card-transition transition-all duration-300 ${isHighlighted ? 'border-transparent' : 'border-gray-100 hover:border-gray-200/80 hover:shadow-md hover:-translate-y-1'}`}
+                  className={`relative rounded-xl border bg-white dark:bg-zinc-800 leaf-product-card-transition transition-all duration-300 ${isHighlighted ? 'border-transparent' : 'border-gray-100 dark:border-zinc-700/50 hover:border-gray-200/80 dark:hover:border-zinc-600 hover:shadow-md hover:-translate-y-1'}`}
                   style={{
                     borderColor: isHighlighted ? primaryColor : undefined,
                     boxShadow: isHighlighted ? `0 0 0 3px ${primaryColor}22, 0 8px 20px ${primaryColor}15` : undefined,
@@ -123,12 +123,12 @@ export function ProductCarousel({
                     loading="lazy"
                   />
                   <div className="p-2">
-                    <p className="text-[11px] font-semibold text-gray-900 truncate leading-tight">{product.name}</p>
+                    <p className="text-[11px] font-semibold text-gray-900 dark:text-zinc-100 truncate leading-tight">{product.name}</p>
                     
                     {/* Simulated Stars & Rating */}
                     <div className="flex items-center gap-0.5 mt-0.5 mb-1 text-amber-400">
                       <span className="text-[10px]">★★★★★</span>
-                      <span className="text-[9px] text-gray-400 ml-1 font-medium">4.8</span>
+                      <span className="text-[9px] text-gray-400 dark:text-zinc-500 ml-1 font-medium">4.8</span>
                     </div>
 
                     {/* Price & sleek '+' action button */}

@@ -65,7 +65,7 @@ export function CallView({
   const stateColor = getStateColor(voiceState, primaryColor);
 
   return (
-    <div className={`flex-1 flex flex-col w-full min-w-0 bg-gray-50 animate-leaf-fade-in`}>
+    <div className={`flex-1 flex flex-col w-full min-w-0 bg-gray-50 dark:bg-zinc-950 animate-leaf-fade-in`}>
       {/* Unified Voice Status & Orb Visualizer */}
       <div className={`flex flex-col items-center justify-center ${hasProducts ? 'py-4 mt-1' : 'flex-1 my-auto py-6'}`}>
         {/* Pulsing Orb */}
@@ -139,7 +139,7 @@ export function CallView({
 
       {/* Suggested Products Section */}
       {hasProducts && (
-        <div className="w-full mb-1 animate-leaf-slide-up border-t border-gray-100 bg-white pt-3 pb-2">
+        <div className="w-full mb-1 animate-leaf-slide-up border-t border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 pt-3 pb-2">
           <ProductCarousel
             products={products}
             primaryColor={primaryColor}

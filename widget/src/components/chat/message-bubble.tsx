@@ -17,7 +17,7 @@ export function MessageBubble({ message, primaryColor, onAddToCart }: MessageBub
     <>
       <div className={`flex items-end gap-2 ${hasProducts ? 'mb-1' : 'mb-3'} ${isUser ? 'flex-row-reverse' : ''}`}>
         {!isUser && (
-          <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+          <div className="w-7 h-7 rounded-full bg-gray-200 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0">
             <AvatarIcon size={14} color="#6b7280" />
           </div>
         )}
@@ -25,7 +25,7 @@ export function MessageBubble({ message, primaryColor, onAddToCart }: MessageBub
           <div
             className={`px-3.5 py-2.5 text-sm leading-relaxed ${isUser
                 ? 'text-white rounded-2xl rounded-br-sm'
-                : 'text-gray-800 bg-gray-100 rounded-2xl rounded-bl-sm'
+                : 'text-gray-800 dark:text-zinc-200 bg-gray-100 dark:bg-zinc-800 rounded-2xl rounded-bl-sm'
               }`}
             style={isUser ? { backgroundColor: primaryColor } : undefined}
           >

@@ -47,15 +47,15 @@ export function CartView({
 
   if (cart.length === 0 && checkoutStep !== 'success') {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-gray-50 animate-leaf-fade-in">
-        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 mb-4">
+      <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-gray-50 dark:bg-zinc-950 animate-leaf-fade-in">
+        <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-zinc-900 flex items-center justify-center text-gray-400 dark:text-zinc-500 mb-4">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
             <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
           </svg>
         </div>
-        <h4 className="text-base font-semibold text-gray-900 mb-1">Your cart is empty</h4>
-        <p className="text-xs text-gray-500 mb-5 max-w-[220px]">
+        <h4 className="text-base font-semibold text-gray-900 dark:text-zinc-100 mb-1">Your cart is empty</h4>
+        <p className="text-xs text-gray-500 dark:text-zinc-400 mb-5 max-w-[220px]">
           Add items to your cart by speaking to Leaf or clicking "+" on product suggestions!
         </p>
         <button
@@ -70,18 +70,18 @@ export function CartView({
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-gray-50 overflow-hidden animate-leaf-fade-in">
+    <div className="flex-1 flex flex-col h-full bg-gray-50 dark:bg-zinc-950 overflow-hidden animate-leaf-fade-in">
       {checkoutStep === 'success' ? (
-        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-white overflow-y-auto">
-          <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 mb-4 animate-bounce">
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-zinc-900 overflow-y-auto">
+          <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mb-4 animate-bounce">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
           </div>
-          <h4 className="text-lg font-bold text-gray-900 mb-1">Order Placed!</h4>
-          <p className="text-xs text-emerald-600 font-medium mb-3">Simulated payment successful</p>
-          <p className="text-xs text-gray-500 max-w-[260px] leading-relaxed mb-6">
+          <h4 className="text-lg font-bold text-gray-900 dark:text-zinc-100 mb-1">Order Placed!</h4>
+          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mb-3">Simulated payment successful</p>
+          <p className="text-xs text-gray-500 dark:text-zinc-400 max-w-[260px] leading-relaxed mb-6">
             Thank you for your order, {name || 'valued customer'}! Your simulated receipt details have been recorded.
           </p>
           <button
@@ -98,12 +98,12 @@ export function CartView({
       ) : (
         <>
           {/* Checkout Steps Header */}
-          <div className="bg-white border-b border-gray-100 px-4 py-2.5 flex items-center justify-between text-xs text-gray-500 font-medium">
-            <span className={checkoutStep === 'cart' ? 'text-gray-900 font-bold' : ''}>1. Cart</span>
-            <span className="text-gray-300">/</span>
-            <span className={checkoutStep === 'shipping' ? 'text-gray-900 font-bold' : ''}>2. Shipping</span>
-            <span className="text-gray-300">/</span>
-            <span className={checkoutStep === 'payment' ? 'text-gray-900 font-bold' : ''}>3. Payment</span>
+          <div className="bg-white dark:bg-zinc-900 border-b border-gray-100 dark:border-zinc-800 px-4 py-2.5 flex items-center justify-between text-xs text-gray-500 dark:text-zinc-400 font-medium">
+            <span className={checkoutStep === 'cart' ? 'text-gray-900 dark:text-zinc-100 font-bold' : ''}>1. Cart</span>
+            <span className="text-gray-300 dark:text-zinc-700">/</span>
+            <span className={checkoutStep === 'shipping' ? 'text-gray-900 dark:text-zinc-100 font-bold' : ''}>2. Shipping</span>
+            <span className="text-gray-300 dark:text-zinc-700">/</span>
+            <span className={checkoutStep === 'payment' ? 'text-gray-900 dark:text-zinc-100 font-bold' : ''}>3. Payment</span>
           </div>
 
           {/* Step Contents */}
@@ -111,15 +111,15 @@ export function CartView({
             {checkoutStep === 'cart' && (
               <div className="space-y-3">
                 {cart.map((item) => (
-                  <div key={item.product.id} className="flex gap-3 bg-white p-3 rounded-xl border border-gray-100 hover:shadow-sm transition-all duration-200">
+                  <div key={item.product.id} className="flex gap-3 bg-white dark:bg-zinc-900 p-3 rounded-xl border border-gray-100 dark:border-zinc-800 hover:shadow-sm dark:hover:shadow-none transition-all duration-200">
                     <img
                       src={item.product.image}
                       alt={item.product.name}
-                      className="w-14 h-14 object-cover rounded-lg bg-gray-50 animate-leaf-fade-in"
+                      className="w-14 h-14 object-cover rounded-lg bg-gray-50 dark:bg-zinc-800 animate-leaf-fade-in"
                     />
                     <div className="flex-1 min-w-0 flex flex-col justify-between">
                       <div>
-                        <p className="text-xs font-bold text-gray-900 truncate leading-tight">{item.product.name}</p>
+                        <p className="text-xs font-bold text-gray-900 dark:text-zinc-100 truncate leading-tight">{item.product.name}</p>
                         <p className="text-[10px] text-gray-400 font-medium mt-0.5" style={{ color: primaryColor }}>
                           ${item.product.price.toFixed(2)} each
                         </p>
@@ -127,22 +127,22 @@ export function CartView({
                       
                       {/* Quantity Selector */}
                       <div className="flex items-center gap-2 mt-1">
-                        <div className="flex items-center border border-gray-150 rounded-lg overflow-hidden bg-gray-50">
+                        <div className="flex items-center border border-gray-150 dark:border-zinc-800 rounded-lg overflow-hidden bg-gray-50 dark:bg-zinc-800">
                           <button
                             onClick={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
-                            className="px-2 py-0.5 text-xs font-bold hover:bg-gray-150 transition-colors"
+                            className="px-2 py-0.5 text-xs font-bold hover:bg-gray-150 dark:hover:bg-zinc-700 transition-colors text-gray-600 dark:text-zinc-400"
                           >
                             -
                           </button>
-                          <span className="px-2 text-xs font-semibold text-gray-700">{item.quantity}</span>
+                          <span className="px-2 text-xs font-semibold text-gray-700 dark:text-zinc-300">{item.quantity}</span>
                           <button
                             onClick={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
-                            className="px-2 py-0.5 text-xs font-bold hover:bg-gray-150 transition-colors"
+                            className="px-2 py-0.5 text-xs font-bold hover:bg-gray-150 dark:hover:bg-zinc-700 transition-colors text-gray-600 dark:text-zinc-400"
                           >
                             +
                           </button>
                         </div>
-                        <span className="text-xs font-bold text-gray-800 ml-auto">
+                        <span className="text-xs font-bold text-gray-800 dark:text-zinc-200 ml-auto">
                           ${(item.product.price * item.quantity).toFixed(2)}
                         </span>
                       </div>
@@ -160,34 +160,34 @@ export function CartView({
             )}
 
             {checkoutStep === 'shipping' && (
-              <div className="bg-white p-4 rounded-xl border border-gray-100 space-y-3 animate-leaf-slide-up">
-                <h5 className="text-xs font-bold text-gray-800 uppercase tracking-wide">Shipping Address</h5>
+              <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-gray-100 dark:border-zinc-800 space-y-3 animate-leaf-slide-up">
+                <h5 className="text-xs font-bold text-gray-800 dark:text-zinc-200 uppercase tracking-wide">Shipping Address</h5>
                 <div className="space-y-2.5 text-xs">
                   <div>
-                    <label className="block text-gray-500 mb-1 font-medium">Full Name</label>
+                    <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Full Name</label>
                     <input
                       type="text"
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50"
+                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. John Doe"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-500 mb-1 font-medium">Email Address</label>
+                    <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Email Address</label>
                     <input
                       type="email"
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50"
+                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. john@example.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-gray-500 mb-1 font-medium">Delivery Address</label>
+                    <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Delivery Address</label>
                     <textarea
                       rows={2}
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 resize-none"
+                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100 resize-none"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="123 Shopping St, Mall City"
@@ -198,14 +198,14 @@ export function CartView({
             )}
 
             {checkoutStep === 'payment' && (
-              <div className="bg-white p-4 rounded-xl border border-gray-100 space-y-3 animate-leaf-slide-up">
-                <h5 className="text-xs font-bold text-gray-800 uppercase tracking-wide">Payment details</h5>
+              <div className="bg-white dark:bg-zinc-900 p-4 rounded-xl border border-gray-100 dark:border-zinc-800 space-y-3 animate-leaf-slide-up">
+                <h5 className="text-xs font-bold text-gray-800 dark:text-zinc-200 uppercase tracking-wide">Payment details</h5>
                 <div className="space-y-2.5 text-xs">
                   <div>
-                    <label className="block text-gray-500 mb-1 font-medium">Card Number (Simulated)</label>
+                    <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Card Number (Simulated)</label>
                     <input
                       type="text"
-                      className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50"
+                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
                       value={cardNum}
                       onChange={(e) => setCardNum(e.target.value.replace(/\D/g, '').slice(0, 16))}
                       placeholder="4111 2222 3333 4444"
@@ -213,20 +213,20 @@ export function CartView({
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="block text-gray-500 mb-1 font-medium">Expiry</label>
+                      <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Expiry</label>
                       <input
                         type="text"
                         maxLength={5}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50"
+                        className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
                         placeholder="MM/YY"
                       />
                     </div>
                     <div>
-                      <label className="block text-gray-500 mb-1 font-medium">CVV</label>
+                      <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">CVV</label>
                       <input
                         type="text"
                         maxLength={3}
-                        className="w-full border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50"
+                        className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
                         placeholder="123"
                       />
                     </div>
@@ -236,22 +236,22 @@ export function CartView({
             )}
 
             {/* Price Calculations */}
-            <div className="bg-white p-3 rounded-xl border border-gray-100 space-y-2 text-xs text-gray-600">
+            <div className="bg-white dark:bg-zinc-900 p-3 rounded-xl border border-gray-100 dark:border-zinc-800 space-y-2 text-xs text-gray-600 dark:text-zinc-400">
               <div className="flex justify-between">
                 <span>Subtotal:</span>
-                <span className="font-semibold text-gray-800">${subtotal.toFixed(2)}</span>
+                <span className="font-semibold text-gray-800 dark:text-zinc-200">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Simulated Tax (8%):</span>
-                <span className="font-semibold text-gray-800">${estTax.toFixed(2)}</span>
+                <span className="font-semibold text-gray-800 dark:text-zinc-200">${estTax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping:</span>
-                <span className="font-semibold text-gray-800">
-                  {shipping === 0 ? <span className="text-emerald-600 font-bold">Free</span> : `$${shipping.toFixed(2)}`}
+                <span className="font-semibold text-gray-800 dark:text-zinc-200">
+                  {shipping === 0 ? <span className="text-emerald-600 dark:text-emerald-400 font-bold">Free</span> : `$${shipping.toFixed(2)}`}
                 </span>
               </div>
-              <div className="border-t border-gray-100 pt-2 flex justify-between font-bold text-sm text-gray-900">
+              <div className="border-t border-gray-100 dark:border-zinc-800 pt-2 flex justify-between font-bold text-sm text-gray-900 dark:text-zinc-100">
                 <span>Total:</span>
                 <span style={{ color: primaryColor }}>${total.toFixed(2)}</span>
               </div>
@@ -259,12 +259,12 @@ export function CartView({
           </div>
 
           {/* Footer Controls */}
-          <div className="p-3 bg-white border-t border-gray-100 flex gap-2">
+          <div className="p-3 bg-white dark:bg-zinc-900 border-t border-gray-100 dark:border-zinc-800 flex gap-2">
             {checkoutStep === 'cart' && (
               <>
                 <button
                   onClick={onBackToChat}
-                  className="flex-1 py-2 text-xs font-semibold text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                  className="flex-1 py-2 text-xs font-semibold text-gray-600 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-800 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                 >
                   Keep Shopping
                 </button>
@@ -282,7 +282,7 @@ export function CartView({
               <>
                 <button
                   onClick={() => setCheckoutStep('cart')}
-                  className="flex-1 py-2 text-xs font-semibold text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                  className="flex-1 py-2 text-xs font-semibold text-gray-600 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-800 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                 >
                   Back
                 </button>
@@ -301,7 +301,7 @@ export function CartView({
               <>
                 <button
                   onClick={() => setCheckoutStep('shipping')}
-                  className="flex-1 py-2 text-xs font-semibold text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors cursor-pointer"
+                  className="flex-1 py-2 text-xs font-semibold text-gray-600 dark:text-zinc-300 bg-gray-100 dark:bg-zinc-800 rounded-lg hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors cursor-pointer"
                 >
                   Back
                 </button>

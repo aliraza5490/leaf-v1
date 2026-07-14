@@ -81,7 +81,7 @@ export function ChatWindow({
 
   return (
     <div
-      className={`fixed bottom-24 ${posClass} z-[999998] ${isCartOpen ? 'w-[380px] h-[550px]' : (isCallActive && products?.length ? 'w-[550px] h-[670px]' : 'w-[380px] h-[450px]')} max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
+      className={`fixed bottom-24 ${posClass} z-[999998] ${isCartOpen ? 'w-[380px] h-[550px]' : (isCallActive && products?.length ? 'w-[550px] h-[670px]' : 'w-[380px] h-[450px]')} max-w-[calc(100vw-2.5rem)] max-h-[calc(100vh-8rem)] bg-white dark:bg-zinc-900 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-leaf-slide-up`}
       style={{ fontFamily: 'var(--leaf-font, Inter, system-ui, sans-serif)' }}
     >
       <ChatHeader
@@ -126,10 +126,10 @@ export function ChatWindow({
         </>
       )}
       {showBranding && (
-        <div className={`text-center py-1.5 ${isCallActive ? 'bg-transparent text-gray-300' : 'bg-gray-50 border-t border-gray-100'}`}>
-          <span className={`text-[10px] ${isCallActive ? 'text-gray-400/50' : 'text-gray-400'}`}>
+        <div className={`text-center py-1.5 ${isCallActive ? 'bg-transparent text-gray-300' : 'bg-gray-50 dark:bg-zinc-900/80 border-t border-gray-100 dark:border-zinc-800'}`}>
+          <span className={`text-[10px] ${isCallActive ? 'text-gray-400/50' : 'text-gray-400 dark:text-zinc-500'}`}>
             Powered by{' '}
-            <span className={`font-semibold ${isCallActive ? 'text-gray-400/70' : 'text-gray-500'}`}>Leaf</span>
+            <span className={`font-semibold ${isCallActive ? 'text-gray-400/70' : 'text-gray-500 dark:text-zinc-400'}`}>Leaf</span>
           </span>
         </div>
       )}

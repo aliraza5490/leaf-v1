@@ -64,9 +64,9 @@ function PreBlock({ code, language }: PreBlockProps) {
 const LANGUAGE_REGEX = /language-(\w+)/;
 
 const components: Components = {
-  p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
-  strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
-  em: ({ children }) => <em className="italic">{children}</em>,
+  p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed text-gray-800 dark:text-gray-300">{children}</p>,
+  strong: ({ children }) => <strong className="font-semibold text-gray-900 dark:text-zinc-100">{children}</strong>,
+  em: ({ children }) => <em className="italic text-gray-800 dark:text-gray-300">{children}</em>,
   h1: ({ children }) => (
     <h1 className="text-base font-bold mb-2 mt-4 first:mt-0" style={{ color: 'var(--leaf-primary)' }}>
       {children}
@@ -78,7 +78,7 @@ const components: Components = {
     </h2>
   ),
   h3: ({ children }) => (
-    <h3 className="text-sm font-semibold mb-1 mt-2.5 first:mt-0 text-gray-800">
+    <h3 className="text-sm font-semibold mb-1 mt-2.5 first:mt-0 text-gray-800 dark:text-zinc-200">
       {children}
     </h3>
   ),
@@ -92,10 +92,10 @@ const components: Components = {
       {children}
     </ol>
   ),
-  li: ({ children }) => <li className="pl-0.5 text-sm leading-relaxed">{children}</li>,
+  li: ({ children }) => <li className="pl-0.5 text-sm leading-relaxed text-gray-800 dark:text-gray-300">{children}</li>,
   code: ({ children }) => {
     return (
-      <code className="bg-gray-100 text-pink-600 font-mono rounded px-1.5 py-0.5 text-xs font-medium border border-gray-200/50">
+      <code className="bg-gray-100 dark:bg-zinc-800 text-pink-600 dark:text-pink-400 font-mono rounded px-1.5 py-0.5 text-xs font-medium border border-gray-200/50 dark:border-zinc-700/50">
         {children}
       </code>
     );
@@ -118,7 +118,7 @@ const components: Components = {
   },
   blockquote: ({ children }) => (
     <blockquote
-      className="border-l-4 pl-3.5 italic text-gray-600 my-2.5 bg-gray-50 py-1.5 pr-2 rounded-r"
+      className="border-l-4 pl-3.5 italic text-gray-600 dark:text-zinc-400 my-2.5 bg-gray-50 dark:bg-zinc-800 py-1.5 pr-2 rounded-r"
       style={{ borderLeftColor: 'var(--leaf-primary)' }}
     >
       {children}
@@ -135,24 +135,24 @@ const components: Components = {
       {children}
     </a>
   ),
-  hr: () => <hr className="border-gray-200 my-3.5" />,
+  hr: () => <hr className="border-gray-200 dark:border-zinc-800 my-3.5" />,
   table: ({ children }) => (
-    <div className="overflow-x-auto my-3 rounded-lg border border-gray-200/80 shadow-sm">
+    <div className="overflow-x-auto my-3 rounded-lg border border-gray-200/80 dark:border-zinc-800 shadow-sm">
       <table className="text-xs border-collapse w-full">{children}</table>
     </div>
   ),
   tr: ({ children }) => (
-    <tr className="even:bg-gray-50/50 hover:bg-gray-50/30 transition-colors">
+    <tr className="even:bg-gray-50/50 dark:even:bg-zinc-800/40 hover:bg-gray-50/30 dark:hover:bg-zinc-850/30 transition-colors">
       {children}
     </tr>
   ),
   th: ({ children }) => (
-    <th className="border-b border-gray-200 bg-gray-50/80 px-3.5 py-2 font-semibold text-left text-gray-700">
+    <th className="border-b border-gray-200 dark:border-zinc-800 bg-gray-50/80 dark:bg-zinc-800 px-3.5 py-2 font-semibold text-left text-gray-700 dark:text-zinc-200">
       {children}
     </th>
   ),
   td: ({ children }) => (
-    <td className="border-b border-gray-100 px-3.5 py-2 text-gray-600 last:border-0">
+    <td className="border-b border-gray-100 dark:border-zinc-800/50 px-3.5 py-2 text-gray-600 dark:text-zinc-350 last:border-0">
       {children}
     </td>
   ),
