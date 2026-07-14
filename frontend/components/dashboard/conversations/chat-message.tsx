@@ -37,7 +37,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
         isVisitor ? "flex-row" : "flex-row-reverse"
       )}
     >
-      <Avatar className="h-8 w-8 flex-shrink-0">
+      <Avatar className="h-8 w-8 shrink-0">
         <AvatarFallback
           className={cn(
             "text-xs",
@@ -65,7 +65,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
       >
         <div
           className={cn(
-            "rounded-2xl px-4 py-2.5",
+            "rounded-2xl px-5 py-3.5",
             isVisitor
               ? "bg-muted text-foreground"
               : message.sender === "ai"
@@ -83,7 +83,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
           <div ref={productsScrollRef} className="mt-2 w-full overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 pb-1" style={{ width: "max-content" }}>
               {message.products.map((product) => (
-                <div key={product.id} className="w-[180px] flex-shrink-0">
+                <div key={product.id} className="w-[180px] shrink-0">
                   <ProductCard product={product} />
                 </div>
               ))}

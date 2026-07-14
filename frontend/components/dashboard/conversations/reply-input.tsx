@@ -36,7 +36,7 @@ export function ReplyInput({ onSend, disabled }: ReplyInputProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="min-h-[60px] max-h-[200px] resize-none"
+          className="min-h-[72px] max-h-[200px] resize-none py-3 px-4"
           disabled={disabled}
         />
         <Button

@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Clock, MousePointerClick, MoreHorizontal, CheckCircle2, UserPlus, FileDown, FileText, File } from "lucide-react";
+import { MoreHorizontal, CheckCircle2, UserPlus, FileDown, FileText, File } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import {
 import type { Conversation } from "@/types/conversation";
 import type { TeamMember } from "@/lib/conversations/types";
 import { exportAsText, exportAsPDF, exportAsWord } from "@/lib/export-utils";
+import { cn } from "@/lib/utils";
+import { getAvatarGradient } from "./conversation-list";
 
 interface VisitorHeaderProps {
   conversation: Conversation;
@@ -31,7 +33,7 @@ export function VisitorHeader({ conversation, teamMembers, onResolve, onAssign }
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
-            <AvatarFallback>
+            <AvatarFallback className={cn("text-xs font-semibold shadow-sm border", getAvatarGradient(conversation.visitor.name))}>
               {conversation.visitor.name
                 .split(" ")
                 .map((n) => n[0])
@@ -101,20 +103,6 @@ export function VisitorHeader({ conversation, teamMembers, onResolve, onAssign }
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
-      <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
-          <Clock className="h-3 w-3" />
-          {conversation.metadata.sessionDuration} session
-        </span>
-        <span className="flex items-center gap-1">
-          <MousePointerClick className="h-3 w-3" />
-          {conversation.metadata.pagesVisited} pages visited
-        </span>
-        <span className="flex items-center gap-1">
-          <Globe className="h-3 w-3" />
-          {conversation.metadata.source}
-        </span>
       </div>
     </div>
   );

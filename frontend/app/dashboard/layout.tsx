@@ -33,11 +33,11 @@ export default function DashboardLayout({
       <SidebarInset>
         <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-border/40 bg-background/80 backdrop-blur px-6">
           <SidebarTrigger className="-ml-1" />
-          <div className="relative flex-1 max-w-md">
+          <div className="relative flex-1 max-w-[280px]">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search conversations, products..."
-              className="pl-9 bg-muted/50 border-0"
+              className="pl-9 bg-muted/30 border border-border/20 focus-visible:bg-background"
             />
           </div>
           <div className="ml-auto flex items-center gap-2">

@@ -7,7 +7,6 @@ import { ConversationDetail } from "@/components/dashboard/conversations/convers
 import {
   getConversation,
   getTeam,
-  sendAgentReply,
   updateConversation,
 } from "@/lib/conversations/api";
 import type { Conversation } from "@/types/conversation";
@@ -44,26 +43,6 @@ export default function ConversationPage({
       .catch(() => {});
   }, []);
 
-  const handleSendReply = useCallback(
-    async (message: string) => {
-      await sendAgentReply(id, message);
-      const updated = await getConversation(id);
-      setConversation(updated);
-      router.refresh();
-    },
-    [id, router]
-  );
-
-  const handleQuickReply = useCallback(
-    async (text: string) => {
-      await sendAgentReply(id, text);
-      const updated = await getConversation(id);
-      setConversation(updated);
-      router.refresh();
-    },
-    [id, router]
-  );
-
   const handleResolve = useCallback(async () => {
     await updateConversation(id, { status: "resolved" });
     const updated = await getConversation(id);
@@ -74,6 +53,16 @@ export default function ConversationPage({
   const handleAssign = useCallback(
     async (agentId: string) => {
       await updateConversation(id, { assigned_to: agentId });
+      const updated = await getConversation(id);
+      setConversation(updated);
+      router.refresh();
+    },
+    [id, router]
+  );
+
+  const handleUpdateTags = useCallback(
+    async (tags: string[]) => {
+      await updateConversation(id, { tags: tags.join(",") });
       const updated = await getConversation(id);
       setConversation(updated);
       router.refresh();
@@ -93,9 +82,9 @@ export default function ConversationPage({
     <ConversationDetail
       conversation={conversation}
       teamMembers={teamMembers}
-      onSendReply={handleSendReply}
       onResolve={handleResolve}
       onAssign={handleAssign}
+      onUpdateTags={handleUpdateTags}
     />
   );
 }

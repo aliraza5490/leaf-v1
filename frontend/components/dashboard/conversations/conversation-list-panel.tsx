@@ -29,6 +29,7 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
 
   const {
     conversations,
+    loading,
     bulkResolve,
     bulkAssign,
     bulkArchive,
@@ -61,19 +62,6 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
       if (c.status in counts) {
         counts[c.status]++;
       }
-    }
-    return counts;
-  }, [conversations]);
-
-  const channelCounts = useMemo(() => {
-    const counts: Record<"all" | ConversationChannel, number> = {
-      all: conversations.length,
-      chat: 0,
-      voice: 0,
-    };
-    for (const c of conversations) {
-      const ch = (c.channel || "chat") as ConversationChannel;
-      if (ch in counts) counts[ch]++;
     }
     return counts;
   }, [conversations]);
@@ -179,8 +167,13 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
     <>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Conversations</h1>
-          <p className="text-muted-foreground">
+          <div className="flex items-baseline gap-2.5">
+            <h1 className="text-3xl font-bold tracking-tight">Conversations</h1>
+            <span className="text-xs font-semibold px-2.5 py-0.5 bg-primary/10 text-primary border border-primary/20 rounded-full">
+              {filterCounts.all} total
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1.5">
             Manage visitor interactions and chat sessions
           </p>
         </div>
@@ -191,14 +184,11 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
           onSortChange={setSortBy}
           activeChannel={activeChannel}
           onChannelChange={setActiveChannel}
-          totalCount={filterCounts[activeFilter]}
         />
       </div>
 
-
-
       <div className="flex flex-1 overflow-hidden rounded-lg border border-border/40">
-        <div className="w-[400px] flex-shrink-0">
+        <div className="w-[32%] min-w-[300px] max-w-[380px] shrink-0">
           <ConversationList
             conversations={filteredConversations}
             selectedId={selectedId}
@@ -210,6 +200,7 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
             activeFilter={activeFilter}
             onFilterChange={setActiveFilter}
             filterCounts={filterCounts}
+            loading={loading}
           />
         </div>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
