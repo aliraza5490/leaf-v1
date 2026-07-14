@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <title>shopi - Leaf Demo Store</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+  <script type="module" src="http://localhost:5174/src/main.tsx"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.Leaf) {
+        window.Leaf.init({
+          storeId: 1,
+          apiUrl: 'http://localhost:8000',
+          position: 'bottom-right',
+          theme: 'light',
+          primaryColor: '#10b981',
+          storeName: 'Leaf Demo Store',
+          greeting: 'Hi! I\'m Leaf, your AI shopping assistant. How can I help you today?',
+          showBranding: true,
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>
