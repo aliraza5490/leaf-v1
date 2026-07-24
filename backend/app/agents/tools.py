@@ -2,7 +2,7 @@ from langchain_core.tools import tool
 from sqlmodel import Session
 from ..routes.product.service import search_products, get_product as get_product_svc, first_image
 from ..utilities.db import engine
-
+import json
 
 @tool
 def product_search(query: str, store_id: str = "") -> str:
@@ -48,7 +48,6 @@ def add_to_cart(product_id: int, quantity: int = 1) -> str:
     """Add a product to the customer's shopping cart by its product ID.
     Always inform the customer that the product has been successfully added to their cart.
     """
-    import json
     with Session(engine) as session:
         try:
             product = get_product_svc(product_id, session)
@@ -74,7 +73,6 @@ def remove_from_cart(product_id: int) -> str:
     """Remove a product from the customer's shopping cart by its product ID.
     Always inform the customer that the product has been successfully removed from their cart.
     """
-    import json
     return json.dumps({
         "action": "remove_from_cart",
         "product_id": str(product_id)
@@ -88,7 +86,6 @@ def edit_cart_quantity(product_id: int, quantity: int) -> str:
     If quantity is 0 or less, the product is removed from the cart.
     Always inform the customer that the quantity has been updated.
     """
-    import json
     return json.dumps({
         "action": "edit_cart_quantity",
         "product_id": str(product_id),
