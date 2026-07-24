@@ -92,6 +92,7 @@ export function ChatWindow({
         isCallActive={isCallActive}
         callDuration={callDuration}
         onStartCall={onStartCall}
+        onEndCall={onEndCall}
         onClose={onClose}
         onCartClick={onCartClick}
         isCartOpen={isCartOpen}

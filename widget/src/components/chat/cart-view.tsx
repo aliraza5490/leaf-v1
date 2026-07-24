@@ -167,7 +167,7 @@ export function CartView({
                     <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Full Name</label>
                     <input
                       type="text"
-                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
+                      className="w-full border border-gray-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g. John Doe"
@@ -177,7 +177,7 @@ export function CartView({
                     <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Email Address</label>
                     <input
                       type="email"
-                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
+                      className="w-full border border-gray-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="e.g. john@example.com"
@@ -187,7 +187,7 @@ export function CartView({
                     <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Delivery Address</label>
                     <textarea
                       rows={2}
-                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100 resize-none"
+                      className="w-full border border-gray-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400 resize-none"
                       value={address}
                       onChange={(e) => setAddress(e.target.value)}
                       placeholder="123 Shopping St, Mall City"
@@ -205,7 +205,7 @@ export function CartView({
                     <label className="block text-gray-500 dark:text-zinc-400 mb-1 font-medium">Card Number (Simulated)</label>
                     <input
                       type="text"
-                      className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
+                      className="w-full border border-gray-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400"
                       value={cardNum}
                       onChange={(e) => setCardNum(e.target.value.replace(/\D/g, '').slice(0, 16))}
                       placeholder="4111 2222 3333 4444"
@@ -217,7 +217,7 @@ export function CartView({
                       <input
                         type="text"
                         maxLength={5}
-                        className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
+                        className="w-full border border-gray-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400"
                         placeholder="MM/YY"
                       />
                     </div>
@@ -226,7 +226,7 @@ export function CartView({
                       <input
                         type="text"
                         maxLength={3}
-                        className="w-full border border-gray-200 dark:border-zinc-800 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-50/50 dark:bg-zinc-850 text-gray-900 dark:text-zinc-100"
+                        className="w-full border border-gray-200 dark:border-zinc-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400"
                         placeholder="123"
                       />
                     </div>

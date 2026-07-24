@@ -57,7 +57,7 @@ export function PreChatForm({ primaryColor, storeName, greeting, onSubmit }: Pre
               setError('');
             }}
             placeholder="Your name"
-            className="w-full text-sm bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-550 rounded-lg px-3 py-2.5 outline-none border-none focus:ring-2"
+            className="w-full text-sm bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400 rounded-lg px-3 py-2.5 outline-none border-none focus:ring-2"
             style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
             autoComplete="name"
           />
@@ -71,7 +71,7 @@ export function PreChatForm({ primaryColor, storeName, greeting, onSubmit }: Pre
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
-            className="w-full text-sm bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-550 rounded-lg px-3 py-2.5 outline-none border-none focus:ring-2"
+            className="w-full text-sm bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-zinc-100 placeholder-gray-400 dark:placeholder-zinc-400 rounded-lg px-3 py-2.5 outline-none border-none focus:ring-2"
             style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
             autoComplete="email"
           />

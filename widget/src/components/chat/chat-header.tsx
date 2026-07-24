@@ -8,6 +8,7 @@ interface ChatHeaderProps {
   isCallActive?: boolean;
   callDuration?: number;
   onStartCall?: () => void;
+  onEndCall?: () => void;
   onClose: () => void;
   onCartClick?: () => void;
   isCartOpen?: boolean;
@@ -28,6 +29,7 @@ export function ChatHeader({
   isCallActive,
   callDuration = 0,
   onStartCall,
+  onEndCall,
   onClose,
   onCartClick,
   isCartOpen = false,
@@ -66,14 +68,29 @@ export function ChatHeader({
           )}
         </button>
       )}
-      {!isCallActive && onStartCall && (
-        <button
-          onClick={onStartCall}
-          className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
-          aria-label="Start call"
-        >
-          <PhoneIcon size={16} />
-        </button>
+      {isCallActive ? (
+        onEndCall && (
+          <button
+            onClick={onEndCall}
+            className="flex-shrink-0 px-3 py-1.5 rounded-full bg-red-500 hover:bg-red-600 active:bg-red-700 text-white text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm"
+            aria-label="End call"
+            title="End Call"
+          >
+            <PhoneIcon size={14} className="rotate-[135deg]" />
+            <span>End Call</span>
+          </button>
+        )
+      ) : (
+        onStartCall && (
+          <button
+            onClick={onStartCall}
+            className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer"
+            aria-label="Start call"
+            title="Start call"
+          >
+            <PhoneIcon size={16} />
+          </button>
+        )
       )}
       <button
         onClick={onClose}

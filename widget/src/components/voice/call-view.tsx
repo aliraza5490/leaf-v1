@@ -1,7 +1,7 @@
 import type { Product, VoiceState } from '@/lib/types';
 import type { VoiceErrorCode } from '@/lib/voice-error';
 import { ProductCarousel } from '@/components/ui/product-carousel';
-import { MicIcon, PhoneIcon } from '@/components/ui/icons';
+import { MicIcon } from '@/components/ui/icons';
 
 interface CallViewProps {
   storeLogo?: string;
@@ -12,7 +12,7 @@ interface CallViewProps {
   transcript: string;
   agentText: string;
   voiceError: { code: VoiceErrorCode; message: string } | null;
-  onEndCall: () => void;
+  onEndCall?: () => void;
   onAddToCart?: (product: Product) => void;
 }
 
@@ -58,7 +58,7 @@ export function CallView({
   transcript: _transcript,
   agentText: _agentText,
   voiceError,
-  onEndCall,
+  onEndCall: _onEndCall,
   onAddToCart
 }: CallViewProps) {
   const hasProducts = products && products.length > 0;
@@ -150,17 +150,6 @@ export function CallView({
         </div>
       )}
 
-      {/* Sleeker End Call Button */}
-      <div className={`flex justify-center ${hasProducts ? 'py-3' : 'pb-6 pt-2'}`}>
-        <button
-          onClick={onEndCall}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-red-500 text-white font-semibold text-xs hover:bg-red-600 active:scale-95 transition-all cursor-pointer shadow-md shadow-red-500/20"
-          aria-label="End call"
-        >
-          <PhoneIcon size={16} />
-          End Call
-        </button>
-      </div>
     </div>
   );
 }
