@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-todo}
+      POSTGRES_DB: ${POSTGRES_DB:-leaf}
     volumes:
       - pg_data:/var/lib/postgresql
       - ./docker/initdb:/docker-entrypoint-initdb.d:ro
