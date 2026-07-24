@@ -5,8 +5,13 @@ import { MessageSquare, Package, BookOpen, Settings } from "lucide-react";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function QuickActions() {
+interface QuickActionsProps {
+  className?: string;
+}
+
+export function QuickActions({ className }: QuickActionsProps = {}) {
   const router = useRouter();
 
   const actions = [
@@ -37,7 +42,7 @@ export function QuickActions() {
   ];
 
   return (
-    <Card>
+    <Card className={cn("w-full max-w-sm", className)}>
       <CardHeader>
         <CardTitle>Quick Actions</CardTitle>
         <CardDescription>Common tasks and shortcuts</CardDescription>
@@ -47,13 +52,13 @@ export function QuickActions() {
           <Button
             key={action.title}
             variant="ghost"
-            className="justify-start gap-3 h-auto py-3 px-3"
+            className="justify-start gap-3 h-auto py-3 px-3 w-full"
             onClick={action.action}
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10">
               <action.icon className="h-4 w-4 text-primary" />
             </div>
-            <div className="flex flex-col items-start">
+            <div className="flex flex-col items-start text-left min-w-0">
               <span className="font-medium">{action.title}</span>
               <span className="text-xs text-muted-foreground">
                 {action.description}

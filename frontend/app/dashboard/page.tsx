@@ -25,11 +25,9 @@ export default function DashboardPage() {
         <VisitorChart />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="col-span-2">
-          <RecentConversations />
-        </div>
-        <QuickActions />
+      <div className="grid gap-4 md:grid-cols-7">
+        <RecentConversations className="md:col-span-5" />
+        <QuickActions className="md:col-span-2" />
       </div>
     </div>
   );

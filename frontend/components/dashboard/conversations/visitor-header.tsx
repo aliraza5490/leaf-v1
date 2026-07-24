@@ -18,7 +18,7 @@ import type { Conversation } from "@/types/conversation";
 import type { TeamMember } from "@/lib/conversations/types";
 import { exportAsText, exportAsPDF, exportAsWord } from "@/lib/export-utils";
 import { cn } from "@/lib/utils";
-import { getAvatarGradient } from "./conversation-list";
+import { getAvatarGradient, getInitials } from "@/lib/avatar-utils";
 
 interface VisitorHeaderProps {
   conversation: Conversation;
@@ -34,10 +34,7 @@ export function VisitorHeader({ conversation, teamMembers, onResolve, onAssign }
         <div className="flex items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarFallback className={cn("text-xs font-semibold shadow-sm border", getAvatarGradient(conversation.visitor.name))}>
-              {conversation.visitor.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
+              {getInitials(conversation.visitor.name)}
             </AvatarFallback>
           </Avatar>
           <div>

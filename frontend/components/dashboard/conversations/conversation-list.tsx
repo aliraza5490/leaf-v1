@@ -8,6 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import type { Conversation, ConversationStatus } from "@/types/conversation";
 import { formatRelativeTime } from "@/lib/time-utils";
+import { getInitials, getAvatarGradient } from "@/lib/avatar-utils";
+
+export { getInitials, getAvatarGradient };
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -34,20 +37,6 @@ function getStatusColor(status: string) {
     default:
       return "bg-muted text-muted-foreground";
   }
-}
-
-// Generate Discord/Linear style gradients dynamically based on name
-export function getAvatarGradient(name: string) {
-  const hash = name.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  const gradients = [
-    "bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-blue-400/20",
-    "bg-gradient-to-br from-emerald-500 to-teal-600 text-white border-emerald-400/20",
-    "bg-gradient-to-br from-violet-500 to-purple-600 text-white border-violet-400/20",
-    "bg-gradient-to-br from-pink-500 to-rose-600 text-white border-pink-400/20",
-    "bg-gradient-to-br from-amber-500 to-orange-600 text-white border-amber-400/20",
-    "bg-gradient-to-br from-cyan-500 to-blue-600 text-white border-cyan-400/20",
-  ];
-  return gradients[hash % gradients.length];
 }
 
 export function ConversationList({
@@ -219,10 +208,7 @@ export function ConversationList({
                 </div>
                 <Avatar className="h-9 w-9 shrink-0">
                   <AvatarFallback className={cn("text-xs font-semibold shadow-sm border", getAvatarGradient(conversation.visitor.name))}>
-                    {conversation.visitor.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")}
+                    {getInitials(conversation.visitor.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">

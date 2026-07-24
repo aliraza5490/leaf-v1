@@ -25,6 +25,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRecentConversations } from "@/hooks/use-conversation-stats";
 import { updateConversation } from "@/lib/conversations/api";
 import { formatRelativeTime } from "@/lib/time-utils";
+import { cn } from "@/lib/utils";
+import { getInitials, getAvatarGradient } from "@/lib/avatar-utils";
 
 function getStatusColor(status: string) {
   switch (status) {
@@ -39,7 +41,11 @@ function getStatusColor(status: string) {
   }
 }
 
-export function RecentConversations() {
+interface RecentConversationsProps {
+  className?: string;
+}
+
+export function RecentConversations({ className }: RecentConversationsProps = {}) {
   const router = useRouter();
   const { conversations, loading, error, refetch } = useRecentConversations(5, 30000);
 
@@ -54,7 +60,7 @@ export function RecentConversations() {
   };
 
   return (
-    <Card className="col-span-full">
+    <Card className={cn("w-full", className)}>
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -114,12 +120,9 @@ export function RecentConversations() {
                   >
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarFallback className="text-xs">
-                            {conversation.visitor.name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")}
+                        <Avatar className="h-8 w-8 shrink-0">
+                          <AvatarFallback className={cn("text-xs font-semibold shadow-sm border", getAvatarGradient(conversation.visitor.name))}>
+                            {getInitials(conversation.visitor.name)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">

@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getAvatarGradient } from "./conversation-list";
+import { getAvatarGradient, getInitials } from "@/lib/avatar-utils";
 import { cn } from "@/lib/utils";
 import {
   DropdownMenu,
@@ -173,10 +173,7 @@ export function ConversationDetail({
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 shrink-0">
               <AvatarFallback className={cn("text-xs font-semibold shadow-sm border", getAvatarGradient(conversation.visitor.name))}>
-                {conversation.visitor.name
-                  .split(" ")
-                  .map((n) => n[0])
-                  .join("")}
+                {getInitials(conversation.visitor.name)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0 flex-1">
