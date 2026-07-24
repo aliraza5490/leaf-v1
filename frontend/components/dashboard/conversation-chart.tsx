@@ -17,7 +17,7 @@ export function ConversationChart() {
   const { trends } = useConversationTrends(7);
 
   const data = trends?.trends.map((t) => ({
-    name: new Date(t.date).toLocaleDateString("en-US", { weekday: "short" }),
+    name: new Date(t.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short" }),
     conversations: t.conversations,
     resolved: t.resolved,
   })) ?? [];

@@ -358,13 +358,14 @@ def get_stats(store_id: int, session: Session) -> dict:
 
 
 def get_trends(store_id: int, session: Session, range_days: int = 7) -> dict:
-    end_date = datetime.utcnow()
-    start_date = end_date - timedelta(days=range_days)
+    today = datetime.utcnow().date()
+    start_date = today - timedelta(days=range_days - 1)
+    start_datetime = datetime.combine(start_date, datetime.min.time())
 
     conversations = session.exec(
         select(Conversation).where(
             Conversation.store_id == store_id,
-            Conversation.created_at >= start_date,
+            Conversation.created_at >= start_datetime,
         )
     ).all()
 
@@ -391,6 +392,7 @@ def get_trends(store_id: int, session: Session, range_days: int = 7) -> dict:
         for day, counts in sorted(daily_counts.items())
     ]
     return {"trends": result}
+
 
 
 def get_recent(store_id: int, session: Session, limit: int = 5) -> dict:

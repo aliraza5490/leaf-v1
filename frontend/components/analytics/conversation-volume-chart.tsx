@@ -17,7 +17,7 @@ export function ConversationVolumeChart() {
   const { trends } = useConversationTrends(30);
 
   const data = trends?.trends.map((t) => ({
-    name: new Date(t.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+    name: new Date(t.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" }),
     total: t.conversations,
     resolved: t.resolved,
   })) ?? [];
