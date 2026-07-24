@@ -144,7 +144,7 @@ export function ConversationList({
       </div>
 
       {/* Conversation List */}
-      <div className="flex-1 overflow-y-auto divide-y divide-border/20">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden divide-y divide-border/20">
         {loading && conversations.length === 0 ? (
           <div className="space-y-0.5">
             {[1, 2, 3, 4].map((n) => (
@@ -187,7 +187,7 @@ export function ConversationList({
                   }
                 }}
                 className={cn(
-                  "flex w-full items-start gap-3 border-b border-border/40 p-4 text-left transition-all duration-200 hover:scale-[1.01] hover:bg-muted/30 relative",
+                  "flex w-full items-start gap-3 border-b border-border/40 p-4 text-left transition-all duration-200 hover:bg-muted/30 relative",
                   isSelected 
                     ? "bg-accent/50 pl-3 border-l-4 border-l-teal-600 dark:border-l-teal-400 shadow-sm" 
                     : "pl-4",
@@ -247,7 +247,7 @@ export function ConversationList({
                   </div>
 
                   {/* Two Line Preview */}
-                  <p className="mt-2 text-xs text-muted-foreground/75 font-normal line-clamp-2 leading-relaxed wrap-break-word">
+                  <p className="mt-2 text-xs text-muted-foreground/75 font-normal line-clamp-2 leading-relaxed break-words">
                     {lastMessage?.content || "No messages"}
                   </p>
                 </div>
