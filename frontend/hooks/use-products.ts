@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   listProducts,
@@ -14,186 +15,122 @@ import type {
   Product,
   ProductFormData,
   ProductFilters,
-  Category,
 } from "@/lib/products/types";
 
 export function useProducts(filters: ProductFilters) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [total, setTotal] = useState(0);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [mutating, setMutating] = useState(false);
+  const queryClient = useQueryClient();
 
-  const seqRef = useRef(0);
+  const params = {
+    q: filters.search || undefined,
+    category: filters.category && filters.category !== "all" ? filters.category : undefined,
+    status: filters.status !== "all" ? filters.status : undefined,
+    sort_field: filters.sortField,
+    sort_dir: filters.sortDirection,
+    page: filters.page,
+    page_size: filters.pageSize,
+  };
 
-  useEffect(() => {
-    const seq = ++seqRef.current;
+  const productsQuery = useQuery({
+    queryKey: ["products", params],
+    queryFn: () => listProducts(params),
+  });
 
-    const params = {
-      q: filters.search || undefined,
-      category: filters.category && filters.category !== "all" ? filters.category : undefined,
-      status: filters.status !== "all" ? filters.status : undefined,
-      sort_field: filters.sortField,
-      sort_dir: filters.sortDirection,
-      page: filters.page,
-      page_size: filters.pageSize,
-    };
+  const categoriesQuery = useQuery({
+    queryKey: ["productCategories"],
+    queryFn: listCategories,
+    staleTime: 5 * 60 * 1000,
+  });
 
-    const timer = setTimeout(() => {
-      setLoading(true);
-      listProducts(params)
-        .then((data) => {
-          if (seq !== seqRef.current) return;
-          setProducts(data.products);
-          setTotal(data.total);
-          setError(null);
-        })
-        .catch((err: unknown) => {
-          if (seq !== seqRef.current) return;
-          const message = err instanceof Error ? err.message : "Failed to load products";
-          setError(message);
-        })
-        .finally(() => {
-          if (seq === seqRef.current) setLoading(false);
-        });
-    }, 300);
+  const invalidate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["products"] });
+    queryClient.invalidateQueries({ queryKey: ["productCategories"] });
+  }, [queryClient]);
 
-    return () => clearTimeout(timer);
-  }, [
-    filters.search,
-    filters.category,
-    filters.status,
-    filters.sortField,
-    filters.sortDirection,
-    filters.page,
-    filters.pageSize,
-  ]);
+  const createMutation = useMutation({
+    mutationFn: (data: ProductFormData) => apiCreate(data),
+    onSuccess: (_, data) => {
+      toast.success(`"${data.name}" has been added.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to create product";
+      toast.error(message);
+    },
+  });
 
-  useEffect(() => {
-    listCategories()
-      .then(setCategories)
-      .catch(() => {
-        // Categories are non-critical; silently ignore.
-      });
-  }, []);
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: ProductFormData }) => apiUpdate(id, data),
+    onSuccess: (_, { data }) => {
+      toast.success(`"${data.name}" has been updated.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to update product";
+      toast.error(message);
+    },
+  });
 
-  const refetch = useCallback(() => {
-    seqRef.current++;
-    setLoading(true);
-    const params = {
-      q: filters.search || undefined,
-      category: filters.category && filters.category !== "all" ? filters.category : undefined,
-      status: filters.status !== "all" ? filters.status : undefined,
-      sort_field: filters.sortField,
-      sort_dir: filters.sortDirection,
-      page: filters.page,
-      page_size: filters.pageSize,
-    };
-    listProducts(params)
-      .then((data) => {
-        setProducts(data.products);
-        setTotal(data.total);
-        setError(null);
-      })
-      .catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : "Failed to load products";
-        setError(message);
-      })
-      .finally(() => setLoading(false));
-  }, [
-    filters.search,
-    filters.category,
-    filters.status,
-    filters.sortField,
-    filters.sortDirection,
-    filters.page,
-    filters.pageSize,
-  ]);
+  const removeMutation = useMutation({
+    mutationFn: (product: Product) => apiDelete(product.id),
+    onSuccess: (_, product) => {
+      toast.success(`"${product.name}" has been deleted.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to delete product";
+      toast.error(message);
+    },
+  });
+
+  const importMutation = useMutation({
+    mutationFn: (items: ProductFormData[]) => bulkImportProducts(items),
+    onSuccess: (_, items) => {
+      toast.success(`${items.length} products have been imported.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to import products";
+      toast.error(message);
+    },
+  });
 
   const createProduct = useCallback(
-    async (data: ProductFormData) => {
-      setMutating(true);
-      try {
-        await apiCreate(data);
-        toast.success(`"${data.name}" has been added.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to create product";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (data: ProductFormData) => createMutation.mutateAsync(data),
+    [createMutation]
   );
 
   const updateProduct = useCallback(
-    async (id: string, data: ProductFormData) => {
-      setMutating(true);
-      try {
-        await apiUpdate(id, data);
-        toast.success(`"${data.name}" has been updated.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to update product";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (id: string, data: ProductFormData) => updateMutation.mutateAsync({ id, data }),
+    [updateMutation]
   );
 
   const removeProduct = useCallback(
-    async (product: Product) => {
-      setMutating(true);
-      try {
-        await apiDelete(product.id);
-        toast.success(`"${product.name}" has been deleted.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to delete product";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (product: Product) => removeMutation.mutateAsync(product),
+    [removeMutation]
   );
 
   const importProducts = useCallback(
-    async (items: ProductFormData[]) => {
-      setMutating(true);
-      try {
-        await bulkImportProducts(items);
-        toast.success(`${items.length} products have been imported.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to import products";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (items: ProductFormData[]) => importMutation.mutateAsync(items),
+    [importMutation]
   );
 
+  const isMutating =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    removeMutation.isPending ||
+    importMutation.isPending;
+
   return {
-    products,
-    total,
-    categories,
-    loading,
-    error,
-    mutating,
+    products: productsQuery.data?.products ?? [],
+    total: productsQuery.data?.total ?? 0,
+    categories: categoriesQuery.data ?? [],
+    loading: productsQuery.isLoading,
+    error: productsQuery.error ? (productsQuery.error instanceof Error ? productsQuery.error.message : "Failed to load products") : null,
+    mutating: isMutating,
     createProduct,
     updateProduct,
     removeProduct,
     importProducts,
-    refetch,
+    refetch: productsQuery.refetch,
   };
 }

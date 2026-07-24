@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
   listConversations,
@@ -10,243 +11,186 @@ import {
   sendAgentReply,
 } from "@/lib/conversations/api";
 import type { ConversationFilters } from "@/lib/conversations/types";
-import type { Conversation } from "@/types/conversation";
 
 export function useConversations(filters: ConversationFilters) {
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [mutating, setMutating] = useState(false);
+  const queryClient = useQueryClient();
 
-  const seqRef = useRef(0);
+  const params = {
+    q: filters.search || undefined,
+    status: filters.status !== "all" ? filters.status : undefined,
+    channel: filters.channel !== "all" ? filters.channel : undefined,
+    sort_field: filters.sortField,
+    sort_dir: filters.sortDirection,
+    page: filters.page,
+    page_size: filters.pageSize,
+  };
 
-  useEffect(() => {
-    const seq = ++seqRef.current;
+  const query = useQuery({
+    queryKey: ["conversations", params],
+    queryFn: () => listConversations(params),
+  });
 
-    const params = {
-      q: filters.search || undefined,
-      status: filters.status !== "all" ? filters.status : undefined,
-      channel: filters.channel !== "all" ? filters.channel : undefined,
-      sort_field: filters.sortField,
-      sort_dir: filters.sortDirection,
-      page: filters.page,
-      page_size: filters.pageSize,
-    };
+  const invalidate = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    queryClient.invalidateQueries({ queryKey: ["conversationStats"] });
+  }, [queryClient]);
 
-    const timer = setTimeout(() => {
-      setLoading(true);
-      listConversations(params)
-        .then((data) => {
-          if (seq !== seqRef.current) return;
-          setConversations(data.conversations);
-          setTotal(data.total);
-          setError(null);
-        })
-        .catch((err: unknown) => {
-          if (seq !== seqRef.current) return;
-          const message = err instanceof Error ? err.message : "Failed to load conversations";
-          setError(message);
-        })
-        .finally(() => {
-          if (seq === seqRef.current) setLoading(false);
-        });
-    }, 300);
+  const resolveMutation = useMutation({
+    mutationFn: (id: string) => updateConversation(id, { status: "resolved" }),
+    onSuccess: () => {
+      toast.success("Conversation resolved.");
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to resolve conversation";
+      toast.error(message);
+    },
+  });
 
-    return () => clearTimeout(timer);
-  }, [
-    filters.search,
-    filters.status,
-    filters.channel,
-    filters.sortField,
-    filters.sortDirection,
-    filters.page,
-    filters.pageSize,
-  ]);
+  const assignMutation = useMutation({
+    mutationFn: ({ id, assignedTo }: { id: string; assignedTo: string }) =>
+      updateConversation(id, { assigned_to: assignedTo }),
+    onSuccess: () => {
+      toast.success("Conversation assigned.");
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to assign conversation";
+      toast.error(message);
+    },
+  });
 
-  const refetch = useCallback(() => {
-    seqRef.current++;
-    setLoading(true);
-    const params = {
-      q: filters.search || undefined,
-      status: filters.status !== "all" ? filters.status : undefined,
-      channel: filters.channel !== "all" ? filters.channel : undefined,
-      sort_field: filters.sortField,
-      sort_dir: filters.sortDirection,
-      page: filters.page,
-      page_size: filters.pageSize,
-    };
-    listConversations(params)
-      .then((data) => {
-        setConversations(data.conversations);
-        setTotal(data.total);
-        setError(null);
-      })
-      .catch((err: unknown) => {
-        const message = err instanceof Error ? err.message : "Failed to load conversations";
-        setError(message);
-      })
-      .finally(() => setLoading(false));
-  }, [
-    filters.search,
-    filters.status,
-    filters.channel,
-    filters.sortField,
-    filters.sortDirection,
-    filters.page,
-    filters.pageSize,
-  ]);
+  const removeMutation = useMutation({
+    mutationFn: (id: string) => deleteConversation(id),
+    onSuccess: () => {
+      toast.success("Conversation deleted.");
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to delete conversation";
+      toast.error(message);
+    },
+  });
+
+  const bulkResolveMutation = useMutation({
+    mutationFn: (ids: string[]) => bulkConversations("resolve", ids),
+    onSuccess: (_, ids) => {
+      toast.success(`${ids.length} conversation(s) resolved.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to resolve conversations";
+      toast.error(message);
+    },
+  });
+
+  const bulkAssignMutation = useMutation({
+    mutationFn: ({ ids, assignedTo }: { ids: string[]; assignedTo: string }) =>
+      bulkConversations("assign", ids, assignedTo),
+    onSuccess: (_, { ids }) => {
+      toast.success(`${ids.length} conversation(s) assigned.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to assign conversations";
+      toast.error(message);
+    },
+  });
+
+  const bulkArchiveMutation = useMutation({
+    mutationFn: (ids: string[]) => bulkConversations("archive", ids),
+    onSuccess: (_, ids) => {
+      toast.success(`${ids.length} conversation(s) archived.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to archive conversations";
+      toast.error(message);
+    },
+  });
+
+  const bulkDeleteMutation = useMutation({
+    mutationFn: (ids: string[]) => bulkConversations("delete", ids),
+    onSuccess: (_, ids) => {
+      toast.success(`${ids.length} conversation(s) deleted.`);
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to delete conversations";
+      toast.error(message);
+    },
+  });
+
+  const sendReplyMutation = useMutation({
+    mutationFn: ({ conversationId, content }: { conversationId: string; content: string }) =>
+      sendAgentReply(conversationId, content),
+    onSuccess: () => {
+      toast.success("Reply sent.");
+      invalidate();
+    },
+    onError: (err: unknown) => {
+      const message = err instanceof Error ? err.message : "Failed to send reply";
+      toast.error(message);
+    },
+  });
 
   const resolveConversation = useCallback(
-    async (id: string) => {
-      setMutating(true);
-      try {
-        await updateConversation(id, { status: "resolved" });
-        toast.success("Conversation resolved.");
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to resolve conversation";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (id: string) => resolveMutation.mutateAsync(id),
+    [resolveMutation]
   );
 
   const assignConversation = useCallback(
-    async (id: string, assignedTo: string) => {
-      setMutating(true);
-      try {
-        await updateConversation(id, { assigned_to: assignedTo });
-        toast.success("Conversation assigned.");
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to assign conversation";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (id: string, assignedTo: string) => assignMutation.mutateAsync({ id, assignedTo }),
+    [assignMutation]
   );
 
   const removeConversation = useCallback(
-    async (id: string) => {
-      setMutating(true);
-      try {
-        await deleteConversation(id);
-        toast.success("Conversation deleted.");
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to delete conversation";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (id: string) => removeMutation.mutateAsync(id),
+    [removeMutation]
   );
 
   const bulkResolve = useCallback(
-    async (ids: string[]) => {
-      setMutating(true);
-      try {
-        await bulkConversations("resolve", ids);
-        toast.success(`${ids.length} conversation(s) resolved.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to resolve conversations";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (ids: string[]) => bulkResolveMutation.mutateAsync(ids),
+    [bulkResolveMutation]
   );
 
   const bulkAssign = useCallback(
-    async (ids: string[], assignedTo: string) => {
-      setMutating(true);
-      try {
-        await bulkConversations("assign", ids, assignedTo);
-        toast.success(`${ids.length} conversation(s) assigned.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to assign conversations";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (ids: string[], assignedTo: string) => bulkAssignMutation.mutateAsync({ ids, assignedTo }),
+    [bulkAssignMutation]
   );
 
   const bulkArchive = useCallback(
-    async (ids: string[]) => {
-      setMutating(true);
-      try {
-        await bulkConversations("archive", ids);
-        toast.success(`${ids.length} conversation(s) archived.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to archive conversations";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (ids: string[]) => bulkArchiveMutation.mutateAsync(ids),
+    [bulkArchiveMutation]
   );
 
   const bulkDelete = useCallback(
-    async (ids: string[]) => {
-      setMutating(true);
-      try {
-        await bulkConversations("delete", ids);
-        toast.success(`${ids.length} conversation(s) deleted.`);
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to delete conversations";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (ids: string[]) => bulkDeleteMutation.mutateAsync(ids),
+    [bulkDeleteMutation]
   );
 
   const sendReply = useCallback(
-    async (conversationId: string, content: string) => {
-      setMutating(true);
-      try {
-        await sendAgentReply(conversationId, content);
-        toast.success("Reply sent.");
-        refetch();
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : "Failed to send reply";
-        toast.error(message);
-        throw err;
-      } finally {
-        setMutating(false);
-      }
-    },
-    [refetch]
+    (conversationId: string, content: string) =>
+      sendReplyMutation.mutateAsync({ conversationId, content }),
+    [sendReplyMutation]
   );
 
+  const isMutating =
+    resolveMutation.isPending ||
+    assignMutation.isPending ||
+    removeMutation.isPending ||
+    bulkResolveMutation.isPending ||
+    bulkAssignMutation.isPending ||
+    bulkArchiveMutation.isPending ||
+    bulkDeleteMutation.isPending ||
+    sendReplyMutation.isPending;
+
   return {
-    conversations,
-    total,
-    loading,
-    error,
-    mutating,
+    conversations: query.data?.conversations ?? [],
+    total: query.data?.total ?? 0,
+    loading: query.isLoading,
+    error: query.error ? (query.error instanceof Error ? query.error.message : "Failed to load conversations") : null,
+    mutating: isMutating,
     resolveConversation,
     assignConversation,
     removeConversation,
@@ -255,6 +199,6 @@ export function useConversations(filters: ConversationFilters) {
     bulkArchive,
     bulkDelete,
     sendReply,
-    refetch,
+    refetch: query.refetch,
   };
 }
