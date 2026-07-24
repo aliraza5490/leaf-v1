@@ -103,7 +103,7 @@ export function IntegrationModal() {
               <Settings2 className="h-5 w-5 text-primary animate-pulse" />
               <h2 className="font-semibold text-lg">Configure Widget</h2>
             </div>
-            
+
             <div className="space-y-4">
               {/* Store Name */}
               <div className="space-y-2">
@@ -158,19 +158,19 @@ export function IntegrationModal() {
                 <div className="grid grid-cols-2 gap-2">
                   <Button
                     type="button"
-                    variant={position === "bottom-right" ? "default" : "outline"}
-                    className="w-full h-8 text-xs font-medium"
-                    onClick={() => setPosition("bottom-right")}
-                  >
-                    Bottom Right
-                  </Button>
-                  <Button
-                    type="button"
                     variant={position === "bottom-left" ? "default" : "outline"}
                     className="w-full h-8 text-xs font-medium"
                     onClick={() => setPosition("bottom-left")}
                   >
                     Bottom Left
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={position === "bottom-right" ? "default" : "outline"}
+                    className="w-full h-8 text-xs font-medium"
+                    onClick={() => setPosition("bottom-right")}
+                  >
+                    Bottom Right
                   </Button>
                 </div>
               </div>
