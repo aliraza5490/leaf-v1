@@ -3,16 +3,9 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useCssVariable } from "@/hooks/use-css-variable";
 import { useAnalyticsChannels } from "@/hooks/use-conversation-stats";
 
 export function ChannelDistribution() {
-  const chart1 = useCssVariable("--chart-1");
-  const chart2 = useCssVariable("--chart-2");
-  const card = useCssVariable("--card");
-  const border = useCssVariable("--border");
-  const radius = useCssVariable("--radius");
-
   const { channels, loading } = useAnalyticsChannels();
 
   const totalCount = channels?.channels.reduce((sum, c) => sum + c.count, 0) ?? 0;
@@ -23,7 +16,7 @@ export function ChannelDistribution() {
     count: c.count,
   }));
 
-  const COLORS = [chart1, chart2];
+  const COLORS = ["var(--chart-1)", "var(--chart-2)"];
 
   return (
     <Card className="col-span-3">
@@ -61,10 +54,13 @@ export function ChannelDistribution() {
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: card,
-                    border: `1px solid ${border}`,
-                    borderRadius: radius,
+                    backgroundColor: "var(--card)",
+                    borderColor: "var(--border)",
+                    borderRadius: "var(--radius)",
+                    color: "var(--card-foreground)",
                   }}
+                  labelStyle={{ color: "var(--card-foreground)", fontWeight: 600 }}
+                  itemStyle={{ color: "var(--card-foreground)" }}
                 />
               </PieChart>
             </ResponsiveContainer>

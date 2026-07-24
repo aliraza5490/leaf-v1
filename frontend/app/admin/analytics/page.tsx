@@ -24,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCssVariable } from "@/hooks/use-css-variable";
 import { getAdminOverview, getAdminTrends, getAdminTopStores } from "@/lib/admin/api";
 import type { PlatformOverview, TrendsResponse, Store } from "@/lib/admin/types";
 
@@ -33,13 +32,6 @@ export default function AdminAnalyticsPage() {
   const [trends, setTrends] = useState<TrendsResponse | null>(null);
   const [topStores, setTopStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const chart1 = useCssVariable("--chart-1");
-  const chart2 = useCssVariable("--chart-2");
-  const mutedForeground = useCssVariable("--muted-foreground");
-  const card = useCssVariable("--card");
-  const border = useCssVariable("--border");
-  const radius = useCssVariable("--radius");
 
   useEffect(() => {
     Promise.all([
@@ -142,28 +134,32 @@ export default function AdminAnalyticsPage() {
                 <AreaChart data={chartData} margin={{ left: -20 }}>
                   <defs>
                     <linearGradient id="adminConv" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor={chart1} stopOpacity={0.3} />
-                      <stop offset="95%" stopColor={chart1} stopOpacity={0} />
+                      <stop offset="5%" stopColor="var(--chart-1)" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="var(--chart-1)" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke={border} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     dataKey="name"
                     className="text-xs"
-                    tick={{ fill: mutedForeground }}
+                    tick={{ fill: "var(--muted-foreground)" }}
                   />
-                  <YAxis className="text-xs" tick={{ fill: mutedForeground }} />
+                  <YAxis className="text-xs" tick={{ fill: "var(--muted-foreground)" }} />
                   <Tooltip
+                    cursor={{ stroke: "var(--border)", strokeDasharray: "3 3" }}
                     contentStyle={{
-                      backgroundColor: card,
-                      border: `1px solid ${border}`,
-                      borderRadius: radius,
+                      backgroundColor: "var(--card)",
+                      borderColor: "var(--border)",
+                      borderRadius: "var(--radius)",
+                      color: "var(--card-foreground)",
                     }}
+                    labelStyle={{ color: "var(--card-foreground)", fontWeight: 600 }}
+                    itemStyle={{ color: "var(--card-foreground)" }}
                   />
                   <Area
                     type="monotone"
                     dataKey="conversations"
-                    stroke={chart1}
+                    stroke="var(--chart-1)"
                     fillOpacity={1}
                     fill="url(#adminConv)"
                     strokeWidth={2}
@@ -185,21 +181,25 @@ export default function AdminAnalyticsPage() {
             ) : (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={chartData} margin={{ left: -20 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke={border} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
                   <XAxis
                     dataKey="name"
                     className="text-xs"
-                    tick={{ fill: mutedForeground }}
+                    tick={{ fill: "var(--muted-foreground)" }}
                   />
-                  <YAxis className="text-xs" tick={{ fill: mutedForeground }} />
+                  <YAxis className="text-xs" tick={{ fill: "var(--muted-foreground)" }} />
                   <Tooltip
+                    cursor={{ fill: "var(--muted)", opacity: 0.2 }}
                     contentStyle={{
-                      backgroundColor: card,
-                      border: `1px solid ${border}`,
-                      borderRadius: radius,
+                      backgroundColor: "var(--card)",
+                      borderColor: "var(--border)",
+                      borderRadius: "var(--radius)",
+                      color: "var(--card-foreground)",
                     }}
+                    labelStyle={{ color: "var(--card-foreground)", fontWeight: 600 }}
+                    itemStyle={{ color: "var(--card-foreground)" }}
                   />
-                  <Bar dataKey="stores" fill={chart2} radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="stores" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
