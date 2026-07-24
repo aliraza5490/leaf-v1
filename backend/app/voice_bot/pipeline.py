@@ -21,7 +21,6 @@ from pipecat.processors.frameworks.rtvi import RTVIProcessor
 from pipecat.services.cartesia.turns.stt import CartesiaTurnsSTTService
 from pipecat.services.cartesia.tts import CartesiaTTSService
 from pipecat.services.openai.llm import OpenAILLMService
-from pipecat.services.google.llm import GoogleLLMService
 from pipecat.transports.base_transport import TransportParams
 from pipecat.transports.smallwebrtc.connection import SmallWebRTCConnection
 from pipecat.transports.smallwebrtc.transport import SmallWebRTCTransport
@@ -79,9 +78,10 @@ async def run_voice_bot(
         voice_id="db6b0ed5-d5d3-463d-ae85-518a07d3c2b4",
     )
 
-    llm = GoogleLLMService(
-        api_key=settings.GOOGLE_API_KEY,
-        model=settings.GOOGLE_MODEL,
+    llm = OpenAILLMService(
+        base_url=settings.OPENAI_BASE_URL,
+        api_key=settings.OPENAI_API_KEY,
+        model=settings.OPENAI_MODEL,
     )
 
     context = LLMContext(
