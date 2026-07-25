@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { AlertCircle, CheckCircle2, Download, FileText, Upload, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Download, FileText, Sparkles, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ProductFormData } from "@/lib/products/types";
+import { DUMMY_PRODUCTS } from "@/lib/products/dummy-products";
 import {
   downloadFile,
   generateCSVTemplate,
@@ -111,6 +112,15 @@ export function ProductImportDialog({
     }
   };
 
+  const handleLoadDummyProducts = () => {
+    setFileName("seed-dummy-products.json");
+    setParseError("");
+    setPreview({
+      data: DUMMY_PRODUCTS,
+      errors: [],
+    });
+  };
+
   const handleClose = () => {
     setPreview(null);
     setFileName("");
@@ -132,7 +142,7 @@ export function ProductImportDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
+      <DialogContent className="max-h-[90vh] min-w-0 overflow-y-auto sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle>Import Products</DialogTitle>
           <DialogDescription>
@@ -140,7 +150,7 @@ export function ProductImportDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0 w-full">
           <div className="rounded-lg border border-dashed p-6">
             <div className="flex flex-col items-center gap-2 text-center">
               <Upload className="h-8 w-8 text-muted-foreground" />
@@ -152,7 +162,7 @@ export function ProductImportDialog({
                 type="file"
                 accept=".csv,.json"
                 onChange={handleFileChange}
-                className="mt-2 text-sm"
+                className="mt-2 max-w-full text-sm"
               />
             </div>
           </div>
@@ -176,6 +186,15 @@ export function ProductImportDialog({
               <Download className="mr-2 h-4 w-4" />
               JSON Template
             </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={handleLoadDummyProducts}
+            >
+              <Sparkles className="mr-2 h-4 w-4 text-emerald-500" />
+              Dummy Products
+            </Button>
           </div>
 
           {parseError && (
@@ -186,13 +205,13 @@ export function ProductImportDialog({
           )}
 
           {preview && (
-            <div className="space-y-3">
+            <div className="space-y-3 min-w-0 w-full">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">{fileName}</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <span className="truncate text-sm font-medium">{fileName}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex shrink-0 items-center gap-2">
                   {preview.data.length > 0 && (
                     <Badge variant="default">
                       <CheckCircle2 className="mr-1 h-3 w-3" />
@@ -209,25 +228,25 @@ export function ProductImportDialog({
               </div>
 
               {preview.data.length > 0 && (
-                <div className="max-h-[200px] overflow-auto rounded-md border">
-                  <Table>
+                <div className="max-h-[220px] w-full min-w-0 overflow-auto rounded-md border">
+                  <Table className="w-full">
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Name</TableHead>
-                        <TableHead>SKU</TableHead>
-                        <TableHead>Category</TableHead>
-                        <TableHead className="text-right">Price</TableHead>
-                        <TableHead className="text-right">Stock</TableHead>
+                        <TableHead className="min-w-[160px]">Name</TableHead>
+                        <TableHead className="w-[110px]">SKU</TableHead>
+                        <TableHead className="w-[130px]">Category</TableHead>
+                        <TableHead className="w-[90px] text-right">Price</TableHead>
+                        <TableHead className="w-[70px] text-right">Stock</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {preview.data.slice(0, 5).map((product, i) => (
                         <TableRow key={i}>
-                          <TableCell className="font-medium">
+                          <TableCell className="max-w-[200px] truncate font-medium" title={product.name}>
                             {product.name}
                           </TableCell>
-                          <TableCell>{product.sku}</TableCell>
-                          <TableCell>{product.category}</TableCell>
+                          <TableCell className="font-mono text-xs">{product.sku}</TableCell>
+                          <TableCell className="max-w-[130px] truncate">{product.category}</TableCell>
                           <TableCell className="text-right">
                             ${product.price.toFixed(2)}
                           </TableCell>
@@ -236,7 +255,7 @@ export function ProductImportDialog({
                       ))}
                       {preview.data.length > 5 && (
                         <TableRow>
-                          <TableCell colSpan={5} className="text-center text-muted-foreground">
+                          <TableCell colSpan={5} className="py-2 text-center text-xs text-muted-foreground">
                             + {preview.data.length - 5} more products
                           </TableCell>
                         </TableRow>

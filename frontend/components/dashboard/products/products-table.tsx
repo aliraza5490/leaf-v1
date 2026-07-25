@@ -53,18 +53,18 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
   };
 
   return (
-    <div className="rounded-md border">
-      <Table>
+    <div className="rounded-md border min-w-0 w-full overflow-hidden">
+      <Table className="w-full">
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[80px]">Image</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>SKU</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead className="text-right">Price</TableHead>
-            <TableHead className="text-center">Stock</TableHead>
-            <TableHead className="text-center">Status</TableHead>
-            <TableHead>Created</TableHead>
+            <TableHead className="w-[60px]">Image</TableHead>
+            <TableHead className="min-w-[180px]">Name</TableHead>
+            <TableHead className="w-[120px]">SKU</TableHead>
+            <TableHead className="w-[140px]">Category</TableHead>
+            <TableHead className="w-[90px] text-right">Price</TableHead>
+            <TableHead className="w-[130px] text-center">Stock</TableHead>
+            <TableHead className="w-[100px] text-center">Status</TableHead>
+            <TableHead className="w-[110px]">Created</TableHead>
             <TableHead className="w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -93,9 +93,11 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="font-medium">{product.name}</TableCell>
-                <TableCell className="text-muted-foreground">{product.sku}</TableCell>
-                <TableCell>{product.category}</TableCell>
+                <TableCell className="max-w-[260px] truncate font-medium" title={product.name}>
+                  {product.name}
+                </TableCell>
+                <TableCell className="font-mono text-xs text-muted-foreground">{product.sku}</TableCell>
+                <TableCell className="max-w-[140px] truncate">{product.category}</TableCell>
                 <TableCell className="text-right">{formatPrice(product.price)}</TableCell>
                 <TableCell className="text-center">
                   <Badge variant={getStockVariant(product.stock)}>
@@ -107,7 +109,7 @@ export function ProductsTable({ products, onEdit, onDelete }: ProductsTableProps
                     {product.status}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-muted-foreground">
+                <TableCell className="text-xs text-muted-foreground whitespace-nowrap">
                   {formatDate(product.createdAt)}
                 </TableCell>
                 <TableCell>
