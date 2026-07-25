@@ -37,7 +37,7 @@ export function MarqueeSection() {
               className="flex items-center gap-3 px-6 py-2 transition-opacity hover:opacity-100"
             >
               <div className="w-8 h-8 flex items-center justify-center">
-                <Icon style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                <Icon className="w-full h-full" />
               </div>
               <span className="text-base font-semibold text-foreground tracking-tight">
                 {brand.name}
