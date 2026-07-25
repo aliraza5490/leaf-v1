@@ -520,4 +520,4 @@ export const baseColors: BaseColor[] = [
 ];
 
 export const DEFAULT_ACCENT = "green";
-export const DEFAULT_BASE = "slate";
+export const DEFAULT_BASE = "zinc";
