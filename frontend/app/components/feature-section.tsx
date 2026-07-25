@@ -35,14 +35,16 @@ export function FeatureSection({ feature, reverse }: FeatureSectionProps) {
           <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
             {feature.title}
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
+          <p className="mt-4 text-base sm:text-lg text-foreground/80 leading-relaxed font-normal">
             {feature.description}
           </p>
-          <ul className="mt-6 space-y-3">
+          <ul className="mt-6 space-y-3.5">
             {feature.bullets.map((bullet) => (
               <li key={bullet} className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
-                <span className="text-sm text-muted-foreground">{bullet}</span>
+                <span className="text-sm sm:text-base font-medium text-foreground/90 leading-snug">
+                  {bullet}
+                </span>
               </li>
             ))}
           </ul>
