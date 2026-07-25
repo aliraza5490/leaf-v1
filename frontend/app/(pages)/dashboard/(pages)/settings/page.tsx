@@ -16,7 +16,7 @@ import {
   mockNotificationSettings,
   mockTeamMembers,
   mockAccountSettings,
-} from "@/lib/settings/mock-data";
+} from "@/mocks/settings";
 
 export default function SettingsPage() {
   const [activeSection, setActiveSection] = useState<SettingsSection>("general");

@@ -18,8 +18,8 @@ import type {
   KBFAQFormData,
   KBViewMode,
 } from "@/app/(pages)/dashboard/(pages)/knowledge-base/types";
-import { mockArticles } from "@/lib/knowledge-base/mock-data";
-import { generateId } from "@/lib/knowledge-base/utils";
+import { mockArticles } from "@/mocks/knowledge-base";
+import { generateId } from "@/lib/utils/knowledge-base";
 
 export default function KnowledgeBasePage() {
   const [articles, setArticles] = useState<KBArticle[]>(mockArticles);

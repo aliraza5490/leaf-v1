@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { KBArticle, KBFAQFormData } from "@/app/(pages)/dashboard/(pages)/knowledge-base/types";
-import { kbCategories } from "@/lib/knowledge-base/mock-data";
+import { kbCategories } from "@/mocks/knowledge-base";
 
 const faqFormSchema = z.object({
   faqQuestion: z.string().min(5, "Question must be at least 5 characters").max(300),

@@ -9,7 +9,7 @@ import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { decodeJwtPayload } from "@/hooks/auth/use-admin-auth";
+import { decodeJwtPayload } from "@/hooks/use-admin-auth";
 import {
   Card,
   CardContent,

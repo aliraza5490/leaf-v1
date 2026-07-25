@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { BrandingConfig } from "@/app/(pages)/dashboard/(pages)/bot-config/types";
-import { fontFamilies } from "@/lib/bot-config/mock-data";
+import { fontFamilies } from "@/mocks/bot-config";
 
 interface BrandingConfigProps {
   config: BrandingConfig;

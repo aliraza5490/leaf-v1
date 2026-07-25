@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { KBArticle, KBArticleFormData } from "@/app/(pages)/dashboard/(pages)/knowledge-base/types";
-import { kbCategories } from "@/lib/knowledge-base/mock-data";
+import { kbCategories } from "@/mocks/knowledge-base";
 
 const articleFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters").max(200),

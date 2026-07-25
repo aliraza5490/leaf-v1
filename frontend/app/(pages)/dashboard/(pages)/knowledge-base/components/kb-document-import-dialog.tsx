@@ -28,7 +28,7 @@ import {
   mapImportToArticle,
   parseCSV,
   validateArticleData,
-} from "@/lib/knowledge-base/utils";
+} from "@/lib/utils/knowledge-base";
 
 interface KBDocImportDialogProps {
   open: boolean;

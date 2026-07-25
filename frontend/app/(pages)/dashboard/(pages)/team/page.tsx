@@ -13,7 +13,7 @@ import type {
   TeamFilters,
   TeamViewMode,
 } from "@/app/(pages)/dashboard/(pages)/team/types";
-import { mockTeamMembers } from "@/lib/mock-data/agents";
+import { mockTeamMembers } from "@/mocks/agents";
 
 export default function TeamPage() {
   const [members, setMembers] = useState<TeamMember[]>(mockTeamMembers);

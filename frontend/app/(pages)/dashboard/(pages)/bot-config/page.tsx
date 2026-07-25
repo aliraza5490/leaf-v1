@@ -16,7 +16,7 @@ import {
   mockConversationFlowsConfig,
   mockGuardrailsConfig,
   mockBrandingConfig,
-} from "@/lib/bot-config/mock-data";
+} from "@/mocks/bot-config";
 
 export default function BotConfigPage() {
   const [activeTab, setActiveTab] = useState<BotConfigTab>("branding");

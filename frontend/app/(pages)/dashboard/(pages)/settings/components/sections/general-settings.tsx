@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { GeneralSettings as GeneralSettingsType } from "@/app/(pages)/dashboard/(pages)/settings/types";
-import { languages, timezones, currencies, dateFormats } from "@/lib/settings/mock-data";
+import { languages, timezones, currencies, dateFormats } from "@/mocks/settings";
 
 interface GeneralSettingsProps {
   settings: GeneralSettingsType;

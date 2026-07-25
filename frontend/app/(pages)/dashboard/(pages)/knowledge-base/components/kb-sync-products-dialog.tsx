@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { KBArticleFormData } from "@/app/(pages)/dashboard/(pages)/knowledge-base/types";
-import { mockProducts } from "@/lib/products/mock-data";
+import { mockProducts } from "@/mocks/products-data";
 
 interface KBSyncProductsDialogProps {
   open: boolean;

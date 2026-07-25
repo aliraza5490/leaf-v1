@@ -25,7 +25,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { mockNotifications } from "@/lib/notifications/mock-data";
+import { mockNotifications } from "@/mocks/notifications";
 import type { Notification, NotificationType } from "@/types/notification";
 
 const notificationIcons: Record<NotificationType, React.ElementType> = {

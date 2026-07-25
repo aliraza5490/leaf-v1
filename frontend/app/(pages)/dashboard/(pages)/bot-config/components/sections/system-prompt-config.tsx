@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { SystemPromptConfig as SystemPromptConfigType } from "@/app/(pages)/dashboard/(pages)/bot-config/types";
-import { availableLanguages, personalityOptions } from "@/lib/bot-config/mock-data";
+import { availableLanguages, personalityOptions } from "@/mocks/bot-config";
 
 interface SystemPromptConfigProps {
   config: SystemPromptConfigType;

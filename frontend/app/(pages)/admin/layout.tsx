@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AdminSidebar } from "./components/admin-sidebar";
-import { useAdminAuth } from "@/hooks/auth/use-admin-auth";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,

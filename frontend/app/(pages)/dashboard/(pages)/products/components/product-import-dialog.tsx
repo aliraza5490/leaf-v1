@@ -21,7 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import type { ProductFormData } from "@/app/(pages)/dashboard/(pages)/products/types";
-import { DUMMY_PRODUCTS } from "@/lib/products/dummy-products";
+import { DUMMY_PRODUCTS } from "@/mocks/dummy-products";
 import {
   downloadFile,
   generateCSVTemplate,

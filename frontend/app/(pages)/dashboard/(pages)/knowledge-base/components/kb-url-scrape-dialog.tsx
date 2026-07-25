@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { KBArticleFormData } from "@/app/(pages)/dashboard/(pages)/knowledge-base/types";
-import { kbCategories } from "@/lib/knowledge-base/mock-data";
+import { kbCategories } from "@/mocks/knowledge-base";
 
 interface ScrapedContent {
   url: string;

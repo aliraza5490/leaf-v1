@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { ThemeCustomizer } from "@/components/common/theme-customizer";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/app/(pages)/dashboard/components/sidebar-nav";
-import { useAuth } from "@/hooks/auth/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import {
   DropdownMenu,
   DropdownMenuContent,

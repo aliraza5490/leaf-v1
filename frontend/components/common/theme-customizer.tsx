@@ -14,7 +14,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useThemeColor } from "@/hooks/ui/use-theme-color";
+import { useThemeColor } from "@/hooks/use-theme-color";
 import { accentColors, baseColors } from "@/lib/theme/colors";
 import { cn } from "@/lib/utils";
 

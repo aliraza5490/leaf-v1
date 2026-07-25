@@ -18,7 +18,7 @@ import type {
   KBStatus,
   KBViewMode,
 } from "@/app/(pages)/dashboard/(pages)/knowledge-base/types";
-import { kbCategories } from "@/lib/knowledge-base/mock-data";
+import { kbCategories } from "@/mocks/knowledge-base";
 
 interface KBToolbarProps {
   filters: KBFilters;

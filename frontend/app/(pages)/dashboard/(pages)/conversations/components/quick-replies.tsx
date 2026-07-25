@@ -3,7 +3,7 @@
 import { Zap } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { quickReplies } from "@/lib/mock-data/quick-replies";
+import { quickReplies } from "@/mocks/quick-replies";
 
 interface QuickRepliesProps {
   onSelect: (text: string) => void;

@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { ModelApiConfig as ModelApiConfigType } from "@/app/(pages)/dashboard/(pages)/bot-config/types";
-import { availableModels } from "@/lib/bot-config/mock-data";
+import { availableModels } from "@/mocks/bot-config";
 
 interface ModelApiConfigProps {
   config: ModelApiConfigType;
