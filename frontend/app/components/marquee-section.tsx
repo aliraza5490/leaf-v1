@@ -9,7 +9,7 @@ import {
   GitHubIcon,
   SupabaseIcon,
   NextjsIcon,
-} from "@/components/icons";
+} from "@/components/common/icons";
 
 export function MarqueeSection() {
   const brandLogos = [

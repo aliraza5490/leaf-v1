@@ -1,4 +1,4 @@
-import type { KBArticleFormData } from "./types";
+import type { KBArticleFormData } from "@/types";
 
 export function generateId(): string {
   return `kb-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;

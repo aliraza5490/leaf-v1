@@ -1,4 +1,4 @@
-import type { ProductFormData } from "./types";
+import type { ProductFormData } from "@/types";
 
 export const DUMMY_PRODUCTS: ProductFormData[] = [
   {

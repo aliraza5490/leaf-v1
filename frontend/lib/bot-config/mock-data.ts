@@ -4,7 +4,7 @@ import type {
   ConversationFlowsConfig,
   GuardrailsConfig,
   BrandingConfig,
-} from "./types";
+} from "@/types";
 
 export const mockSystemPromptConfig: SystemPromptConfig = {
   botName: "Leaf Assistant",

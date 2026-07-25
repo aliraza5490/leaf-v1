@@ -1,4 +1,4 @@
-import type { KBArticle, KBCategory } from "./types";
+import type { KBArticle, KBCategory } from "@/types";
 
 export const kbCategories: KBCategory[] = [
   { id: "kb-cat-1", name: "Shipping & Delivery", description: "Policies and info about shipping", articleCount: 3 },

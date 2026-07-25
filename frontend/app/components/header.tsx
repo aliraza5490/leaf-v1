@@ -5,8 +5,8 @@ import Link from "next/link";
 import { Leaf } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeCustomizer } from "@/components/theme-customizer";
-import { useAuth } from "@/hooks/use-auth";
+import { ThemeCustomizer } from "@/components/common/theme-customizer";
+import { useAuth } from "@/hooks/auth/use-auth";
 
 export function Header() {
   const { isAuthenticated } = useAuth();

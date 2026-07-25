@@ -2,9 +2,9 @@ import type {
   GeneralSettings,
   IntegrationSettings,
   NotificationSettings,
-  TeamMember,
+  SettingsTeamMember,
   AccountSettings,
-} from "./types";
+} from "@/types";
 
 export const mockGeneralSettings: GeneralSettings = {
   storeName: "Leaf Demo Store",
@@ -71,7 +71,7 @@ export const mockNotificationSettings: NotificationSettings = {
 
 
 
-export const mockTeamMembers: TeamMember[] = [
+export const mockTeamMembers: SettingsTeamMember[] = [
   {
     id: "1",
     name: "Sarah Johnson",

@@ -7,7 +7,7 @@ import {
   BetaSection,
   Footer,
   features,
-} from "./components";
+} from "@/app/components";
 
 export default function LandingPage() {
   return (

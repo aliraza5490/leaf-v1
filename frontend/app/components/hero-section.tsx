@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/auth/use-auth";
 import { Boxes } from "@/components/ui/background-boxes";
 import { ChatMockup } from "./chat-mockup";
 

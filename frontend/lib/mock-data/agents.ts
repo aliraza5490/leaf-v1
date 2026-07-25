@@ -1,4 +1,4 @@
-import type { TeamMember } from "@/lib/team/types";
+import type { TeamMember } from "@/app/(pages)/dashboard/(pages)/team/types";
 
 export const mockTeamMembers: TeamMember[] = [
   {

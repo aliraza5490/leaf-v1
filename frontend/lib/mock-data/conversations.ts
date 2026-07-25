@@ -1,4 +1,4 @@
-import type { Conversation } from "@/types/conversation";
+import type { Conversation } from "@/app/(pages)/dashboard/(pages)/conversations/types";
 import { mockProducts } from "./products";
 
 export const mockConversations: Conversation[] = [

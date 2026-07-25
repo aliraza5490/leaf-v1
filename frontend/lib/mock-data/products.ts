@@ -1,6 +1,6 @@
-import type { Product } from "@/types/conversation";
+import type { ConversationProduct } from "@/app/(pages)/dashboard/(pages)/conversations/types";
 
-export const mockProducts: Product[] = [
+export const mockProducts: ConversationProduct[] = [
   {
     id: "p1",
     title: "Nike Air Max 270",

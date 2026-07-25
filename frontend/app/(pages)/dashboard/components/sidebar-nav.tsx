@@ -1,0 +1,155 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import {
+  BarChart3,
+  BookOpen,
+  Bot,
+  ChevronDown,
+  FlaskConical,
+  Home,
+  Leaf,
+  MessageSquare,
+  Package,
+  Settings,
+  Users,
+} from "lucide-react";
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuBadge,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarRail,
+  SidebarSeparator,
+} from "@/components/ui/sidebar";
+import { getConversationStats } from "@/lib/api/conversations";
+
+const navigationItems = [
+  { title: "Overview", url: "/dashboard", icon: Home },
+  { title: "Conversations", url: "/dashboard/conversations", icon: MessageSquare },
+  { title: "Products", url: "/dashboard/products", icon: Package },
+  { title: "Knowledge Base", url: "/dashboard/knowledge-base", icon: BookOpen },
+  { title: "Analytics", url: "/dashboard/analytics", icon: BarChart3 },
+  { title: "Bot Config", url: "/dashboard/bot-config", icon: Bot },
+  { title: "Playground", url: "/dashboard/playground", icon: FlaskConical },
+];
+
+const managementItems = [
+  { title: "Team", url: "/dashboard/team", icon: Users },
+  { title: "Settings", url: "/dashboard/settings", icon: Settings },
+];
+
+function ConversationsBadge() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    getConversationStats()
+      .then((stats) => setCount(stats.active))
+      .catch(() => setCount(null));
+
+    const interval = setInterval(() => {
+      getConversationStats()
+        .then((stats) => setCount(stats.active))
+        .catch(() => {});
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  if (count === null || count === 0) return null;
+  return <SidebarMenuBadge>{count}</SidebarMenuBadge>;
+}
+
+export function DashboardSidebar() {
+  const pathname = usePathname();
+
+  return (
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-b border-border/40">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 px-2 py-3 text-primary group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0"
+        >
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <Leaf className="h-5 w-5" />
+          </div>
+          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+            <span className="text-lg font-semibold tracking-tight">Leaf</span>
+            <span className="text-xs text-muted-foreground">AI Assistant</span>
+          </div>
+        </Link>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup className="px-2">
+          <SidebarGroupContent>
+            <SidebarMenu className="gap-1.5">
+              {navigationItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === item.url || (item.url !== "/dashboard" && pathname.startsWith(item.url))}
+                    tooltip={item.title}
+                  >
+                    <Link href={item.url}>
+                      <item.icon className="h-4 w-4" />
+                      <span>{item.title}</span>
+                    </Link>
+                  </SidebarMenuButton>
+                  {item.title === "Conversations" ? (
+                    <ConversationsBadge />
+                  ) : null}
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarSeparator className="mx-2" />
+        <Collapsible defaultOpen className="group/collapsible">
+          <SidebarGroup className="px-2">
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger>
+                Management
+                <ChevronDown className="ml-auto h-4 w-4 transition-transform group-data-[state=open]/collapsible:rotate-180" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent className="px-0">
+                <SidebarMenu className="gap-1.5">
+                  {managementItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={pathname === item.url}
+                        tooltip={item.title}
+                      >
+                        <Link href={item.url}>
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </SidebarGroup>
+        </Collapsible>
+      </SidebarContent>
+      <SidebarRail />
+    </Sidebar>
+  );
+}
