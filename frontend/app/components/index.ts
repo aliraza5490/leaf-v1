@@ -1,0 +1,10 @@
+export { Header } from "./header";
+export { HeroSection } from "./hero-section";
+export { MarqueeSection } from "./marquee-section";
+export { BenefitsSection } from "./benefits-section";
+export { FeatureSection } from "./feature-section";
+export { BetaSection } from "./beta-section";
+export { Footer } from "./footer";
+export { ChatMockup } from "./chat-mockup";
+export { FeatureVisual } from "./feature-visual";
+export { features } from "./features-data";
