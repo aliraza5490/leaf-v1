@@ -111,6 +111,9 @@ export function RecentConversations({ className }: RecentConversationsProps = {}
               </TableRow>
             ) : (
               conversations.map((conversation) => {
+                const hasUnread = conversation.messages.some(
+                  (m) => !m.read && m.sender === "visitor"
+                );
                 const lastMessage = conversation.messages[conversation.messages.length - 1];
                 return (
                   <TableRow
@@ -126,7 +129,12 @@ export function RecentConversations({ className }: RecentConversationsProps = {}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col">
-                          <span className="font-medium">{conversation.visitor.name}</span>
+                          <span className="font-medium flex items-center gap-1.5">
+                            {conversation.visitor.name}
+                            {hasUnread && (
+                              <span className="h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--primary),0.6)]" />
+                            )}
+                          </span>
                           <span className="text-xs text-muted-foreground">
                             {conversation.visitor.email}
                           </span>

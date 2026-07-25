@@ -168,7 +168,7 @@ export function ConversationList({
         ) : (
           conversations.map((conversation) => {
             const hasUnread = conversation.messages.some(
-              (m) => !m.read && m.sender !== "visitor"
+              (m) => !m.read && m.sender === "visitor"
             );
             const lastMessage =
               conversation.messages[conversation.messages.length - 1];
