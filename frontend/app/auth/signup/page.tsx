@@ -65,12 +65,12 @@ export default function SignupPage() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-lg">
-      <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-semibold tracking-tight">
+    <Card className="w-full max-w-md shadow-xl border-border/80 dark:border-zinc-800/80 bg-card/95 backdrop-blur-md relative z-10">
+      <CardHeader className="space-y-1.5 text-center pb-6">
+        <CardTitle className="text-2xl font-bold tracking-tight">
           Create an account
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm">
           Enter your details to get started with us
         </CardDescription>
       </CardHeader>
@@ -82,7 +82,7 @@ export default function SignupPage() {
               name="full_name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full name</FormLabel>
+                  <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Full name</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -104,7 +104,7 @@ export default function SignupPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -127,7 +127,7 @@ export default function SignupPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Password</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -164,7 +164,7 @@ export default function SignupPage() {
               name="confirmPassword"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Confirm password</FormLabel>
+                  <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Confirm password</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -198,7 +198,7 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full font-semibold shadow-md shadow-emerald-500/10" disabled={isLoading}>
               {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
@@ -207,11 +207,11 @@ export default function SignupPage() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center border-t pt-6 text-sm text-muted-foreground">
+      <CardFooter className="flex justify-center border-t border-border/60 dark:border-zinc-800/80 pt-6 text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link
           href="/auth/login"
-          className="ml-1 font-medium text-primary underline-offset-4 hover:underline"
+          className="ml-1 font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 underline-offset-4 hover:underline transition-colors"
         >
           Sign in
         </Link>

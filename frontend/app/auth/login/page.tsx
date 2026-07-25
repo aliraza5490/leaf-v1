@@ -68,12 +68,12 @@ export default function LoginPage() {
   }
 
   return (
-    <Card className="w-full max-w-md shadow-lg">
-      <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-semibold tracking-tight">
+    <Card className="w-full max-w-md shadow-xl border-border/80 dark:border-zinc-800/80 bg-card/95 backdrop-blur-md relative z-10">
+      <CardHeader className="space-y-1.5 text-center pb-6">
+        <CardTitle className="text-2xl font-bold tracking-tight">
           Welcome back
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm">
           Enter your credentials to access your account
         </CardDescription>
       </CardHeader>
@@ -85,7 +85,7 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Email</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -108,7 +108,7 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Password</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -141,25 +141,25 @@ export default function LoginPage() {
               )}
             />
 
-            <div className="flex items-center justify-between">
-              <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+            <div className="flex items-center justify-between pt-1">
+              <label className="flex cursor-pointer items-center gap-2 text-sm text-muted-foreground select-none">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
+                  className="h-4 w-4 rounded border-input accent-emerald-500 focus:ring-emerald-500"
                 />
                 Remember me
               </label>
               <Link
                 href="/auth/forgot-password"
-                className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 underline-offset-4 hover:underline transition-colors"
               >
                 Forgot password?
               </Link>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full font-semibold shadow-md shadow-emerald-500/10" disabled={isLoading}>
               {isLoading && (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
@@ -168,11 +168,11 @@ export default function LoginPage() {
           </form>
         </Form>
       </CardContent>
-      <CardFooter className="flex justify-center border-t pt-6 text-sm text-muted-foreground">
+      <CardFooter className="flex justify-center border-t border-border/60 dark:border-zinc-800/80 pt-6 text-sm text-muted-foreground">
         Don&apos;t have an account?{" "}
         <Link
           href="/auth/signup"
-          className="ml-1 font-medium text-primary underline-offset-4 hover:underline"
+          className="ml-1 font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 underline-offset-4 hover:underline transition-colors"
         >
           Sign up
         </Link>

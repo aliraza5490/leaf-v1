@@ -127,6 +127,27 @@
   html {
     @apply font-sans;
   }
+
+  /* Autofill styling overrides to eliminate yellow/olive browser background */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--foreground) !important;
+    -webkit-box-shadow: 0 0 0px 1000px oklch(0.97 0.002 286) inset !important;
+    transition: background-color 50000s ease-in-out 0s;
+    caret-color: currentColor;
+  }
+
+  .dark input:-webkit-autofill,
+  .dark input:-webkit-autofill:hover,
+  .dark input:-webkit-autofill:focus,
+  .dark input:-webkit-autofill:active {
+    -webkit-text-fill-color: var(--foreground) !important;
+    -webkit-box-shadow: 0 0 0px 1000px oklch(0.20 0.01 286) inset !important;
+    transition: background-color 50000s ease-in-out 0s;
+    caret-color: currentColor;
+  }
 }
 
 @layer utilities {
