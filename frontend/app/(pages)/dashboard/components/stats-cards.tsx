@@ -1,3 +1,5 @@
+"use client";
+
 import { MessageSquare, Users, TrendingUp, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConversationStats } from "@/app/(pages)/dashboard/(pages)/conversations/hooks";
