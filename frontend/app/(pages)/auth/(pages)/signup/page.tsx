@@ -26,7 +26,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { register } from "@/lib/auth/service";
+import { registerAction } from "@/app/actions/auth";
 import { signupSchema, type SignupFormValues } from "@/lib/auth/validation";
 
 export default function SignupPage() {
@@ -48,12 +48,18 @@ export default function SignupPage() {
   async function onSubmit(values: SignupFormValues) {
     setIsLoading(true);
     try {
-      const response = await register({
+      const res = await registerAction({
         full_name: values.full_name,
         email: values.email,
         password: values.password,
       });
-      toast.success(response.message ?? "Account created successfully");
+
+      if (!res.success || !res.data) {
+        toast.error(res.error || "Failed to create account");
+        return;
+      }
+
+      toast.success(res.data.message ?? "Account created successfully");
       router.push("/auth/login");
     } catch (error) {
       const message =

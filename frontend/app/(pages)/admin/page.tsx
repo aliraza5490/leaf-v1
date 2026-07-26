@@ -1,27 +1,17 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Users, Store, Settings, ArrowRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AdminStatsCards } from "@/app/(pages)/admin/components/stats-cards";
-import { getAdminTopStores } from "@/lib/api/admin";
+import { getAdminTopStoresAction } from "@/app/actions/admin";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { Store as StoreType } from "@/app/(pages)/admin/types";
 
-export default function AdminOverviewPage() {
-  const [topStores, setTopStores] = useState<StoreType[]>([]);
-  const [loadingStores, setLoadingStores] = useState(true);
+export const dynamic = "force-dynamic";
 
-  useEffect(() => {
-    getAdminTopStores(5)
-      .then((res) => setTopStores(res.items))
-      .catch(() => {})
-      .finally(() => setLoadingStores(false));
-  }, []);
+export default async function AdminOverviewPage() {
+  const topStoresRes = await getAdminTopStoresAction(5);
+  const topStores = topStoresRes.success && topStoresRes.data ? topStoresRes.data.items : [];
 
   return (
     <div className="flex flex-col gap-6">
@@ -49,13 +39,7 @@ export default function AdminOverviewPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {loadingStores ? (
-              <div className="space-y-3">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
-                ))}
-              </div>
-            ) : topStores.length === 0 ? (
+            {topStores.length === 0 ? (
               <p className="text-sm text-muted-foreground">No stores yet.</p>
             ) : (
               <div className="space-y-3">

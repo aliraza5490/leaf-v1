@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api/client";
+import { serverApiGet, serverApiPost, serverApiPut, serverApiDelete } from "@/lib/api/server";
 import type {
   AdminUser,
   AdminUserUpdate,
@@ -20,26 +20,26 @@ export async function getAdminUsers(params?: {
   page?: number;
   page_size?: number;
 }): Promise<PaginatedResponse<AdminUser>> {
-  return apiGet("/admin/users", params as Record<string, unknown>);
+  return serverApiGet("/admin/users", params as Record<string, unknown>);
 }
 
 export async function getAdminUserStats(): Promise<UserStats> {
-  return apiGet("/admin/users/stats");
+  return serverApiGet("/admin/users/stats");
 }
 
 export async function getAdminUser(email: string): Promise<AdminUser> {
-  return apiGet(`/admin/users/${encodeURIComponent(email)}`);
+  return serverApiGet(`/admin/users/${encodeURIComponent(email)}`);
 }
 
 export async function updateAdminUser(
   email: string,
   data: AdminUserUpdate
 ): Promise<AdminUser> {
-  return apiPut(`/admin/users/${encodeURIComponent(email)}`, data);
+  return serverApiPut(`/admin/users/${encodeURIComponent(email)}`, data);
 }
 
 export async function deactivateAdminUser(email: string): Promise<{ message: string }> {
-  return apiDelete(`/admin/users/${encodeURIComponent(email)}`);
+  return serverApiDelete(`/admin/users/${encodeURIComponent(email)}`);
 }
 
 export async function getAdminStores(params?: {
@@ -49,38 +49,38 @@ export async function getAdminStores(params?: {
   page?: number;
   page_size?: number;
 }): Promise<PaginatedResponse<Store>> {
-  return apiGet("/admin/stores", params as Record<string, unknown>);
+  return serverApiGet("/admin/stores", params as Record<string, unknown>);
 }
 
 export async function getAdminStoreStats(): Promise<StoreStats> {
-  return apiGet("/admin/stores/stats");
+  return serverApiGet("/admin/stores/stats");
 }
 
 export async function getAdminStore(id: number): Promise<Store> {
-  return apiGet(`/admin/stores/${encodeURIComponent(String(id))}`);
+  return serverApiGet(`/admin/stores/${encodeURIComponent(String(id))}`);
 }
 
 export async function updateAdminStore(
   id: number,
   data: StoreUpdate
 ): Promise<Store> {
-  return apiPut(`/admin/stores/${encodeURIComponent(String(id))}`, data);
+  return serverApiPut(`/admin/stores/${encodeURIComponent(String(id))}`, data);
 }
 
 export async function getAdminOverview(): Promise<PlatformOverview> {
-  return apiGet("/admin/analytics/overview");
+  return serverApiGet("/admin/analytics/overview");
 }
 
 export async function getAdminTrends(rangeDays = 30): Promise<AdminTrendsResponse> {
-  return apiGet("/admin/analytics/trends", { range_days: rangeDays });
+  return serverApiGet("/admin/analytics/trends", { range_days: rangeDays });
 }
 
 export async function getAdminTopStores(limit = 10): Promise<{ items: Store[] }> {
-  return apiGet("/admin/analytics/top-stores", { limit });
+  return serverApiGet("/admin/analytics/top-stores", { limit });
 }
 
 export async function getAdminSettings(): Promise<SystemSetting[]> {
-  return apiGet("/admin/settings");
+  return serverApiGet("/admin/settings");
 }
 
 export async function createAdminSetting(data: {
@@ -88,18 +88,18 @@ export async function createAdminSetting(data: {
   value: string;
   description: string;
 }): Promise<SystemSetting> {
-  return apiPost("/admin/settings", data);
+  return serverApiPost("/admin/settings", data);
 }
 
 export async function updateAdminSetting(
   key: string,
   data: SystemSettingUpdate
 ): Promise<SystemSetting> {
-  return apiPut(`/admin/settings/${encodeURIComponent(key)}`, data);
+  return serverApiPut(`/admin/settings/${encodeURIComponent(key)}`, data);
 }
 
 export async function deleteAdminSetting(
   key: string
 ): Promise<{ message: string }> {
-  return apiDelete(`/admin/settings/${encodeURIComponent(key)}`);
+  return serverApiDelete(`/admin/settings/${encodeURIComponent(key)}`);
 }

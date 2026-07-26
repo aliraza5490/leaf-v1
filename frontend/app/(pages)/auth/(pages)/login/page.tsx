@@ -27,7 +27,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { login } from "@/lib/auth/service";
+import { loginAction } from "@/app/actions/auth";
 import { loginSchema, type LoginFormValues } from "@/lib/auth/validation";
 
 export default function LoginPage() {
@@ -47,10 +47,15 @@ export default function LoginPage() {
   async function onSubmit(values: LoginFormValues) {
     setIsLoading(true);
     try {
-      const data = await login(values);
+      const res = await loginAction(values);
+      if (!res.success || !res.data) {
+        toast.error(res.error || "Invalid credentials");
+        return;
+      }
+
       toast.success("Logged in successfully");
 
-      const payload = decodeJwtPayload(data.access_token);
+      const payload = decodeJwtPayload(res.data.access_token);
       const role = payload?.role;
 
       if (role === "superadmin") {

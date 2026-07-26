@@ -1,17 +1,21 @@
-"use client";
-
 import { MessageSquare, Users, TrendingUp, Clock } from "lucide-react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConversationStats } from "@/app/(pages)/dashboard/(pages)/conversations/hooks";
+import type { ConversationStats } from "@/types";
 
-export function StatsCards() {
-  const { stats, loading } = useConversationStats();
+interface StatsCardsProps {
+  stats?: ConversationStats | null;
+}
+
+export function StatsCards({ stats: initialStats }: StatsCardsProps = {}) {
+  const { stats: clientStats, loading } = useConversationStats();
+  const stats = initialStats ?? clientStats;
+  const isDataLoading = !initialStats && loading;
 
   const statsData = [
     {
       title: "Total Conversations",
-      value: loading ? "..." : String(stats?.total ?? 0),
+      value: isDataLoading ? "..." : String(stats?.total ?? 0),
       change: "+12.5%",
       trend: "up",
       icon: MessageSquare,
@@ -19,7 +23,7 @@ export function StatsCards() {
     },
     {
       title: "Active Conversations",
-      value: loading ? "..." : String(stats?.active ?? 0),
+      value: isDataLoading ? "..." : String(stats?.active ?? 0),
       change: "+8.2%",
       trend: "up",
       icon: Users,
@@ -27,7 +31,7 @@ export function StatsCards() {
     },
     {
       title: "Conversion Rate",
-      value: loading ? "..." : stats?.conversionRate ?? "0%",
+      value: isDataLoading ? "..." : stats?.conversionRate ?? "0%",
       change: "+2.1%",
       trend: "up",
       icon: TrendingUp,
@@ -35,7 +39,7 @@ export function StatsCards() {
     },
     {
       title: "Avg. Response Time",
-      value: loading ? "..." : stats?.avgResponseTime ?? "0s",
+      value: isDataLoading ? "..." : stats?.avgResponseTime ?? "0s",
       change: "-15%",
       trend: "down",
       icon: Clock,

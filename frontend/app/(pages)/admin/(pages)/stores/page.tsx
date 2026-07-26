@@ -18,10 +18,10 @@ import {
 import { AdminStoreTable } from "@/app/(pages)/admin/(pages)/stores/components/store-table";
 import { AdminStoreDialog } from "@/app/(pages)/admin/(pages)/stores/components/store-dialog";
 import {
-  getAdminStores,
-  getAdminStoreStats,
-  updateAdminStore,
-} from "@/lib/api/admin";
+  getAdminStoresAction,
+  getAdminStoreStatsAction,
+  updateAdminStoreAction,
+} from "@/app/actions/admin";
 import type { Store as StoreType, StoreUpdate, StoreStats } from "@/app/(pages)/admin/types";
 
 export default function AdminStoresPage() {
@@ -40,15 +40,19 @@ export default function AdminStoresPage() {
   const fetchStores = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getAdminStores({
+      const res = await getAdminStoresAction({
         q: search || undefined,
         status: statusFilter === "all" ? undefined : statusFilter,
         plan: planFilter === "all" ? undefined : planFilter,
         page,
         page_size: 20,
       });
-      setStores(res.items);
-      setTotal(res.total);
+      if (res.success && res.data) {
+        setStores(res.data.items);
+        setTotal(res.data.total);
+      } else {
+        toast.error(res.error || "Failed to load stores");
+      }
     } catch {
       toast.error("Failed to load stores");
     } finally {
@@ -56,14 +60,14 @@ export default function AdminStoresPage() {
     }
   }, [search, statusFilter, planFilter, page]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     fetchStores();
   }, [fetchStores]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    getAdminStoreStats().then(setStats).catch(() => {});
+    getAdminStoreStatsAction().then((res) => {
+      if (res.success && res.data) setStats(res.data);
+    }).catch(() => {});
   }, []);
 
   function handleEdit(store: StoreType) {
@@ -74,9 +78,13 @@ export default function AdminStoresPage() {
   async function handleSave(data: StoreUpdate) {
     if (!editingStore) return;
     try {
-      await updateAdminStore(editingStore.id, data);
-      toast.success(`Store ${editingStore.name} updated`);
-      fetchStores();
+      const res = await updateAdminStoreAction(editingStore.id, data);
+      if (res.success) {
+        toast.success(`Store ${editingStore.name} updated`);
+        fetchStores();
+      } else {
+        toast.error(res.error || "Failed to update store");
+      }
     } catch {
       toast.error("Failed to update store");
     }

@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getAdminOverview, getAdminTrends, getAdminTopStores } from "@/lib/api/admin";
+import { getAdminOverviewAction, getAdminTrendsAction, getAdminTopStoresAction } from "@/app/actions/admin";
 import type { PlatformOverview, AdminTrendsResponse, Store } from "@/app/(pages)/admin/types";
 
 export default function AdminAnalyticsPage() {
@@ -35,14 +35,14 @@ export default function AdminAnalyticsPage() {
 
   useEffect(() => {
     Promise.all([
-      getAdminOverview(),
-      getAdminTrends(14),
-      getAdminTopStores(10),
+      getAdminOverviewAction(),
+      getAdminTrendsAction(14),
+      getAdminTopStoresAction(10),
     ])
-      .then(([ov, tr, ts]) => {
-        setOverview(ov);
-        setTrends(tr);
-        setTopStores(ts.items);
+      .then(([ovRes, trRes, tsRes]) => {
+        if (ovRes.success && ovRes.data) setOverview(ovRes.data);
+        if (trRes.success && trRes.data) setTrends(trRes.data);
+        if (tsRes.success && tsRes.data) setTopStores(tsRes.data.items);
       })
       .catch(() => {})
       .finally(() => setLoading(false));

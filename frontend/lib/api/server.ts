@@ -1,4 +1,4 @@
-import { getAuthHeaders } from "@/lib/auth/service";
+import { cookies } from "next/headers";
 
 export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
@@ -8,13 +8,13 @@ export interface ApiError {
   detail: string;
 }
 
-export class ApiClientError extends Error {
+export class ApiServerError extends Error {
   constructor(
     message: string,
     public status?: number
   ) {
     super(message);
-    this.name = "ApiClientError";
+    this.name = "ApiServerError";
   }
 }
 
@@ -32,10 +32,18 @@ function buildUrl(path: string, params?: Record<string, unknown>): string {
   return url.toString();
 }
 
-function buildHeaders(extra?: Record<string, string>): Record<string, string> {
+async function buildHeaders(extra?: Record<string, string>): Promise<Record<string, string>> {
+  let token: string | null = null;
+  try {
+    const cookieStore = await cookies();
+    token = cookieStore.get("access_token")?.value ?? null;
+  } catch {
+    // If not in request context
+  }
+
   return {
     "Content-Type": "application/json",
-    ...getAuthHeaders(),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...extra,
   };
 }
@@ -47,51 +55,59 @@ async function handleResponse<T>(response: Response): Promise<T> {
     const message =
       (data as ApiError).detail ??
       `Request failed with status ${response.status}`;
-    throw new ApiClientError(message, response.status);
+    throw new ApiServerError(message, response.status);
   }
 
   return data as T;
 }
 
-export async function apiGet<T>(
+export async function serverApiGet<T>(
   path: string,
   params?: Record<string, unknown>
 ): Promise<T> {
+  const headers = await buildHeaders();
   const response = await fetch(buildUrl(path, params), {
     method: "GET",
-    headers: buildHeaders(),
+    headers,
+    cache: "no-store",
   });
   return handleResponse<T>(response);
 }
 
-export async function apiPost<T>(
+export async function serverApiPost<T>(
   path: string,
   body?: unknown
 ): Promise<T> {
+  const headers = await buildHeaders();
   const response = await fetch(buildUrl(path), {
     method: "POST",
-    headers: buildHeaders(),
+    headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    cache: "no-store",
   });
   return handleResponse<T>(response);
 }
 
-export async function apiPut<T>(
+export async function serverApiPut<T>(
   path: string,
   body?: unknown
 ): Promise<T> {
+  const headers = await buildHeaders();
   const response = await fetch(buildUrl(path), {
     method: "PUT",
-    headers: buildHeaders(),
+    headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    cache: "no-store",
   });
   return handleResponse<T>(response);
 }
 
-export async function apiDelete<T>(path: string): Promise<T> {
+export async function serverApiDelete<T>(path: string): Promise<T> {
+  const headers = await buildHeaders();
   const response = await fetch(buildUrl(path), {
     method: "DELETE",
-    headers: buildHeaders(),
+    headers,
+    cache: "no-store",
   });
   return handleResponse<T>(response);
 }

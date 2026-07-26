@@ -1,16 +1,14 @@
-"use client";
-
 import { useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  listProducts,
-  createProduct as apiCreate,
-  updateProduct as apiUpdate,
-  deleteProduct as apiDelete,
-  bulkImportProducts,
-  listCategories,
-} from "@/lib/api/products";
+  listProductsAction,
+  createProductAction,
+  updateProductAction,
+  deleteProductAction,
+  bulkImportProductsAction,
+  listCategoriesAction,
+} from "@/app/actions/products";
 import type {
   Product,
   ProductFormData,
@@ -32,12 +30,20 @@ export function useProducts(filters: ProductFilters) {
 
   const productsQuery = useQuery({
     queryKey: ["products", params],
-    queryFn: () => listProducts(params),
+    queryFn: async () => {
+      const res = await listProductsAction(params);
+      if (!res.success) throw new Error(res.error || "Failed to load products");
+      return res.data;
+    },
   });
 
   const categoriesQuery = useQuery({
     queryKey: ["productCategories"],
-    queryFn: listCategories,
+    queryFn: async () => {
+      const res = await listCategoriesAction();
+      if (!res.success) throw new Error(res.error || "Failed to load categories");
+      return res.data;
+    },
     staleTime: 5 * 60 * 1000,
   });
 
@@ -47,7 +53,11 @@ export function useProducts(filters: ProductFilters) {
   }, [queryClient]);
 
   const createMutation = useMutation({
-    mutationFn: (data: ProductFormData) => apiCreate(data),
+    mutationFn: async (data: ProductFormData) => {
+      const res = await createProductAction(data);
+      if (!res.success) throw new Error(res.error || "Failed to create product");
+      return res.data;
+    },
     onSuccess: (_, data) => {
       toast.success(`"${data.name}" has been added.`);
       invalidate();
@@ -59,7 +69,11 @@ export function useProducts(filters: ProductFilters) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: ProductFormData }) => apiUpdate(id, data),
+    mutationFn: async ({ id, data }: { id: string; data: ProductFormData }) => {
+      const res = await updateProductAction(id, data);
+      if (!res.success) throw new Error(res.error || "Failed to update product");
+      return res.data;
+    },
     onSuccess: (_, { data }) => {
       toast.success(`"${data.name}" has been updated.`);
       invalidate();
@@ -71,7 +85,11 @@ export function useProducts(filters: ProductFilters) {
   });
 
   const removeMutation = useMutation({
-    mutationFn: (product: Product) => apiDelete(product.id),
+    mutationFn: async (product: Product) => {
+      const res = await deleteProductAction(product.id);
+      if (!res.success) throw new Error(res.error || "Failed to delete product");
+      return res.data;
+    },
     onSuccess: (_, product) => {
       toast.success(`"${product.name}" has been deleted.`);
       invalidate();
@@ -83,7 +101,11 @@ export function useProducts(filters: ProductFilters) {
   });
 
   const importMutation = useMutation({
-    mutationFn: (items: ProductFormData[]) => bulkImportProducts(items),
+    mutationFn: async (items: ProductFormData[]) => {
+      const res = await bulkImportProductsAction(items);
+      if (!res.success) throw new Error(res.error || "Failed to import products");
+      return res.data;
+    },
     onSuccess: (_, items) => {
       toast.success(`${items.length} products have been imported.`);
       invalidate();

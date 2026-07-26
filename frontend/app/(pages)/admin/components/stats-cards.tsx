@@ -12,19 +12,27 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getAdminOverview } from "@/lib/api/admin";
+import { getAdminOverviewAction } from "@/app/actions/admin";
 import type { PlatformOverview } from "@/app/(pages)/admin/types";
 
-export function AdminStatsCards() {
-  const [data, setData] = useState<PlatformOverview | null>(null);
-  const [loading, setLoading] = useState(true);
+interface AdminStatsCardsProps {
+  overview?: PlatformOverview | null;
+}
+
+export function AdminStatsCards({ overview: initialOverview }: AdminStatsCardsProps = {}) {
+  const [data, setData] = useState<PlatformOverview | null>(initialOverview ?? null);
+  const [loading, setLoading] = useState(!initialOverview);
 
   useEffect(() => {
-    getAdminOverview()
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    if (!initialOverview) {
+      getAdminOverviewAction()
+        .then((res) => {
+          if (res.success && res.data) setData(res.data);
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }
+  }, [initialOverview]);
 
   const stats = [
     {

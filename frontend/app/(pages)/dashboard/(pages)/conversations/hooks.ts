@@ -4,18 +4,18 @@ import { useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
-  listConversations,
-  updateConversation,
-  deleteConversation,
-  bulkConversations,
-  sendAgentReply,
-  getConversationStats,
-  getConversationTrends,
-  getRecentConversations,
-  getAnalyticsChannels,
-  getAnalyticsHeatmap,
-  getAnalyticsTopProducts,
-} from "@/lib/api/conversations";
+  listConversationsAction,
+  updateConversationAction,
+  deleteConversationAction,
+  bulkConversationsAction,
+  sendAgentReplyAction,
+  getConversationStatsAction,
+  getConversationTrendsAction,
+  getRecentConversationsAction,
+  getAnalyticsChannelsAction,
+  getAnalyticsHeatmapAction,
+  getAnalyticsTopProductsAction,
+} from "@/app/actions/conversations";
 import type { ConversationFilters } from "@/app/(pages)/dashboard/(pages)/conversations/types";
 
 export function useConversations(filters: ConversationFilters) {
@@ -33,7 +33,11 @@ export function useConversations(filters: ConversationFilters) {
 
   const query = useQuery({
     queryKey: ["conversations", params],
-    queryFn: () => listConversations(params),
+    queryFn: async () => {
+      const res = await listConversationsAction(params);
+      if (!res.success) throw new Error(res.error || "Failed to load conversations");
+      return res.data;
+    },
   });
 
   const invalidate = useCallback(() => {
@@ -42,7 +46,11 @@ export function useConversations(filters: ConversationFilters) {
   }, [queryClient]);
 
   const resolveMutation = useMutation({
-    mutationFn: (id: string) => updateConversation(id, { status: "resolved" }),
+    mutationFn: async (id: string) => {
+      const res = await updateConversationAction({ id, status: "resolved" });
+      if (!res.success) throw new Error(res.error || "Failed to resolve conversation");
+      return res.data;
+    },
     onSuccess: () => {
       toast.success("Conversation resolved.");
       invalidate();
@@ -54,8 +62,11 @@ export function useConversations(filters: ConversationFilters) {
   });
 
   const assignMutation = useMutation({
-    mutationFn: ({ id, assignedTo }: { id: string; assignedTo: string }) =>
-      updateConversation(id, { assigned_to: assignedTo }),
+    mutationFn: async ({ id, assignedTo }: { id: string; assignedTo: string }) => {
+      const res = await updateConversationAction({ id, assigned_to: assignedTo });
+      if (!res.success) throw new Error(res.error || "Failed to assign conversation");
+      return res.data;
+    },
     onSuccess: () => {
       toast.success("Conversation assigned.");
       invalidate();
@@ -67,7 +78,11 @@ export function useConversations(filters: ConversationFilters) {
   });
 
   const removeMutation = useMutation({
-    mutationFn: (id: string) => deleteConversation(id),
+    mutationFn: async (id: string) => {
+      const res = await deleteConversationAction(id);
+      if (!res.success) throw new Error(res.error || "Failed to delete conversation");
+      return res.data;
+    },
     onSuccess: () => {
       toast.success("Conversation deleted.");
       invalidate();
@@ -79,7 +94,11 @@ export function useConversations(filters: ConversationFilters) {
   });
 
   const bulkResolveMutation = useMutation({
-    mutationFn: (ids: string[]) => bulkConversations("resolve", ids),
+    mutationFn: async (ids: string[]) => {
+      const res = await bulkConversationsAction({ action: "resolve", ids });
+      if (!res.success) throw new Error(res.error || "Failed to resolve conversations");
+      return res.data;
+    },
     onSuccess: (_, ids) => {
       toast.success(`${ids.length} conversation(s) resolved.`);
       invalidate();
@@ -91,8 +110,11 @@ export function useConversations(filters: ConversationFilters) {
   });
 
   const bulkAssignMutation = useMutation({
-    mutationFn: ({ ids, assignedTo }: { ids: string[]; assignedTo: string }) =>
-      bulkConversations("assign", ids, assignedTo),
+    mutationFn: async ({ ids, assignedTo }: { ids: string[]; assignedTo: string }) => {
+      const res = await bulkConversationsAction({ action: "assign", ids, assignedTo });
+      if (!res.success) throw new Error(res.error || "Failed to assign conversations");
+      return res.data;
+    },
     onSuccess: (_, { ids }) => {
       toast.success(`${ids.length} conversation(s) assigned.`);
       invalidate();
@@ -104,7 +126,11 @@ export function useConversations(filters: ConversationFilters) {
   });
 
   const bulkArchiveMutation = useMutation({
-    mutationFn: (ids: string[]) => bulkConversations("archive", ids),
+    mutationFn: async (ids: string[]) => {
+      const res = await bulkConversationsAction({ action: "archive", ids });
+      if (!res.success) throw new Error(res.error || "Failed to archive conversations");
+      return res.data;
+    },
     onSuccess: (_, ids) => {
       toast.success(`${ids.length} conversation(s) archived.`);
       invalidate();
@@ -116,7 +142,11 @@ export function useConversations(filters: ConversationFilters) {
   });
 
   const bulkDeleteMutation = useMutation({
-    mutationFn: (ids: string[]) => bulkConversations("delete", ids),
+    mutationFn: async (ids: string[]) => {
+      const res = await bulkConversationsAction({ action: "delete", ids });
+      if (!res.success) throw new Error(res.error || "Failed to delete conversations");
+      return res.data;
+    },
     onSuccess: (_, ids) => {
       toast.success(`${ids.length} conversation(s) deleted.`);
       invalidate();
@@ -128,8 +158,11 @@ export function useConversations(filters: ConversationFilters) {
   });
 
   const sendReplyMutation = useMutation({
-    mutationFn: ({ conversationId, content }: { conversationId: string; content: string }) =>
-      sendAgentReply(conversationId, content),
+    mutationFn: async ({ conversationId, content }: { conversationId: string; content: string }) => {
+      const res = await sendAgentReplyAction({ conversationId, content });
+      if (!res.success) throw new Error(res.error || "Failed to send reply");
+      return res.data;
+    },
     onSuccess: () => {
       toast.success("Reply sent.");
       invalidate();
@@ -212,7 +245,11 @@ export function useConversations(filters: ConversationFilters) {
 export function useConversationStats() {
   const query = useQuery({
     queryKey: ["conversationStats"],
-    queryFn: getConversationStats,
+    queryFn: async () => {
+      const res = await getConversationStatsAction();
+      if (!res.success) throw new Error(res.error || "Failed to load stats");
+      return res.data;
+    },
   });
 
   return {
@@ -226,7 +263,11 @@ export function useConversationStats() {
 export function useConversationTrends(rangeDays: number = 7) {
   const query = useQuery({
     queryKey: ["conversationTrends", rangeDays],
-    queryFn: () => getConversationTrends(rangeDays),
+    queryFn: async () => {
+      const res = await getConversationTrendsAction(rangeDays);
+      if (!res.success) throw new Error(res.error || "Failed to load trends");
+      return res.data;
+    },
   });
 
   return {
@@ -240,7 +281,11 @@ export function useConversationTrends(rangeDays: number = 7) {
 export function useRecentConversations(limit: number = 5, pollInterval?: number) {
   const query = useQuery({
     queryKey: ["recentConversations", limit],
-    queryFn: () => getRecentConversations(limit),
+    queryFn: async () => {
+      const res = await getRecentConversationsAction(limit);
+      if (!res.success) throw new Error(res.error || "Failed to load recent conversations");
+      return res.data;
+    },
     refetchInterval: pollInterval && pollInterval > 0 ? pollInterval : false,
   });
 
@@ -255,7 +300,11 @@ export function useRecentConversations(limit: number = 5, pollInterval?: number)
 export function useAnalyticsChannels() {
   const query = useQuery({
     queryKey: ["analyticsChannels"],
-    queryFn: getAnalyticsChannels,
+    queryFn: async () => {
+      const res = await getAnalyticsChannelsAction();
+      if (!res.success) throw new Error(res.error || "Failed to load channels");
+      return res.data;
+    },
   });
 
   return {
@@ -269,7 +318,11 @@ export function useAnalyticsChannels() {
 export function useAnalyticsHeatmap() {
   const query = useQuery({
     queryKey: ["analyticsHeatmap"],
-    queryFn: getAnalyticsHeatmap,
+    queryFn: async () => {
+      const res = await getAnalyticsHeatmapAction();
+      if (!res.success) throw new Error(res.error || "Failed to load heatmap");
+      return res.data;
+    },
   });
 
   return {
@@ -283,7 +336,11 @@ export function useAnalyticsHeatmap() {
 export function useAnalyticsTopProducts(limit: number = 10) {
   const query = useQuery({
     queryKey: ["analyticsTopProducts", limit],
-    queryFn: () => getAnalyticsTopProducts(limit),
+    queryFn: async () => {
+      const res = await getAnalyticsTopProductsAction(limit);
+      if (!res.success) throw new Error(res.error || "Failed to load top products");
+      return res.data;
+    },
   });
 
   return {

@@ -1,10 +1,11 @@
-"use client";
-
 import { MessageSquare, Sparkles, Keyboard } from "lucide-react";
-import { useConversationStats } from "@/app/(pages)/dashboard/(pages)/conversations/hooks";
+import { getConversationStatsAction } from "@/app/actions/conversations";
 
-export default function ConversationsPage() {
-  const { stats, loading } = useConversationStats();
+export const dynamic = "force-dynamic";
+
+export default async function ConversationsPage() {
+  const statsRes = await getConversationStatsAction();
+  const stats = statsRes.success ? statsRes.data ?? null : null;
 
   return (
     <div className="flex h-full items-center justify-center p-4 bg-muted/5 overflow-hidden">
@@ -32,28 +33,20 @@ export default function ConversationsPage() {
           <div className="text-[8px] font-bold text-muted-foreground uppercase tracking-wider text-left">
             Current Stats
           </div>
-          {loading ? (
-            <div className="grid grid-cols-3 gap-2">
-              {[1, 2, 3].map((n) => (
-                <div key={n} className="h-9 rounded-lg bg-muted/40 animate-pulse border border-border/10" />
-              ))}
+          <div className="grid grid-cols-3 gap-2">
+            <div className="p-1.5 rounded-lg border border-border/40 bg-muted/5 flex flex-col items-center justify-center">
+              <span className="text-[8px] font-medium text-muted-foreground uppercase">Active</span>
+              <span className="text-xs font-bold text-foreground mt-0.5">{stats?.active ?? 0}</span>
             </div>
-          ) : (
-            <div className="grid grid-cols-3 gap-2">
-              <div className="p-1.5 rounded-lg border border-border/40 bg-muted/5 flex flex-col items-center justify-center">
-                <span className="text-[8px] font-medium text-muted-foreground uppercase">Active</span>
-                <span className="text-xs font-bold text-foreground mt-0.5">{stats?.active ?? 0}</span>
-              </div>
-              <div className="p-1.5 rounded-lg border border-border/40 bg-muted/5 flex flex-col items-center justify-center">
-                <span className="text-[8px] font-medium text-muted-foreground uppercase">Waiting</span>
-                <span className="text-xs font-bold text-chart-4 mt-0.5">{stats?.waiting ?? 0}</span>
-              </div>
-              <div className="p-1.5 rounded-lg border border-border/40 bg-muted/5 flex flex-col items-center justify-center">
-                <span className="text-[8px] font-medium text-muted-foreground uppercase">Resolved</span>
-                <span className="text-xs font-bold text-chart-2 mt-0.5">{stats?.resolved ?? 0}</span>
-              </div>
+            <div className="p-1.5 rounded-lg border border-border/40 bg-muted/5 flex flex-col items-center justify-center">
+              <span className="text-[8px] font-medium text-muted-foreground uppercase">Waiting</span>
+              <span className="text-xs font-bold text-chart-4 mt-0.5">{stats?.waiting ?? 0}</span>
             </div>
-          )}
+            <div className="p-1.5 rounded-lg border border-border/40 bg-muted/5 flex flex-col items-center justify-center">
+              <span className="text-[8px] font-medium text-muted-foreground uppercase">Resolved</span>
+              <span className="text-xs font-bold text-chart-2 mt-0.5">{stats?.resolved ?? 0}</span>
+            </div>
+          </div>
         </div>
 
         {/* What you can do list */}

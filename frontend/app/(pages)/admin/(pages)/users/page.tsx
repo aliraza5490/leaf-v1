@@ -18,11 +18,11 @@ import {
 import { AdminUserTable } from "@/app/(pages)/admin/(pages)/users/components/user-table";
 import { AdminUserDialog } from "@/app/(pages)/admin/(pages)/users/components/user-dialog";
 import {
-  getAdminUsers,
-  getAdminUserStats,
-  updateAdminUser,
-  deactivateAdminUser,
-} from "@/lib/api/admin";
+  getAdminUsersAction,
+  getAdminUserStatsAction,
+  updateAdminUserAction,
+  deactivateAdminUserAction,
+} from "@/app/actions/admin";
 import type { AdminUser, AdminUserUpdate, UserStats } from "@/app/(pages)/admin/types";
 
 export default function AdminUsersPage() {
@@ -40,14 +40,18 @@ export default function AdminUsersPage() {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await getAdminUsers({
+      const res = await getAdminUsersAction({
         q: search || undefined,
         role: roleFilter === "all" ? undefined : roleFilter,
         page,
         page_size: 20,
       });
-      setUsers(res.items);
-      setTotal(res.total);
+      if (res.success && res.data) {
+        setUsers(res.data.items);
+        setTotal(res.data.total);
+      } else {
+        toast.error(res.error || "Failed to load users");
+      }
     } catch {
       toast.error("Failed to load users");
     } finally {
@@ -55,14 +59,14 @@ export default function AdminUsersPage() {
     }
   }, [search, roleFilter, page]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
-    getAdminUserStats().then(setStats).catch(() => {});
+    getAdminUserStatsAction().then((res) => {
+      if (res.success && res.data) setStats(res.data);
+    }).catch(() => {});
   }, []);
 
   function handleEdit(user: AdminUser) {
@@ -73,9 +77,13 @@ export default function AdminUsersPage() {
   async function handleSave(data: AdminUserUpdate) {
     if (!editingUser) return;
     try {
-      await updateAdminUser(editingUser.email, data);
-      toast.success(`User ${editingUser.email} updated`);
-      fetchUsers();
+      const res = await updateAdminUserAction(editingUser.email, data);
+      if (res.success) {
+        toast.success(`User ${editingUser.email} updated`);
+        fetchUsers();
+      } else {
+        toast.error(res.error || "Failed to update user");
+      }
     } catch {
       toast.error("Failed to update user");
     }
@@ -84,9 +92,13 @@ export default function AdminUsersPage() {
   async function handleDeactivate(user: AdminUser) {
     if (!confirm(`Deactivate ${user.email}?`)) return;
     try {
-      await deactivateAdminUser(user.email);
-      toast.success(`User ${user.email} deactivated`);
-      fetchUsers();
+      const res = await deactivateAdminUserAction(user.email);
+      if (res.success) {
+        toast.success(`User ${user.email} deactivated`);
+        fetchUsers();
+      } else {
+        toast.error(res.error || "Failed to deactivate user");
+      }
     } catch {
       toast.error("Failed to deactivate user");
     }

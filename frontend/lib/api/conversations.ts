@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiDelete, apiPut } from "@/lib/api/client";
+import { serverApiGet, serverApiPost, serverApiDelete, serverApiPut } from "@/lib/api/server";
 import type {
   ConversationListResponse,
   ConversationStats,
@@ -126,7 +126,7 @@ export interface ConversationQueryParams {
 export async function listConversations(
   params: ConversationQueryParams
 ): Promise<ConversationListResponse> {
-  const data = await apiGet<BackendListResponse>("/conversations/", params);
+  const data = await serverApiGet<BackendListResponse>("/conversations/", params);
   return {
     conversations: data.conversations.map(toConversation),
     total: data.total,
@@ -136,7 +136,7 @@ export async function listConversations(
 }
 
 export async function getConversation(id: string): Promise<Conversation> {
-  const data = await apiGet<BackendConversation>(`/conversations/${id}`);
+  const data = await serverApiGet<BackendConversation>(`/conversations/${id}`);
   return toConversation(data);
 }
 
@@ -144,12 +144,12 @@ export async function updateConversation(
   id: string,
   patch: { status?: string; assigned_to?: string; tags?: string }
 ): Promise<Conversation> {
-  const data = await apiPut<BackendConversation>(`/conversations/${id}`, patch);
+  const data = await serverApiPut<BackendConversation>(`/conversations/${id}`, patch);
   return toConversation(data);
 }
 
 export async function deleteConversation(id: string): Promise<void> {
-  await apiDelete<{ conversation_id: string }>(`/conversations/${id}`);
+  await serverApiDelete<{ conversation_id: string }>(`/conversations/${id}`);
 }
 
 export async function bulkConversations(
@@ -157,7 +157,7 @@ export async function bulkConversations(
   ids: string[],
   assignedTo?: string
 ): Promise<{ count: number }> {
-  return apiPost<{ count: number }>("/conversations/bulk", {
+  return serverApiPost<{ count: number }>("/conversations/bulk", {
     action,
     ids,
     assigned_to: assignedTo,
@@ -168,14 +168,14 @@ export async function sendAgentReply(
   conversationId: string,
   content: string
 ): Promise<Message> {
-  const data = await apiPost<BackendMessage>(`/conversations/${conversationId}/messages`, {
+  const data = await serverApiPost<BackendMessage>(`/conversations/${conversationId}/messages`, {
     content,
   });
   return toMessage(data);
 }
 
 export async function getConversationStats(): Promise<ConversationStats> {
-  const data = await apiGet<BackendStats>("/conversations/stats");
+  const data = await serverApiGet<BackendStats>("/conversations/stats");
   return {
     total: data.total,
     active: data.active,
@@ -187,11 +187,11 @@ export async function getConversationStats(): Promise<ConversationStats> {
 }
 
 export async function getConversationTrends(rangeDays: number = 7): Promise<TrendsResponse> {
-  return apiGet<TrendsResponse>("/conversations/trends", { range_days: rangeDays });
+  return serverApiGet<TrendsResponse>("/conversations/trends", { range_days: rangeDays });
 }
 
 export async function getRecentConversations(limit: number = 5): Promise<ConversationListResponse> {
-  const data = await apiGet<{ conversations: BackendConversation[] }>("/conversations/recent", { limit });
+  const data = await serverApiGet<{ conversations: BackendConversation[] }>("/conversations/recent", { limit });
   return {
     conversations: data.conversations.map(toConversation),
     total: data.conversations.length,
@@ -201,25 +201,25 @@ export async function getRecentConversations(limit: number = 5): Promise<Convers
 }
 
 export async function getAnalyticsSummary(): Promise<ConversationStats> {
-  return apiGet<ConversationStats>("/conversations/analytics/summary");
+  return serverApiGet<ConversationStats>("/conversations/analytics/summary");
 }
 
 export async function getAnalyticsVolume(rangeDays: number = 30): Promise<TrendsResponse> {
-  return apiGet<TrendsResponse>("/conversations/analytics/volume", { range_days: rangeDays });
+  return serverApiGet<TrendsResponse>("/conversations/analytics/volume", { range_days: rangeDays });
 }
 
 export async function getAnalyticsChannels(): Promise<ChannelsResponse> {
-  return apiGet<ChannelsResponse>("/conversations/analytics/channels");
+  return serverApiGet<ChannelsResponse>("/conversations/analytics/channels");
 }
 
 export async function getAnalyticsHeatmap(): Promise<{ heatmap: Record<string, Record<string, number>> }> {
-  return apiGet<{ heatmap: Record<string, Record<string, number>> }>("/conversations/analytics/heatmap");
+  return serverApiGet<{ heatmap: Record<string, Record<string, number>> }>("/conversations/analytics/heatmap");
 }
 
 export async function getAnalyticsTopProducts(limit: number = 10): Promise<TopProductsResponse> {
-  return apiGet<TopProductsResponse>("/conversations/analytics/top-products", { limit });
+  return serverApiGet<TopProductsResponse>("/conversations/analytics/top-products", { limit });
 }
 
 export async function getTeam(): Promise<TeamResponse> {
-  return apiGet<TeamResponse>("/team/");
+  return serverApiGet<TeamResponse>("/team/");
 }

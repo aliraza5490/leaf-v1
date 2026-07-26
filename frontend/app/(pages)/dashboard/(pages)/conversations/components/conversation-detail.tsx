@@ -8,7 +8,7 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Conversation, ConversationTeamMember } from "@/app/(pages)/dashboard/(pages)/conversations/types";
-import { API_BASE_URL } from "@/lib/api/client";
+import { API_BASE_URL } from "@/lib/auth/service";
 import { ChatMessage } from "./chat-message";
 import { VisitorHeader } from "./visitor-header";
 import { Badge } from "@/components/ui/badge";
@@ -24,11 +24,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { updateConversationAction } from "@/app/actions/conversations";
+import { toast } from "sonner";
+
 interface ConversationDetailProps {
   conversation: Conversation;
   teamMembers: ConversationTeamMember[];
-  onResolve: () => void;
-  onAssign: (agentId: string) => void;
+  onResolve?: () => void;
+  onAssign?: (agentId: string) => void;
   onUpdateTags?: (tags: string[]) => void;
 }
 
@@ -82,10 +85,40 @@ function generateAiSummary(conversation: Conversation) {
 export function ConversationDetail({
   conversation,
   teamMembers,
-  onResolve,
-  onAssign,
-  onUpdateTags,
+  onResolve: customOnResolve,
+  onAssign: customOnAssign,
+  onUpdateTags: customOnUpdateTags,
 }: ConversationDetailProps) {
+  const handleResolve = async () => {
+    if (customOnResolve) {
+      customOnResolve();
+    } else {
+      const res = await updateConversationAction({ id: conversation.id, status: "resolved" });
+      if (res.success) toast.success("Conversation resolved");
+      else toast.error(res.error || "Failed to resolve conversation");
+    }
+  };
+
+  const handleAssign = async (agentId: string) => {
+    if (customOnAssign) {
+      customOnAssign(agentId);
+    } else {
+      const res = await updateConversationAction({ id: conversation.id, assigned_to: agentId });
+      if (res.success) toast.success("Conversation assigned");
+      else toast.error(res.error || "Failed to assign conversation");
+    }
+  };
+
+  const handleUpdateTags = async (tags: string[]) => {
+    if (customOnUpdateTags) {
+      customOnUpdateTags(tags);
+    } else {
+      const res = await updateConversationAction({ id: conversation.id, tags: tags.join(",") });
+      if (res.success) toast.success("Tags updated");
+      else toast.error(res.error || "Failed to update tags");
+    }
+  };
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
   const [newTag, setNewTag] = useState("");
@@ -116,14 +149,14 @@ export function ConversationDetail({
     const tag = newTag.trim();
     if (tag && !conversation.tags.includes(tag)) {
       const updatedTags = [...conversation.tags, tag];
-      onUpdateTags?.(updatedTags);
+      handleUpdateTags(updatedTags);
       setNewTag("");
     }
   };
 
   const handleRemoveTag = (tagToRemove: string) => {
     const updatedTags = conversation.tags.filter(t => t !== tagToRemove);
-    onUpdateTags?.(updatedTags);
+    handleUpdateTags(updatedTags);
   };
 
   return (
@@ -133,8 +166,8 @@ export function ConversationDetail({
         <VisitorHeader
           conversation={conversation}
           teamMembers={teamMembers}
-          onResolve={onResolve}
-          onAssign={onAssign}
+          onResolve={handleResolve}
+          onAssign={handleAssign}
         />
 
         {conversation.audioRecordingUrl && (
@@ -239,7 +272,7 @@ export function ConversationDetail({
                 {teamMembers.map((member) => (
                   <DropdownMenuItem
                     key={member.id}
-                    onClick={() => onAssign(member.id)}
+                    onClick={() => handleAssign(member.id)}
                     className="text-xs"
                   >
                     {member.name}

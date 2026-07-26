@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRecentConversations } from "@/app/(pages)/dashboard/(pages)/conversations/hooks";
-import { updateConversation } from "@/lib/api/conversations";
+import { updateConversationAction } from "@/app/actions/conversations";
 import { formatRelativeTime } from "@/lib/utils/time";
 import { cn } from "@/lib/utils";
 import { getInitials, getAvatarGradient } from "@/lib/utils/avatar";
@@ -51,9 +51,13 @@ export function RecentConversations({ className }: RecentConversationsProps = {}
 
   const handleResolve = async (id: string) => {
     try {
-      await updateConversation(id, { status: "resolved" });
-      toast.success("Conversation resolved.");
-      refetch();
+      const res = await updateConversationAction({ id, status: "resolved" });
+      if (res.success) {
+        toast.success("Conversation resolved.");
+        refetch();
+      } else {
+        toast.error(res.error || "Failed to resolve conversation.");
+      }
     } catch {
       toast.error("Failed to resolve conversation.");
     }

@@ -1,4 +1,4 @@
-const API_BASE_URL =
+export const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000";
 const API_PREFIX = "/api/v1";
 
@@ -73,7 +73,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 
 export async function login(credentials: LoginCredentials): Promise<LoginResponse> {
   const data = await post<LoginResponse>("/auth/login", credentials);
-  setAccessToken(data.access_token);
+  await setAccessToken(data.access_token);
   return data;
 }
 
@@ -89,27 +89,56 @@ export async function forgotPassword(
 
 const TOKEN_KEY = "access_token";
 
-export function setAccessToken(token: string): void {
+export async function setAccessToken(token: string): Promise<void> {
   if (typeof window !== "undefined") {
-    localStorage.setItem(TOKEN_KEY, token);
+    document.cookie = `${TOKEN_KEY}=${encodeURIComponent(token)}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+  } else {
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      cookieStore.set(TOKEN_KEY, token, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7,
+        sameSite: "lax",
+        httpOnly: false,
+      });
+    } catch {
+      // Ignore if headers are already sent
+    }
   }
 }
 
-export function getAccessToken(): string | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-  return localStorage.getItem(TOKEN_KEY);
-}
-
-export function removeAccessToken(): void {
+export async function getAccessToken(): Promise<string | null> {
   if (typeof window !== "undefined") {
-    localStorage.removeItem(TOKEN_KEY);
+    const match = document.cookie.match(new RegExp("(?:^|; )" + TOKEN_KEY + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+  } else {
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      return cookieStore.get(TOKEN_KEY)?.value ?? null;
+    } catch {
+      return null;
+    }
   }
 }
 
-export function getAuthHeaders(): Record<string, string> {
-  const token = getAccessToken();
+export async function removeAccessToken(): Promise<void> {
+  if (typeof window !== "undefined") {
+    document.cookie = `${TOKEN_KEY}=; path=/; max-age=0`;
+  } else {
+    try {
+      const { cookies } = await import("next/headers");
+      const cookieStore = await cookies();
+      cookieStore.delete(TOKEN_KEY);
+    } catch {
+      // Ignore if headers are already sent
+    }
+  }
+}
+
+export async function getAuthHeaders(): Promise<Record<string, string>> {
+  const token = await getAccessToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -122,12 +151,14 @@ export interface UserProfile {
 }
 
 export async function getMe(): Promise<UserProfile> {
+  const headers = await getAuthHeaders();
   const response = await fetch(
     `${API_BASE_URL}${API_PREFIX}/auth/me`,
-    { headers: getAuthHeaders() }
+    { headers, cache: "no-store" }
   );
   if (!response.ok) {
     throw new Error("Failed to fetch user profile");
   }
   return response.json();
 }
+

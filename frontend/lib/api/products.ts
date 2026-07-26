@@ -1,4 +1,4 @@
-import { apiGet, apiPost, apiPut, apiDelete } from "@/lib/api/client";
+import { serverApiGet, serverApiPost, serverApiPut, serverApiDelete } from "@/lib/api/server";
 import type {
   Product,
   ProductFormData,
@@ -100,7 +100,7 @@ function toUpdatePayload(data: ProductFormData): Record<string, unknown> {
 export async function listProducts(
   params: ProductQueryParams
 ): Promise<ProductListResponse> {
-  const data = await apiGet<BackendProductListResponse>("/products/", params);
+  const data = await serverApiGet<BackendProductListResponse>("/products/", params);
   return {
     products: data.products.map(toProduct),
     total: data.total,
@@ -112,7 +112,7 @@ export async function listProducts(
 export async function createProduct(
   data: ProductFormData
 ): Promise<Product> {
-  const product = await apiPost<BackendProduct>("/products/", toCreatePayload(data));
+  const product = await serverApiPost<BackendProduct>("/products/", toCreatePayload(data));
   return toProduct(product);
 }
 
@@ -120,7 +120,7 @@ export async function updateProduct(
   id: string,
   data: ProductFormData
 ): Promise<Product> {
-  const product = await apiPut<BackendProduct>(
+  const product = await serverApiPut<BackendProduct>(
     `/products/${id}`,
     toUpdatePayload(data)
   );
@@ -128,20 +128,20 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  await apiDelete<BackendDeleteResponse>(`/products/${id}`);
+  await serverApiDelete<BackendDeleteResponse>(`/products/${id}`);
 }
 
 export async function bulkImportProducts(
   items: ProductFormData[]
 ): Promise<Product[]> {
-  const data = await apiPost<BackendBulkResponse>("/products/bulk", {
+  const data = await serverApiPost<BackendBulkResponse>("/products/bulk", {
     products: items.map(toCreatePayload),
   });
   return data.products.map(toProduct);
 }
 
 export async function listCategories(): Promise<Category[]> {
-  const data = await apiGet<BackendCategoriesResponse>("/products/categories");
+  const data = await serverApiGet<BackendCategoriesResponse>("/products/categories");
   return data.categories.map((c) => ({
     id: c.id,
     name: c.name,

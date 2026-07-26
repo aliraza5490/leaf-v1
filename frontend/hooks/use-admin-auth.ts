@@ -1,7 +1,8 @@
 "use client";
 import { useCallback, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
-import { getAccessToken, removeAccessToken } from "@/lib/auth/service";
+import { logoutAction } from "@/app/actions/auth";
+import { getAccessToken } from "@/lib/auth/service";
 import type { UserRole } from "@/app/(pages)/admin/types";
 
 interface AdminUser {
@@ -27,8 +28,14 @@ export function decodeJwtPayload(token: string): Record<string, unknown> | null 
 let cachedToken: string | null = undefined as unknown as null;
 let cachedUser: AdminUser | null = null;
 
+function getClientToken(): string | null {
+  if (typeof window === "undefined") return null;
+  const match = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 function getSnapshot(): AdminUser | null {
-  const token = getAccessToken();
+  const token = getClientToken();
 
   // Return cached reference when the token hasn't changed
   if (token === cachedToken) return cachedUser;
@@ -79,8 +86,8 @@ export function useAdminAuth() {
   const isSuperAdmin = user?.role === "superadmin";
   const isLoading = false;
 
-  const logout = useCallback(() => {
-    removeAccessToken();
+  const logout = useCallback(async () => {
+    await logoutAction();
     notifyListeners();
     router.push("/auth/login");
   }, [router]);

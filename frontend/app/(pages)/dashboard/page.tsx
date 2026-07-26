@@ -3,8 +3,14 @@ import { ConversationChart } from "@/app/(pages)/dashboard/components/conversati
 import { VisitorChart } from "@/app/(pages)/dashboard/components/visitor-chart";
 import { RecentConversations } from "@/app/(pages)/dashboard/components/recent-conversations";
 import { QuickActions } from "@/app/(pages)/dashboard/components/quick-actions";
+import { getConversationStatsAction } from "@/app/actions/conversations";
 
-export default function DashboardPage() {
+export const dynamic = "force-dynamic";
+
+export default async function DashboardPage() {
+  const statsRes = await getConversationStatsAction();
+  const stats = statsRes.success ? statsRes.data ?? null : null;
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -16,7 +22,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <StatsCards />
+      <StatsCards stats={stats} />
 
       <div className="grid gap-4 md:grid-cols-7">
         <ConversationChart />

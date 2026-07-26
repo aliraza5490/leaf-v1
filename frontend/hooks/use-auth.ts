@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getAccessToken, removeAccessToken } from "@/lib/auth/service";
+import { logoutAction } from "@/app/actions/auth";
+import { getAccessToken } from "@/lib/auth/service";
 
 export function useAuth() {
   const router = useRouter();
@@ -10,12 +11,14 @@ export function useAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsAuthenticated(!!getAccessToken());
-    setIsLoading(false);
+    getAccessToken().then((token) => {
+      setIsAuthenticated(!!token);
+      setIsLoading(false);
+    });
   }, []);
 
-  function logout() {
-    removeAccessToken();
+  async function logout() {
+    await logoutAction();
     setIsAuthenticated(false);
     router.push("/auth/login");
   }

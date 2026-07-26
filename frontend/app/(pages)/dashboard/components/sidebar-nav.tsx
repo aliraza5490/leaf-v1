@@ -36,7 +36,7 @@ import {
   SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { getConversationStats } from "@/lib/api/conversations";
+import { getConversationStatsAction } from "@/app/actions/conversations";
 
 const navigationItems = [
   { title: "Overview", url: "/dashboard", icon: Home },
@@ -57,13 +57,17 @@ function ConversationsBadge() {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
-    getConversationStats()
-      .then((stats) => setCount(stats.active))
+    getConversationStatsAction()
+      .then((res) => {
+        if (res.success && res.data) setCount(res.data.active);
+      })
       .catch(() => setCount(null));
 
     const interval = setInterval(() => {
-      getConversationStats()
-        .then((stats) => setCount(stats.active))
+      getConversationStatsAction()
+        .then((res) => {
+          if (res.success && res.data) setCount(res.data.active);
+        })
         .catch(() => {});
     }, 30000);
 

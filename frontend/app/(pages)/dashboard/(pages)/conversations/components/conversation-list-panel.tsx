@@ -7,7 +7,7 @@ import { ConversationList } from "./conversation-list";
 import { ConversationFilters } from "./conversation-filters";
 import { BulkActions } from "./bulk-actions";
 import { useConversations } from "@/app/(pages)/dashboard/(pages)/conversations/hooks";
-import { getTeam } from "@/lib/api/conversations";
+import { getTeamAction } from "@/app/actions/team";
 import type { ConversationStatus, ConversationChannel, ConversationTeamMember } from "@/app/(pages)/dashboard/(pages)/conversations/types";
 
 export function ConversationListPanel({ children }: { children: React.ReactNode }) {
@@ -44,8 +44,10 @@ export function ConversationListPanel({ children }: { children: React.ReactNode 
   });
 
   useEffect(() => {
-    getTeam()
-      .then((data) => setTeamMembers(data.team))
+    getTeamAction()
+      .then((res) => {
+        if (res.success && res.data) setTeamMembers(res.data.team);
+      })
       .catch(() => {});
   }, []);
 

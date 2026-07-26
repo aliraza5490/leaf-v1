@@ -25,7 +25,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { forgotPassword } from "@/lib/auth/service";
+import { forgotPasswordAction } from "@/app/actions/auth";
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormValues,
@@ -45,8 +45,12 @@ export default function ForgotPasswordPage() {
   async function onSubmit(values: ForgotPasswordFormValues) {
     setIsLoading(true);
     try {
-      const response = await forgotPassword(values);
-      toast.success(response.message ?? "Password reset instructions sent");
+      const res = await forgotPasswordAction(values);
+      if (!res.success || !res.data) {
+        toast.error(res.error || "Failed to send reset instructions");
+        return;
+      }
+      toast.success(res.data.message ?? "Password reset instructions sent");
       setIsSubmitted(true);
     } catch (error) {
       const message =

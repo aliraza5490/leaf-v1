@@ -18,11 +18,11 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
-  getAdminSettings,
-  createAdminSetting,
-  updateAdminSetting,
-  deleteAdminSetting,
-} from "@/lib/api/admin";
+  getAdminSettingsAction,
+  createAdminSettingAction,
+  updateAdminSettingAction,
+  deleteAdminSettingAction,
+} from "@/app/actions/admin";
 import type { SystemSetting } from "@/app/(pages)/admin/types";
 
 export default function AdminSettingsPage() {
@@ -40,8 +40,12 @@ export default function AdminSettingsPage() {
   const fetchSettings = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getAdminSettings();
-      setSettings(data);
+      const res = await getAdminSettingsAction();
+      if (res.success && res.data) {
+        setSettings(res.data);
+      } else {
+        toast.error(res.error || "Failed to load settings");
+      }
     } catch {
       toast.error("Failed to load settings");
     } finally {
@@ -49,7 +53,6 @@ export default function AdminSettingsPage() {
     }
   }, []);
 
-  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     fetchSettings();
   }, [fetchSettings]);
@@ -74,14 +77,18 @@ export default function AdminSettingsPage() {
       return;
     }
     try {
-      await createAdminSetting({
+      const res = await createAdminSettingAction({
         key: formKey.trim(),
         value: formValue,
         description: formDescription,
       });
-      toast.success("Setting created");
-      setCreateOpen(false);
-      fetchSettings();
+      if (res.success) {
+        toast.success("Setting created");
+        setCreateOpen(false);
+        fetchSettings();
+      } else {
+        toast.error(res.error || "Failed to create setting");
+      }
     } catch {
       toast.error("Failed to create setting");
     }
@@ -90,13 +97,17 @@ export default function AdminSettingsPage() {
   async function handleUpdate() {
     if (!editingSetting) return;
     try {
-      await updateAdminSetting(editingSetting.key, {
+      const res = await updateAdminSettingAction(editingSetting.key, {
         value: formValue,
         description: formDescription,
       });
-      toast.success("Setting updated");
-      setEditOpen(false);
-      fetchSettings();
+      if (res.success) {
+        toast.success("Setting updated");
+        setEditOpen(false);
+        fetchSettings();
+      } else {
+        toast.error(res.error || "Failed to update setting");
+      }
     } catch {
       toast.error("Failed to update setting");
     }
@@ -105,9 +116,13 @@ export default function AdminSettingsPage() {
   async function handleDelete(key: string) {
     if (!confirm(`Delete setting "${key}"?`)) return;
     try {
-      await deleteAdminSetting(key);
-      toast.success("Setting deleted");
-      fetchSettings();
+      const res = await deleteAdminSettingAction(key);
+      if (res.success) {
+        toast.success("Setting deleted");
+        fetchSettings();
+      } else {
+        toast.error(res.error || "Failed to delete setting");
+      }
     } catch {
       toast.error("Failed to delete setting");
     }
