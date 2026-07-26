@@ -1,5 +1,3 @@
-"use client";
-
 import { BarChart3, Calendar } from "lucide-react";
 
 import {

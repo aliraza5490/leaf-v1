@@ -1,5 +1,3 @@
-"use client";
-
 import { AnalyticsHeader } from "@/app/(pages)/dashboard/(pages)/analytics/components/analytics-header";
 import { KpiSummaryCards } from "@/app/(pages)/dashboard/(pages)/analytics/components/kpi-summary-cards";
 import { ConversationVolumeChart } from "@/app/(pages)/dashboard/(pages)/analytics/components/conversation-volume-chart";

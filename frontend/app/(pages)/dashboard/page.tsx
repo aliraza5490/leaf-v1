@@ -1,5 +1,3 @@
-"use client";
-
 import { StatsCards } from "@/app/(pages)/dashboard/components/stats-cards";
 import { ConversationChart } from "@/app/(pages)/dashboard/components/conversation-chart";
 import { VisitorChart } from "@/app/(pages)/dashboard/components/visitor-chart";

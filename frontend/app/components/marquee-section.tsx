@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Marquee from "@/components/8starlabs-ui/marquee";
 import {
