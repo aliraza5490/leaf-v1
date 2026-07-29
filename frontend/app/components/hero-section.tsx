@@ -52,7 +52,7 @@ export function HeroSection() {
           </div>
 
           {/* Right — Chat Mockup */}
-          <div className="hidden lg:block">
+          <div className="flex justify-center">
             <ChatMockup />
           </div>
         </div>
