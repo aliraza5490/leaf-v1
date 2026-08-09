@@ -75,12 +75,17 @@ async def run_voice_bot(
     )
     tts = CartesiaTTSService(
         api_key=settings.CARTESIA_API_KEY,
-        voice_id="db6b0ed5-d5d3-463d-ae85-518a07d3c2b4",
+        settings=CartesiaTTSService.Settings(
+            voice="db6b0ed5-d5d3-463d-ae85-518a07d3c2b4",
+        ),
     )
     llm = OpenAILLMService(
         base_url=settings.OPENAI_BASE_URL,
         api_key=settings.OPENAI_API_KEY,
-        model=settings.OPENAI_MODEL,
+        settings=OpenAILLMService.Settings(
+            model=settings.OPENAI_MODEL,
+            extra={"reasoning_effort": "low"},
+        ),
     )
 
     context = LLMContext(
