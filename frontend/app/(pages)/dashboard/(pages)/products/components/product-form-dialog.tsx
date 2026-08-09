@@ -88,8 +88,8 @@ export function ProductFormDialog({
         price: product.price,
         sku: product.sku,
         category: product.category,
-        tags: product.tags.join(", "),
-        imageUrl: product.images[0] || "",
+        tags: Array.isArray(product.tags) ? product.tags.join(", ") : (product.tags || ""),
+        imageUrl: (Array.isArray(product.images) && product.images[0]) || "",
         stock: product.stock,
         status: product.status,
       });

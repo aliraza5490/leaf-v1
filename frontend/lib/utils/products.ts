@@ -59,14 +59,14 @@ export function parseCSV(csvText: string): Record<string, string>[] {
 export function productsToCSV(products: Product[]): string {
   const headers = ["name", "description", "price", "sku", "category", "tags", "stock", "status"];
   const rows = products.map((p) => [
-    p.name,
-    p.description,
-    p.price.toString(),
-    p.sku,
-    p.category,
-    p.tags.join("; "),
-    p.stock.toString(),
-    p.status,
+    p.name || "",
+    p.description || "",
+    (p.price || 0).toString(),
+    p.sku || "",
+    p.category || "",
+    Array.isArray(p.tags) ? p.tags.join("; ") : (p.tags || ""),
+    (p.stock || 0).toString(),
+    p.status || "active",
   ]);
 
   return [headers.join(","), ...rows.map((r) => r.map((v) => `"${v}"`).join(","))].join("\n");
@@ -140,16 +140,32 @@ export function validateProductData(data: Record<string, unknown>): string[] {
   return errors;
 }
 
-export function mapImportToProduct(data: Record<string, string>): ProductFormData {
+export function mapImportToProduct(data: Record<string, unknown>): ProductFormData {
+  let tags: string[] = [];
+  if (Array.isArray(data.tags)) {
+    tags = data.tags.map(String);
+  } else if (typeof data.tags === "string" && data.tags) {
+    tags = data.tags.includes(";")
+      ? data.tags.split(";").map((t) => t.trim()).filter(Boolean)
+      : data.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+
+  let images: string[] = [];
+  if (Array.isArray(data.images)) {
+    images = data.images.map(String);
+  } else if (typeof data.images === "string" && data.images) {
+    images = [data.images];
+  }
+
   return {
-    name: data.name || "",
-    description: data.description || "",
-    price: parseFloat(data.price) || 0,
-    sku: data.sku || "",
-    category: data.category || "",
-    tags: data.tags ? data.tags.split(";").map((t) => t.trim()).filter(Boolean) : [],
-    images: [],
-    stock: parseInt(data.stock) || 0,
-    status: (data.status as "active" | "draft" | "archived") || "draft",
+    name: String(data.name || ""),
+    description: String(data.description || ""),
+    price: typeof data.price === "number" ? data.price : parseFloat(String(data.price)) || 0,
+    sku: String(data.sku || ""),
+    category: String(data.category || ""),
+    tags,
+    images,
+    stock: typeof data.stock === "number" ? data.stock : parseInt(String(data.stock)) || 0,
+    status: (data.status as "active" | "draft" | "archived") || "active",
   };
 }

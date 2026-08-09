@@ -32,6 +32,22 @@ const productFormSchema = z.object({
   sku: z.string().optional(),
   stock: z.number().optional(),
   image_url: z.string().optional(),
+  tags: z
+    .union([z.array(z.string()), z.string()])
+    .optional()
+    .transform((val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return val.split(",").map((s) => s.trim()).filter(Boolean);
+    }),
+  images: z
+    .union([z.array(z.string()), z.string()])
+    .optional()
+    .transform((val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return [val];
+    }),
 });
 
 const bulkImportSchema = z.array(productFormSchema).min(1, "At least one product is required for import");

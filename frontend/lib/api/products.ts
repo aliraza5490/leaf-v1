@@ -11,10 +11,10 @@ interface BackendProduct {
   name: string;
   description: string;
   price: number;
-  images: string[];
+  images: string[] | string;
   url: string;
   category: string;
-  tags: string[];
+  tags: string[] | string;
   store_id: number;
   sku: string;
   stock: number;
@@ -61,35 +61,66 @@ export interface ProductQueryParams {
 }
 
 function toProduct(p: BackendProduct): Product {
+  let images: string[] = [];
+  if (Array.isArray(p.images)) {
+    images = p.images;
+  } else if (typeof p.images === "string" && p.images) {
+    try {
+      const parsed = JSON.parse(p.images);
+      if (Array.isArray(parsed)) images = parsed;
+      else images = [p.images];
+    } catch {
+      images = [p.images];
+    }
+  }
+
+  let tags: string[] = [];
+  if (Array.isArray(p.tags)) {
+    tags = p.tags;
+  } else if (typeof p.tags === "string" && p.tags) {
+    tags = p.tags.split(",").map((t) => t.trim()).filter(Boolean);
+  }
+
   return {
     id: String(p.id),
     name: p.name,
-    description: p.description,
+    description: p.description ?? "",
     price: p.price,
-    sku: p.sku,
-    category: p.category,
-    tags: p.tags ?? [],
-    images: p.images ?? [],
-    url: p.url,
+    sku: p.sku ?? "",
+    category: p.category ?? "",
+    tags,
+    images,
+    url: p.url ?? "",
     storeId: p.store_id,
-    stock: p.stock,
-    status: p.status,
+    stock: p.stock ?? 0,
+    status: p.status ?? "active",
     createdAt: p.created_at,
     updatedAt: p.updated_at,
   };
 }
 
 function toCreatePayload(data: ProductFormData): Record<string, unknown> {
+  const tagsStr = Array.isArray(data.tags)
+    ? data.tags.join(",")
+    : typeof data.tags === "string"
+    ? data.tags
+    : "";
+  const imagesArr = Array.isArray(data.images)
+    ? data.images
+    : typeof data.images === "string" && data.images
+    ? [data.images]
+    : [];
+
   return {
     name: data.name,
-    description: data.description,
+    description: data.description ?? "",
     price: data.price,
-    sku: data.sku,
-    category: data.category,
-    tags: data.tags.join(","),
-    images: JSON.stringify(data.images),
-    stock: data.stock,
-    status: data.status,
+    sku: data.sku ?? "",
+    category: data.category ?? "",
+    tags: tagsStr,
+    images: JSON.stringify(imagesArr),
+    stock: data.stock ?? 0,
+    status: data.status ?? "active",
   };
 }
 
