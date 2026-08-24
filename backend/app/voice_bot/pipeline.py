@@ -84,7 +84,7 @@ async def run_voice_bot(
         api_key=settings.OPENAI_API_KEY,
         settings=OpenAILLMService.Settings(
             model=settings.OPENAI_MODEL,
-            extra={"reasoning_effort": "low"},
+            extra={"reasoning_effort": "none"},
         ),
     )
 
